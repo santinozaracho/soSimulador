@@ -1,5 +1,41 @@
+var sizeMemory = "256";
+
+
 $(document).ready(function () {
     getData();
+
+    console.log(sizeMemory)
+
+    $(".sizeInput, .arrivalInput, .firstCpu, .inOut, .lastCpu").keydown(function (e) {
+       if ((e.keyCode == 65 && (e.ctrlKey === true || e.metaKey === true)) ||
+         (e.keyCode >= 35 && e.keyCode <= 40) ||
+         $.inArray(e.keyCode, [46, 8, 9, 27, 13, 110, 190]) !== -1) {
+         return;
+      }
+      if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) &&
+         (e.keyCode < 96 || e.keyCode > 105)) {
+          e.preventDefault();
+      }
+   });
+
+   //control de la obtención del tamaño de la memoria
+   $(".optionOne").click(function(){
+      var te = $(".optionOne > input").val();
+      sizeMemory = te;
+      console.log(sizeMemory)
+   });
+   $(".optionTwo").click(function(){
+       var te = $(".optionTwo > input").val();
+       sizeMemory = te;
+       console.log(sizeMemory)
+   });
+   $(".optionThree").click(function(){
+      var te = $(".optionThree > input").val();
+      sizeMemory = te;
+      console.log(sizeMemory)
+   });
+   //--------------------------------
+
 });
 
 
@@ -12,7 +48,6 @@ firebase.initializeApp({
 // Initialize Cloud Firestore through Firebase
 var db = firebase.firestore();
 
-
 function saveData() {
 
     var name = $('.name').val();
@@ -24,7 +59,6 @@ function saveData() {
 
     saveFirebase(name, size, arrival, firstCpu, inOut, lastCpu);
 }
-
 
 function saveFirebase(name, size, arrival, firstCpu, inOut, lastCpu) {
 
@@ -46,7 +80,7 @@ function saveFirebase(name, size, arrival, firstCpu, inOut, lastCpu) {
         $('.lastCpu').val("");
 
         getData();
-        
+
     }).catch(function (error) {
         console.error("Error adding document: ", error);
     });
@@ -63,7 +97,6 @@ function deleteData(idData){
     });
 
 }
-
 
 function getData(){
 
@@ -94,7 +127,3 @@ function getData(){
 
 
 }
-
-
-
-

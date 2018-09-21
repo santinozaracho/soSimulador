@@ -1,8 +1,6 @@
 
 .navCustom{
-
     border: 1px solid black;
-
 }
 
 .tableCustom{
@@ -15,4 +13,13 @@
 
 .trCustom{
     text-align: center;
+}
+
+.buttonSelect{
+  margin-top: 20px;
+  margin-bottom: 30px;
+}
+
+.buttonSelect > .memorySelect{
+   text-align: center;
 }
