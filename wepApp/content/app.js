@@ -127,3 +127,94 @@ function getData(){
 
 
 }
+
+
+/*Para ordenar por tiempo de arribo antes de procesar*/
+function sortTable() {
+  var table, rows, switching, i, x, y, shouldSwitch;
+  table = doc.getElementById("tdTable");
+  switching = true;
+  while (switching) {
+    switching = false;
+    rows = tdTable.rows;
+    for (i = 1; i < (rows.length - 1); i++) {
+      shouldSwitch = false;
+      x = rows[i].getElementsByTagName("TD")[0];
+      y = rows[i + 1].getElementsByTagName("TD")[0];
+      if (x.innerHTML.arrivalTime > y.innerHTML.arribalTime) {
+        shouldSwitch = true;
+        break;
+      }
+    }
+    if (shouldSwitch) {
+      rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+      switching = true;
+    }
+  }
+}
+
+
+/*Algoritmo Round Robin*/
+// function RoundRobin(){
+//       var listaprocesos, procesoEjecucion, procesosCola, quantum, totalProcesos, bandera, i, tiempo, nprocesos;
+//       listaprocesos=doc.getElementById("tdTable");
+//       procesoEjecucion = tdTable.rows;
+//       quantum=FATA DEFINIR EN LA TABLA;
+//       totalProcesos= listaprocesos.length;
+//       bandera= true;
+//       tiempo=0;
+//       nproceso=0;
+//       while (listaprocesos>0){
+//         if(tdTable.rows > nproceso and tiempo >= listadeprocesos[nproceso].innerHTML.arribalTime){
+//               procesosCola.unshift(listadeprocesos[nproceso]);
+//               nproceso = nproceso +1;
+//
+//           else
+//             (if (nproceso>0 or procesosCola.length> 0){
+//               if(procesoEjecucion =null){
+//                 procesoEjecucion = delete procesosCola[0];
+//                 bandera = true
+//               else (if(bandera){
+//                       if(procesoEjecucion.cpuTime >=quantum){
+//                         procesoEjecucion.cpuTime = procesoEjecucion.cpuTime - quantum;
+//                         tiempo = tiempo + quantum;
+//                       else(tiempo = tiempo + procesoEjecusion.cpuTime
+//                         procesoEjecucion.cpuTime = 0;}
+//
+//                       if(procesoEjecucion.cpuTime <1 ){
+//                           procesoEjecucion.finalizacion = tiempo;
+//                           procesoEjecucion.retorno = procesoEjecucion.finalizacion - procesoEjecucion.llegada;
+//                           procesoEjecucion.espera = procesoEjecucion.retorno - procesoEjecucion.rafaga;
+//                           totalProcesos = totalProcesos-1;
+//                           procesoEjecusion = null;
+//
+//                       else
+//                           bandera= false;}
+//                     else
+//                       procesosCola.unshift(procesoEjecucion);
+//                       procesoEjecucion = null;}
+//               }
+//             else
+//               tiempo = tiempo +1;})
+//         }
+//
+//       totalretorno=0
+//       totalespera=0
+//       for proceso in listadeprocesos:
+//           print("Proceso "+ str(proceso.id) + " Finalizo: "+str(proceso.finalizacion) + " Espera: "+str(proceso.espera)+ " Retorno: "+str(proceso.retorno))
+//           totalretorno = totalretorno + proceso.retorno
+//           totalespera = totalespera + proceso.espera
+//       print()
+//       print("Promedio de retorno: " +str(totalretorno/len(listadeprocesos)))
+//       print("Promedio de espera: " +str(totalespera/len(listadeprocesos)))
+//   else:
+//       print("No es valido")
+// except Exception as e:
+//   print(e)
+//
+//         if listaprocesos =[]{
+//             bandera=false;
+//         }
+//       }
+//
+// }
