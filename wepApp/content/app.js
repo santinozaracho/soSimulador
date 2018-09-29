@@ -1,12 +1,19 @@
 var sizeMemory = "256";
-
+var typeMemory = "Fija";
+var fitMemory = "Best Fit";
+var algorithm = "FCFS"
 
 $(document).ready(function () {
     getData();
 
-    console.log(sizeMemory)
+    $(".quantumIn").hide();
 
-    $(".sizeInput, .arrivalInput, .firstCpu, .inOut, .lastCpu").keydown(function (e) {
+    console.log(sizeMemory);
+    console.log(typeMemory);
+    console.log(fitMemory);
+    console.log(algorithm);
+
+    $(".sizeInput, .arrivalInput, .firstCpu, .inOut, .lastCpu, .quantumIn").keydown(function (e) {
        if ((e.keyCode == 65 && (e.ctrlKey === true || e.metaKey === true)) ||
          (e.keyCode >= 35 && e.keyCode <= 40) ||
          $.inArray(e.keyCode, [46, 8, 9, 27, 13, 110, 190]) !== -1) {
@@ -16,6 +23,11 @@ $(document).ready(function () {
          (e.keyCode < 96 || e.keyCode > 105)) {
           e.preventDefault();
       }
+
+    $('.quantumIn').keypress(function() {
+        //falta hacer
+    });
+
    });
 
    //control de la obtención del tamaño de la memoria
@@ -35,6 +47,72 @@ $(document).ready(function () {
       console.log(sizeMemory)
    });
    //--------------------------------
+
+   //control del tipo de memoria
+   $(".optionTypeOne").click(function(){
+      var valueCurrent = $(".optionTypeOne > input").val();
+      typeMemory = valueCurrent;
+      console.log(typeMemory);
+   });
+   $(".optionTypeTwo").click(function(){
+      var valueCurrent = $(".optionTypeTwo > input").val();
+      typeMemory = valueCurrent;
+      console.log(typeMemory);
+   });
+   $(".optionTypeThree").click(function(){
+      var valueCurrent = $(".optionTypeThree > input").val();
+      typeMemory = valueCurrent;
+      console.log(typeMemory);
+   });
+   //-------------------------
+
+   //control de ajuste de memoria
+   $(".optionFitOne").click(function(){
+      var valueCurrent = $(".optionFitOne > input").val();
+      fitMemory = valueCurrent;
+      console.log(fitMemory);
+   });
+   $(".optionFitTwo").click(function(){
+      var valueCurrent = $(".optionFitTwo > input").val();
+      fitMemory = valueCurrent;
+      console.log(fitMemory);
+   });
+   $(".optionFitThree").click(function(){
+      var valueCurrent = $(".optionFitThree > input").val();
+      fitMemory = valueCurrent;
+      console.log(fitMemory);
+   });
+   //------------------------------------
+
+   //control de la seleccion de algoritmo
+   $(".optionPlaningOne").click(function(){
+      var valueCurrent = $(".optionPlaningOne > input").val();
+      algorithm = valueCurrent;
+      console.log(algorithm);
+      $(".quantumIn").val("");
+      $(".quantumIn").hide();
+   });
+   $(".optionPlaningTwo").click(function(){
+      var valueCurrent = $(".optionPlaningTwo > input").val();
+      algorithm = valueCurrent;
+      console.log(algorithm);
+      $(".quantumIn").show();
+   });
+   $(".optionPlaningThree").click(function(){
+      var valueCurrent = $(".optionPlaningThree > input").val();
+      algorithm = valueCurrent;
+      console.log(algorithm);
+      $(".quantumIn").val("");
+      $(".quantumIn").hide();
+   });
+   $(".optionPlaningFour").click(function(){
+      var valueCurrent = $(".optionPlaningFour > input").val();
+      algorithm = valueCurrent;
+      console.log(algorithm);
+      $(".quantumIn").hide();
+   });
+   //------------------------------------
+
 
 });
 
