@@ -56,21 +56,19 @@ $(document).ready(function () {
       var valueCurrent = $(".optionTypeOne > input").val();
       typeMemory = valueCurrent;
       console.log(typeMemory);
-      $("#collapseExample").removeClass("show");
+      $("#collapseExample").addClass("show");
+      $(".optionFitTwo").hide();
+      $(".optionFitOne").show();
    });
    $(".optionTypeTwo").click(function(){
       $(".fixedPart").hide();
       var valueCurrent = $(".optionTypeTwo > input").val();
       typeMemory = valueCurrent;
       console.log(typeMemory);
+      //$("#collapseExample").removeClass("show");
       $("#collapseExample").addClass("show");
-   });
-   $(".optionTypeThree").click(function(){
-      $(".fixedPart").hide();
-      var valueCurrent = $(".optionTypeThree > input").val();
-      typeMemory = valueCurrent;
-      console.log(typeMemory);
-      $("#collapseExample").removeClass("show");
+      $(".optionFitTwo").show();
+      $(".optionFitOne").hide();
    });
    //-------------------------
 
@@ -123,7 +121,7 @@ $(document).ready(function () {
 
    //falta hacer
    $(".nexttab").click(function() {
-      
+
    });
    //--------------
 
@@ -215,7 +213,7 @@ function getData(){
           arrayProcess.push(doc.data());
 
           console.log(arrayProcess)
-            
+
         });
     });
 }

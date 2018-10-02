@@ -62,9 +62,9 @@
 
 			  <!--Primer pestaña-->
 			  <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-			  	
+
 			  	<div class="row buttonSelect">
-		          
+
 		          <div class="col-lg-6 memorySelect">
 		            <h5 class="card-title my-2">Selecciona el Tamaño de la memoria</h5>
 		            <div class="btn-group btn-group-toggle" data-toggle="buttons">
@@ -86,22 +86,34 @@
 		              <label class="btn btn-secondary active optionTypeOne">
 		                <input type="radio" name="options" autocomplete="off" value="Fija" checked> Fija
 		              </label>
-		              <input type="text" class="fixedPart" placeholder="Cuantas particiones?"/>
 		              <label class="btn btn-secondary optionTypeTwo">
 		                <input type="radio" name="options" value="Variable" autocomplete="off"> Variable
-		              </label>
-		              <label class="btn btn-secondary optionTypeThree">
-		                <input type="radio" name="options" value="Buddy System" autocomplete="off"> Buddy System
 		              </label>
 		            </div>
 		          </div>
         		</div>
 
         		<div class="row collapse" id="collapseExample">
-				  <div class="card card-body">
-				    Hay que poner datos para la particion variable
-				  </div>
-				</div>
+    				  <div class="card card-body">
+
+                <div class="col-lg-6 memorySelect">
+  		            <h5 class="card-title my-2">Selecciona el ajuste de memoria</h5>
+  		            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                    <label class="btn btn-secondary active optionFitThree">
+  		                <input type="radio" name="options" value="First Fit" checked autocomplete="off"> First Fit
+  		              </label>
+  		              <label class="btn btn-secondary optionFitOne">
+  		                <input type="radio" name="options" autocomplete="off" value="Best Fit"> Best Fit
+  		              </label>
+  		              <label class="btn btn-secondary optionFitTwo">
+  		                <input type="radio" name="options" value="Works Fit" autocomplete="off"> Worst Fit
+  		              </label>
+
+  		            </div>
+  		          </div>
+
+    				  </div>
+    				</div>
 
 		        <div class="row">
 
@@ -158,7 +170,7 @@
 
 			  <!--Segunda pesataña-->
 			  <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-			  	
+
 			  	<div class="row buttonSelect">
 
 		          <div class="col-lg-6 memorySelect">
@@ -182,7 +194,7 @@
 		              <label class="btn btn-secondary active optionPlaningOne">
 		                <input type="radio" name="options" autocomplete="off" value="FCFS" checked> FCFS
 		              </label>
-		              
+
 		              <label class="btn btn-secondary optionPlaningTwo">
 		                <input type="radio" name="options" value="RR" autocomplete="off"> RR
 		              </label>
@@ -207,7 +219,7 @@
 			  <!--Fin de Tercer pesataña-->
 
 			</div>
-        	
+
         </div>
 
 
