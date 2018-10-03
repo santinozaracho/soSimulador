@@ -1,8 +1,6 @@
 
 .navCustom{
-
     border: 1px solid black;
-
 }
 
 .tableCustom{
@@ -16,6 +14,7 @@
 .trCustom{
     text-align: center;
 }
+<<<<<<< HEAD
 .wizard {
     margin: 20px auto;
     background: #fff;
@@ -156,3 +155,47 @@ span.round-tab:hover {
         left: 35%;
     }
 }
+=======
+
+.buttonSelect{
+  margin-top: 20px;
+  margin-bottom: 30px;
+}
+
+.buttonSelect > .memorySelect{
+   text-align: center;
+}
+
+.divTab{
+	margin-top: 20px;
+}
+
+.divNext{
+	margin-top: 30px;
+	margin-bottom: 60px;
+	text-align: right;
+}
+
+.blue{
+	background-color: #2196f3!important;
+}
+
+footer.page-footer {
+    color: #fff;
+}
+
+footer.page-footer .footer-copyright {
+    overflow: hidden;
+    background-color: rgba(0,0,0,.2);
+    color: rgba(255,255,255,.6);
+}
+
+.footerCustom{
+	margin-top: 60px
+
+}
+
+.ulText > li > a{
+	color: white;
+}
+>>>>>>> master
