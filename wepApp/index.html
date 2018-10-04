@@ -60,12 +60,12 @@
 
 			<div class="tab-content" id="myTabContent">
 
-			  <!--Primer pestaña-->
+        <!--Primer pestaña-->
 			  <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
 
-			  	<div class="row buttonSelect">
+          <div class="row buttonSelect">
 
-		          <div class="col-lg-6 memorySelect">
+            <div class="col-lg-4 memorySelect">
 		            <h5 class="card-title my-2">Selecciona el Tamaño de la memoria</h5>
 		            <div class="btn-group btn-group-toggle" data-toggle="buttons">
 		              <label class="btn btn-secondary active optionOne">
@@ -78,76 +78,44 @@
 		                <input type="radio" name="options" value="1024" autocomplete="off" checked> 1024 KB
 		              </label>
 		            </div>
-		          </div>
-
-		          <div class="col-lg-6 memorySelect">
-		            <h5 class="card-title my-2">Selecciona el tipo de memoria</h5>
-		            <div class="btn-group btn-group-toggle" data-toggle="buttons">
-		              <label class="btn btn-secondary active optionTypeOne">
-		                <input type="radio" name="options" autocomplete="off" value="Fija" checked> Fija
-		              </label>
-		              <label class="btn btn-secondary optionTypeTwo">
-		                <input type="radio" name="options" value="Variable" autocomplete="off"> Variable
-		              </label>
-		            </div>
-		          </div>
-
-
-
-              <div class="col-lg-6 memorySelect" style="display:none">
-		            <h5 class="card-title my-2">Selecciona el ajuste de memoria</h5>
-		            <div class="btn-group btn-group-toggle" data-toggle="buttons">
-		              <label class="btn btn-secondary active optionFitOne">
-		                <input type="radio" name="options" autocomplete="off" value="Best Fit" checked> Best Fit
-		              </label>
-		              <label class="btn btn-secondary optionFitTwo">
-		                <input type="radio" name="options" value="Works Fit" autocomplete="off"> Works Fit
-		              </label>
-		              <label class="btn btn-secondary optionFitThree">
-		                <input type="radio" name="options" value="First Fit" autocomplete="off"> First Fit
-		              </label>
-		            </div>
-		           </div>
-
-
-               <div class="row collapse" id="collapseExample">
-       				  <div class="card card-body">
-                  <div class="col-lg-6 ">
-                    <p>hola</p>
-                  </div>
-
-
-                   <div class="col-lg-6 memorySelect">
-     		            <h5 class="card-title my-2">Selecciona el ajuste de memoria</h5>
-     		            <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                       <label class="btn btn-secondary active optionFitThree">
-     		                <input type="radio" name="options" value="First Fit" checked autocomplete="off"> First Fit
-     		              </label>
-     		              <label class="btn btn-secondary optionFitOne">
-     		                <input type="radio" name="options" autocomplete="off" value="Best Fit"> Best Fit
-     		              </label>
-     		              <label class="btn btn-secondary optionFitTwo">
-     		                <input type="radio" name="options" value="Works Fit" autocomplete="off"> Worst Fit
-     		              </label>
-
-     		            </div>
-     		          </div>
-
-       				  </div>
-       				</div>
-
-          	</div>
-
-
-
-
-		        <div class="col-lg-12 divNext">
-		        	<button class="btn btn-success" onclick="secondStep()">Siguiente</button>
 		        </div>
 
+            <div class="col-lg-4 memorySelect">
+	            <h5 class="card-title my-2">Selecciona el tipo de memoria</h5>
+	            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+	              <label class="btn btn-secondary active optionTypeOne">
+	                <input type="radio" name="options" autocomplete="off" value="Fija" checked> Fija
+	              </label>
+	              <label class="btn btn-secondary optionTypeTwo">
+	                <input type="radio" name="options" value="Variable" autocomplete="off"> Variable
+	              </label>
+	            </div>
+	          </div>
 
+            <div class="col-lg-4 memorySelect">
+	            <h5 class="card-title my-2">Selecciona el ajuste de memoria</h5>
+	            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+               <label class="btn btn-secondary active optionFitThree">
+	                <input type="radio" name="options" value="First Fit" checked autocomplete="off"> First Fit
+	               </label>
+	               <label class="btn btn-secondary optionFitOne">
+	                <input type="radio" name="options" autocomplete="off" value="Best Fit"> Best Fit
+	               </label>
+	               <label class="btn btn-secondary optionFitTwo">
+	                <input type="radio" name="options" value="Works Fit" autocomplete="off"> Worst Fit
+	               </label>
+	            </div>
+	           </div>
 
+          </div>
 
+          <div class="row collapse" id="collapseExample">
+
+            <div class="col-lg-12">
+                
+            </div>
+
+          </div>
 
 			  </div>
 			  <!--Fin de Primer pestaña-->
@@ -337,6 +305,7 @@
         crossorigin="anonymous"></script>
 
     <script src="content/app.js"></script>
+    <script src="content/script.js"></script>
 
 </body>
 

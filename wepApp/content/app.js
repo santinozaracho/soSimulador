@@ -10,6 +10,8 @@ $(document).ready(function () {
 
     $(".quantumIn").hide();
 
+    $(".optionFitTwo").hide();
+
     console.log(sizeMemory);
     console.log(typeMemory);
     console.log(fitMemory);
@@ -65,8 +67,8 @@ $(document).ready(function () {
       var valueCurrent = $(".optionTypeTwo > input").val();
       typeMemory = valueCurrent;
       console.log(typeMemory);
-      //$("#collapseExample").removeClass("show");
-      $("#collapseExample").addClass("show");
+      $("#collapseExample").removeClass("show");
+      //$("#collapseExample").addClass("show");
       $(".optionFitTwo").show();
       $(".optionFitOne").hide();
    });
@@ -212,7 +214,7 @@ function getData(){
 
           arrayProcess.push(doc.data());
 
-          console.log(arrayProcess)
+          console.log(arrayProcess[1])
 
         });
     });
