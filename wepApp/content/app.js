@@ -234,7 +234,7 @@ function FCFS(procesosMemoria){
          if (colaListo[1]!=0 || colaListo[3]!=0){
              tiempoE= listaProcesosGeneral[salidaCPU]
              if (colaListo[1]!=0){
-              salidaCPU[1]=
+              salidaCPU[1]=arrayProcess
               }
 
 
