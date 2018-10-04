@@ -221,3 +221,28 @@ function getData(){
 function secondStep(){
   $('[href="#profile"]').tab('show');
 }
+
+//algoritmo FCFS
+function FCFS(procesosMemoria){
+   var colaListo, i, tiempoE salidaCPU, salidaES, bandera
+   badera=true
+   colaListo=procesosMemoria
+   i=0
+   while (colaListo!= null && bandera=true){
+         salidaCPU[]=colaListo[i]
+
+         if (colaListo[1]!=0 || colaListo[3]!=0){
+             tiempoE= listaProcesosGeneral[salidaCPU]
+             if (colaListo[1]!=0){
+              salidaCPU[1]=arrayProcess
+              }
+
+
+          }else{if (colaListo[2]<>0) {
+
+
+          }else{bandera=false}
+              }
+    }
+
+}
