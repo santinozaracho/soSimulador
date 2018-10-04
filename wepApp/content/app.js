@@ -121,6 +121,13 @@ $(document).ready(function () {
    });
    //------------------------------------
 
+   //boton para agregar particiones
+   // $(".btn-add").click(function(){
+   //
+   // });
+
+   //---------------------------------
+
    //falta hacer
    $(".nexttab").click(function() {
 
