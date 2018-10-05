@@ -60,114 +60,79 @@
 
 			<div class="tab-content" id="myTabContent">
 
-			  <!--Primer pestaña-->
-			  <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+        <!--Primer pestaña-->
+		<div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
 
-			  	<div class="row buttonSelect">
+          <div class="row buttonSelect">
 
-		          <div class="col-lg-4 memorySelect">
-		            <h5 class="card-title my-2">Selecciona el Tamaño de la memoria</h5>
-		            <div class="btn-group btn-group-toggle" data-toggle="buttons">
-		              <label class="btn btn-secondary active optionOne">
-		                <input type="radio" name="options" autocomplete="off" value="256" checked> 256 KB
-		              </label>
-		              <label class="btn btn-secondary optionTwo">
-		                <input type="radio" name="options" value="512" autocomplete="off"> 512 KB
-		              </label>
-		              <label class="btn btn-secondary optionThree">
-		                <input type="radio" name="options" value="1024" autocomplete="off"> 1024 KB
-		              </label>
-		            </div>
-		          </div>
+            <div class="col-lg-4 memorySelect">
+	            <h5 class="card-title my-2">Selecciona el Tamaño de la memoria</h5>
+	            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+	              <label class="btn btn-secondary active optionOne">
+	                <input type="radio" name="options" autocomplete="off" value="256"> 256 KB
+	              </label>
+	              <label class="btn btn-secondary optionTwo">
+	                <input type="radio" name="options" value="512" autocomplete="off"> 512 KB
+	              </label>
+	              <label class="btn btn-secondary optionThree">
+	                <input type="radio" name="options" value="1024" autocomplete="off" checked> 1024 KB
+	              </label>
+	            </div>
+	        </div>
 
-		          <div class="col-lg-4 memorySelect">
-		            <h5 class="card-title my-2">Selecciona el tipo de memoria</h5>
-		            <div class="btn-group btn-group-toggle" data-toggle="buttons">
-		            	<label class="btn btn-secondary active optionTypeTwo">
-			            	<input type="radio" name="options" value="Variable" autocomplete="off" checked> Variable
-			            </label>
+            <div class="col-lg-4 memorySelect">
+	            <h5 class="card-title my-2">Selecciona el tipo de memoria</h5>
+	            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+	              <label class="btn btn-secondary active optionTypeOne">
+	                <input type="radio" name="options" autocomplete="off" value="Fija" checked> Fija
+	              </label>
+	              <label class="btn btn-secondary optionTypeTwo">
+	                <input type="radio" name="options" value="Variable" autocomplete="off"> Variable
+	              </label>
+	            </div>
+	        </div>
 
-		            	<label class="btn btn-secondary  optionTypeOne">
-			            	<input type="radio" name="options" autocomplete="off" value="Fija" > Fija
-			            </label>
-		            </div>
-		          </div>
+            <div class="col-lg-4 memorySelect">
+	            <h5 class="card-title my-2">Selecciona el ajuste de memoria</h5>
+	            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+               <label class="btn btn-secondary active optionFitThree">
+	                <input type="radio" name="options" value="First Fit" checked autocomplete="off"> First Fit
+	               </label>
+	               <label class="btn btn-secondary optionFitOne">
+	                <input type="radio" name="options" autocomplete="off" value="Best Fit"> Best Fit
+	               </label>
+	               <label class="btn btn-secondary optionFitTwo">
+	                <input type="radio" name="options" value="Works Fit" autocomplete="off"> Worst Fit
+	               </label>
+	            </div>
+	        </div>
 
-		          <div class="col-lg-4 memorySelect">
-  		            <h5 class="card-title my-2">Selecciona el ajuste de memoria</h5>
-  		            <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                    <label class="btn btn-secondary active optionFitThree">
-  		                <input type="radio" name="options" value="First Fit" checked autocomplete="off"> First Fit
-  		              </label>
-  		              <label class="btn btn-secondary optionFitOne">
-  		                <input type="radio" name="options" autocomplete="off" value="Best Fit"> Best Fit
-  		              </label>
-  		              <label class="btn btn-secondary optionFitTwo">
-  		                <input type="radio" name="options" value="Works Fit" autocomplete="off"> Worst Fit
-  		              </label>
+          </div>
 
-  		            </div>
-  		          </div>
+          <div class="row collapse" id="collapseExample">
 
-        		</div>
+            <div class="col-lg-6">
 
-        		<div class="row collapse" id="collapseExample">
-				  <div class="card card-body">
+              <h4>Generación de particiones</h4>
 
-            		aca van las opciones de particiones
+              <div class="control-group" id="fields">
+                  <div class="controls">
+                      <form role="form" autocomplete="off">
+                          <div class="entry input-group col-xs-3">
+                              <input class="form-control inputMemory" name="fields[]" type="text" placeholder="Ingrese tamaño" />
+                          	<span class="input-group-btn">
+                                  <button class="btn btn-success btn-add" type="button">
+                                      <span class="glyphicon glyphicon-plus">Agregar</span>
+                                  </button>
+                              </span>
+                          </div>
+                      </form>
+                  </div>
+              </div>
 
-				  </div>
-				</div>
+            </div>
 
-		        <div class="row">
-
-		            <div class="col-lg-4">
-		                <h5 class="card-title my-2">Nuevo Trabajo (Proceso)</h5>
-		                <input type="text" placeholder="Nombre de Proceso" class="name form-control my-3" />
-		                <input type="text" placeholder="Tamaño del proceso" class="size form-control my-3 sizeInput" />
-		                <input type="text" placeholder="Tiempo de Arribo" class="arrival form-control my-3 arrivalInput" />
-
-		                <div class="row">
-		                    <div class="col-lg-4 ">
-		                        <input type="text" placeholder="CPU 1º" class="firstCpu form-control my-3" />
-		                    </div>
-
-		                    <div class="col-lg-4 ">
-		                        <input type="text" placeholder="E/S" class="inOut form-control my-3" />
-		                    </div>
-
-		                    <div class="col-lg-4 ">
-		                        <input type="text" placeholder="CPU 2º" class="lastCpu form-control my-3" />
-		                    </div>
-		                </div>
-
-		                <button class="btn btn-info" onclick="saveData()">Guardar</button>
-		            </div>
-
-		            <div class="col-lg-8 ">
-
-		                <table class="table table-hover table-dark tableCustom" >
-		                    <thead>
-		                        <tr class="trCustom">
-		                            <th scope="col">Proceso N°</th>
-		                            <th scope="col">Tamaño Kb</th>
-		                            <th scope="col">T. Arribo</th>
-		                            <th scope="col">Ciclo de vida (CPU-E/S-CPU)</th>
-		                            <th scope="col">Eliminar</th>
-		                        </tr>
-		                    </thead>
-
-		                    <tbody id="tableId">
-		                    </tbody>
-
-		                </table>
-
-		            </div>
-		        </div>
-
-		        <div class="col-lg-12 divNext">
-		        	<button class="btn btn-success" onclick="secondStep()">Siguiente</button>
-		        </div>
+          </div>
 
 			  </div>
 			  <!--Fin de Primer pestaña-->
@@ -177,20 +142,6 @@
 
 			  	<div class="row buttonSelect">
 
-		          <div class="col-lg-6 memorySelect">
-		            <h5 class="card-title my-2">Selecciona el ajuste de memoria</h5>
-		            <div class="btn-group btn-group-toggle" data-toggle="buttons">
-		              <label class="btn btn-secondary active optionFitOne">
-		                <input type="radio" name="options" autocomplete="off" value="Best Fit" checked> Best Fit
-		              </label>
-		              <label class="btn btn-secondary optionFitTwo">
-		                <input type="radio" name="options" value="Works Fit" autocomplete="off"> Works Fit
-		              </label>
-		              <label class="btn btn-secondary optionFitThree">
-		                <input type="radio" name="options" value="First Fit" autocomplete="off"> First Fit
-		              </label>
-		            </div>
-		          </div>
 
 		          <div class="col-lg-6 memorySelect">
 		            <h5 class="card-title my-2">Selecciona el algortimo de planificación</h5>
@@ -212,7 +163,55 @@
 		              </label>
 		            </div>
 		          </div>
-        		</div>
+
+          </div>
+
+              <div class="row">
+
+  		            <div class="col-lg-4">
+  		                <h5 class="card-title my-2">Nuevo Trabajo (Proceso)</h5>
+  		                <input type="text" placeholder="Nombre de Proceso" class="name form-control my-3" />
+  		                <input type="text" placeholder="Tamaño del proceso" class="size form-control my-3 sizeInput" />
+  		                <input type="text" placeholder="Tiempo de Arribo" class="arrival form-control my-3 arrivalInput" />
+
+  		                <div class="row">
+  		                    <div class="col-lg-4 ">
+  		                        <input type="text" placeholder="CPU 1º" class="firstCpu form-control my-3" />
+  		                    </div>
+
+  		                    <div class="col-lg-4 ">
+  		                        <input type="text" placeholder="E/S" class="inOut form-control my-3" />
+  		                    </div>
+
+  		                    <div class="col-lg-4 ">
+  		                        <input type="text" placeholder="CPU 2º" class="lastCpu form-control my-3" />
+  		                    </div>
+  		                </div>
+
+  		                <button class="btn btn-info" onclick="saveData()">Guardar</button>
+  		            </div>
+
+  		            <div class="col-lg-8 ">
+
+  		                <table class="table table-hover table-dark tableCustom" >
+  		                    <thead>
+  		                        <tr class="trCustom">
+  		                            <th scope="col">Proceso N°</th>
+  		                            <th scope="col">Tamaño Kb</th>
+  		                            <th scope="col">T. Arribo</th>
+  		                            <th scope="col">Ciclo de vida (CPU-E/S-CPU)</th>
+  		                            <th scope="col">Eliminar</th>
+  		                        </tr>
+  		                    </thead>
+
+  		                    <tbody id="tableId">
+  		                    </tbody>
+
+  		                </table>
+
+  		        </div>
+
+          	</div>
 
 			  </div>
 			  <!--Fin de Segunda pesataña-->
@@ -323,6 +322,7 @@
         crossorigin="anonymous"></script>
 
     <script src="content/app.js"></script>
+    <script src="content/script.js"></script>
 
 </body>
 

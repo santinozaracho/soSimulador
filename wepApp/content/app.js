@@ -1,6 +1,6 @@
-var sizeMemory = "256";
-var typeMemory = "Variable";
-var fitMemory = "First Fit";
+var sizeMemory = 256;
+var typeMemory = "Fija";
+var fitMemory = "Best Fit";
 var algorithm = "FCFS";
 
 var arrayProcess = [];
@@ -9,7 +9,8 @@ $(document).ready(function () {
     getData();
 
     $(".quantumIn").hide();
-    $(".optionFitOne").hide();
+
+    $(".optionFitTwo").hide();
 
     console.log(sizeMemory);
     console.log(typeMemory);
@@ -27,26 +28,24 @@ $(document).ready(function () {
           e.preventDefault();
       }
 
-    $('.quantumIn').keypress(function() {
-        //falta hacer
+      $('.quantumIn').keypress(function() {
+          //falta hacer
+      });
+
     });
 
-   });
 
    //control de la obtención del tamaño de la memoria
    $(".optionOne").click(function(){
-      var te = $(".optionOne > input").val();
-      sizeMemory = te;
+      sizeMemory = parseInt($(".optionOne > input").val());
       console.log(sizeMemory)
    });
    $(".optionTwo").click(function(){
-       var te = $(".optionTwo > input").val();
-       sizeMemory = te;
+       sizeMemory = parseInt($(".optionTwo > input").val());
        console.log(sizeMemory)
    });
    $(".optionThree").click(function(){
-      var te = $(".optionThree > input").val();
-      sizeMemory = te;
+      sizeMemory = parseInt($(".optionThree > input").val());
       console.log(sizeMemory)
    });
    //--------------------------------
@@ -120,13 +119,49 @@ $(document).ready(function () {
    });
    //------------------------------------
 
-   //falta hacer
-   $(".nexttab").click(function() {
+   //seguir
 
-   });
    //--------------
 
 });
+
+
+var cont = 1;
+
+//inputs para crear las particiones
+$(document).on('click', '.btn-add', function(e){
+
+    e.preventDefault();
+
+      var t = $('.controls form:first').find('.entry:last').val();
+      console.log("valor",t);
+
+      if($('.inputMemory').val()){
+
+        //console.log($('.inputMemory').val());
+
+        var controlForm = $('.controls form:first'),
+            currentEntry = $(this).parents('.entry:first'),
+            newEntry = $(currentEntry.clone()).appendTo(controlForm);
+
+        newEntry.find('input').val('');
+        controlForm.find('.entry:not(:last) .btn-add')
+            .removeClass('btn-add').addClass('btn-remove')
+            .removeClass('btn-success').addClass('btn-danger')
+            .html('<span class="glyphicon glyphicon-minus">Quitar</span>');
+
+      }else{
+        alert("Debes ingresar el valor de la partición")
+      }   
+
+    }).on('click', '.btn-remove', function(e)
+    {
+    $(this).parents('.entry:first').remove();
+
+    e.preventDefault();
+    return false;
+  });
+//-------
 
 var config = {
     apiKey: "AIzaSyBPV-YDy4TwyVtAnKzG8SQ3fwKy4gyAHxQ",
@@ -213,7 +248,7 @@ function getData(){
 
           arrayProcess.push(doc.data());
 
-          console.log(arrayProcess)
+          console.log(arrayProcess[1])
 
         });
     });
@@ -222,3 +257,28 @@ function getData(){
 function secondStep(){
   $('[href="#profile"]').tab('show');
 }
+
+//algoritmo FCFS
+// function FCFS(procesosMemoria){
+//    var colaListo, i, tiempoE, salidaCPU, salidaES, bandera
+//    badera=true
+//    colaListo=procesosMemoria
+//    i=0
+//    while (colaListo!= null && bandera=true){
+//          salidaCPU[]=colaListo[i]
+
+//          if (colaListo[1]!=0 || colaListo[3]!=0){
+//              tiempoE= listaProcesosGeneral[salidaCPU]
+//              if (colaListo[1]!=0){
+//               salidaCPU[1]=arrayProcess
+//               }
+
+
+//           }else{if (colaListo[2]<>0) {
+
+
+//           }else{bandera=false}
+//               }
+//     }
+
+// }
