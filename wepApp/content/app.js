@@ -1,6 +1,6 @@
 var sizeMemory = "256";
-var typeMemory = "Fija";
-var fitMemory = "Best Fit";
+var typeMemory = "Variable";
+var fitMemory = "First Fit";
 var algorithm = "FCFS";
 
 var arrayProcess = [];
@@ -9,6 +9,7 @@ $(document).ready(function () {
     getData();
 
     $(".quantumIn").hide();
+    $(".optionFitOne").hide();
 
     console.log(sizeMemory);
     console.log(typeMemory);
@@ -65,8 +66,8 @@ $(document).ready(function () {
       var valueCurrent = $(".optionTypeTwo > input").val();
       typeMemory = valueCurrent;
       console.log(typeMemory);
-      //$("#collapseExample").removeClass("show");
-      $("#collapseExample").addClass("show");
+      $("#collapseExample").removeClass("show");
+      //$("#collapseExample").addClass("show");
       $(".optionFitTwo").show();
       $(".optionFitOne").hide();
    });
