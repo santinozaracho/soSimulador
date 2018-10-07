@@ -7,7 +7,6 @@ var arrayProcess = [];
 
 $(document).ready(function () {
     getData();
-
     $(".quantumIn").hide();
 
     console.log(sizeMemory);
@@ -212,7 +211,9 @@ function getData(){
 
           arrayProcess.push(doc.data());
 
-          console.log(arrayProcess)
+          console.log(arrayProcess);
+
+          firstInFirstOut(arrayProcess);//borrar despues de probar
 
         });
     });
@@ -223,26 +224,52 @@ function secondStep(){
 }
 
 //algoritmo FCFS
-function FCFS(procesosMemoria){
-   var colaListo, i, tiempoE salidaCPU, salidaES, bandera
-   badera=true
-   colaListo=procesosMemoria
-   i=0
-   while (colaListo!= null && bandera=true){
-         salidaCPU[]=colaListo[i]
+//falta agregar arrayProcess como parametro
+function firstInFirstOut(procesosMemoria){
 
-         if (colaListo[1]!=0 || colaListo[3]!=0){
-             tiempoE= listaProcesosGeneral[salidaCPU]
-             if (colaListo[1]!=0){
-              salidaCPU[1]=arrayProcess
-              }
+   var colaListo = procesosMemoria;
+   var i;
+   var tiempoEspera;
+   var salidaCPU= [];
+   var salidaES= [];
+   var salidaFinal = [];
+   var bandera;
+   var x=0;
+   var controladorBucle = 0;
+   var tiempoEspera;
+   var enEjecucion = [];
+   var salidaFinal= new Array;
 
+   // for (var i = 0; i < colaListo.length; i++) {
+   //    var firstCpu = parseInt(colaListo[i].ioTime) + parseInt(colaListo[i].cpuTime) + parseInt(colaListo[i].lastCpuTime);
+   //    var controladorBucle =controladorBucle + firstCpu;
+   //    console.log("La duración total del proceso",test);
+   // }
 
-          }else{if (colaListo[2]<>0) {
+   for (var x = 0; x < colaListo.length; x++) {
+         enEjecucion = colaListo[x];
+         salidaCPU.push(enEjecucion.name);
+         salidaES.push(enEjecucion.name);
 
+          if (enEjecucion.cpuTime!= 0){
+            salidaCPU.push( enEjecucion.cpuTime );
+            salidaES.push('Ocioso',enEjecucion.cpuTime);
+            colaListo.cpuTime=0;
+           }
+         if(enEjecucion.ioTime!=0){
+           salidaES.push( enEjecucion.ioTime );
+           salidaCPU.push('Ocioso',enEjecucion.ioTime);
+           colaListo.ioTime=0;
+         }
+         if(enEjecucion.lastCpuTime!=0){
+           salidaCPU.push( enEjecucion.lastCpuTime );
+           salidaES.push('Ocioso',enEjecucion.lastCpuTime);
+           colaListo.lastCpuTime=0;
+         }
+  }
+  salidaFinal.push(salidaCPU);
+  salidaFinal.push(salidaES);
 
-          }else{bandera=false}
-              }
-    }
-
+  console.log("Es la salida final", salidaFinal);
+  
 }
