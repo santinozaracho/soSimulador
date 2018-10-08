@@ -1,4 +1,3 @@
-var sizeMemory = "256";
 var typeMemory = "Fija";
 var fitMemory = "Best Fit";
 var algorithm = "FCFS";
@@ -14,7 +13,6 @@ $(document).ready(function () {
     console.log(fitMemory);
     console.log(algorithm);
 
-    $(".sizeInput, .arrivalInput, .firstCpu, .inOut, .lastCpu, .quantumIn, .fixedPart").keydown(function (e) {
        if ((e.keyCode == 65 && (e.ctrlKey === true || e.metaKey === true)) ||
          (e.keyCode >= 35 && e.keyCode <= 40) ||
          $.inArray(e.keyCode, [46, 8, 9, 27, 13, 110, 190]) !== -1) {
@@ -25,26 +23,17 @@ $(document).ready(function () {
           e.preventDefault();
       }
 
-    $('.quantumIn').keypress(function() {
-        //falta hacer
     });
 
-   });
 
    //control de la obtención del tamaño de la memoria
    $(".optionOne").click(function(){
-      var te = $(".optionOne > input").val();
-      sizeMemory = te;
       console.log(sizeMemory)
    });
    $(".optionTwo").click(function(){
-       var te = $(".optionTwo > input").val();
-       sizeMemory = te;
        console.log(sizeMemory)
    });
    $(".optionThree").click(function(){
-      var te = $(".optionThree > input").val();
-      sizeMemory = te;
       console.log(sizeMemory)
    });
    //--------------------------------
@@ -64,8 +53,6 @@ $(document).ready(function () {
       var valueCurrent = $(".optionTypeTwo > input").val();
       typeMemory = valueCurrent;
       console.log(typeMemory);
-      //$("#collapseExample").removeClass("show");
-      $("#collapseExample").addClass("show");
       $(".optionFitTwo").show();
       $(".optionFitOne").hide();
    });
@@ -118,9 +105,7 @@ $(document).ready(function () {
    });
    //------------------------------------
 
-   //falta hacer
-   $(".nexttab").click(function() {
-
+   //seguir
    });
    //--------------
 
@@ -211,9 +196,12 @@ function getData(){
 
           arrayProcess.push(doc.data());
 
+<<<<<<< HEAD
           console.log(arrayProcess);
 
           firstInFirstOut(arrayProcess);//borrar despues de probar
+=======
+>>>>>>> master
 
         });
     });
@@ -224,6 +212,7 @@ function secondStep(){
 }
 
 //algoritmo FCFS
+<<<<<<< HEAD
 //falta agregar arrayProcess como parametro
 function firstInFirstOut(procesosMemoria){
 
@@ -273,3 +262,28 @@ function firstInFirstOut(procesosMemoria){
   console.log("Es la salida final", salidaFinal);
   
 }
+=======
+// function FCFS(procesosMemoria){
+//    var colaListo, i, tiempoE, salidaCPU, salidaES, bandera
+//    badera=true
+//    colaListo=procesosMemoria
+//    i=0
+//    while (colaListo!= null && bandera=true){
+//          salidaCPU[]=colaListo[i]
+
+//          if (colaListo[1]!=0 || colaListo[3]!=0){
+//              tiempoE= listaProcesosGeneral[salidaCPU]
+//              if (colaListo[1]!=0){
+//               salidaCPU[1]=arrayProcess
+//               }
+
+
+//           }else{if (colaListo[2]<>0) {
+
+
+//           }else{bandera=false}
+//               }
+//     }
+
+// }
+>>>>>>> master
