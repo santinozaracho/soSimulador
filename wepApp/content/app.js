@@ -5,6 +5,10 @@ var algorithm = "FCFS";
 
 var arrayProcess = [];
 
+$(function () {
+  $('[data-toggle="popover"]').popover()
+})
+
 $(document).ready(function () {
     getData();
 
@@ -17,7 +21,7 @@ $(document).ready(function () {
     console.log(fitMemory);
     console.log(algorithm);
 
-    $(".sizeInput, .arrivalInput, .firstCpu, .inOut, .lastCpu, .quantumIn, .fixedPart").keydown(function (e) {
+    $(".sizeInput, .arrivalInput, .firstCpu, .inOut, .lastCpu, .quantumIn, .fixedPart, .inputMemory").keydown(function (e) {
        if ((e.keyCode == 65 && (e.ctrlKey === true || e.metaKey === true)) ||
          (e.keyCode >= 35 && e.keyCode <= 40) ||
          $.inArray(e.keyCode, [46, 8, 9, 27, 13, 110, 190]) !== -1) {
@@ -120,39 +124,52 @@ $(document).ready(function () {
    //------------------------------------
 
    //seguir
-
+   $(".startButton").click(function(){
+      $('.progress-bar').clone().addClass('newClass').insertAfter('.progress');
+   });
    //--------------
 
 });
 
 
-var cont = 1;
+var cont = 5;
 
 //inputs para crear las particiones
 $(document).on('click', '.btn-add', function(e){
 
+    $('.alertCustom').removeClass('show');
+    $('.alertCustom').addClass('hide');
+
     e.preventDefault();
 
-      var t = $('.controls form:first').find('.entry:last').val();
-      console.log("valor",t);
+      if(cont > 0){
 
-      if($('.inputMemory').val()){
+        if($('.inputMemory').val()){
 
-        //console.log($('.inputMemory').val());
+          var controlForm = $('.controls form:first'),
+              currentEntry = $(this).parents('.entry:first'),
+              newEntry = $(currentEntry.clone()).appendTo(controlForm);
 
-        var controlForm = $('.controls form:first'),
-            currentEntry = $(this).parents('.entry:first'),
-            newEntry = $(currentEntry.clone()).appendTo(controlForm);
+          newEntry.find('input').val('');
+          controlForm.find('.entry:not(:last) .inputMemory')
+            .addClass('classDisabled')
+            .removeClass('inputMemory')
+            .prop('disabled', true);
 
-        newEntry.find('input').val('');
-        controlForm.find('.entry:not(:last) .btn-add')
-            .removeClass('btn-add').addClass('btn-remove')
-            .removeClass('btn-success').addClass('btn-danger')
-            .html('<span class="glyphicon glyphicon-minus">Quitar</span>');
+          controlForm.find('.entry:not(:last) .btn-add')
+              .removeClass('btn-add').addClass('btn-remove')
+              .removeClass('btn-success').addClass('btn-danger')
+              .html('<span class="glyphicon glyphicon-minus">Quitar</span>');
+
+          cont = cont - 1; 
+
+        }else{
+          $('.alertCustom').addClass('show');
+        }
 
       }else{
-        alert("Debes ingresar el valor de la partición")
-      }   
+          $('.alertCustom').addClass('show');
+      } 
 
     }).on('click', '.btn-remove', function(e)
     {
