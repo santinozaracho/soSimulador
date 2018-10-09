@@ -1,9 +1,13 @@
-var sizeMemory = "256";
+var sizeMemory = 256;
 var typeMemory = "Fija";
 var fitMemory = "Best Fit";
 var algorithm = "FCFS";
 
 var arrayProcess = [];
+
+$(function () {
+  $('[data-toggle="popover"]').popover()
+})
 
 $(document).ready(function () {
     getData();
@@ -17,7 +21,7 @@ $(document).ready(function () {
     console.log(fitMemory);
     console.log(algorithm);
 
-    $(".sizeInput, .arrivalInput, .firstCpu, .inOut, .lastCpu, .quantumIn, .fixedPart").keydown(function (e) {
+    $(".sizeInput, .arrivalInput, .firstCpu, .inOut, .lastCpu, .quantumIn, .fixedPart, .inputMemory").keydown(function (e) {
        if ((e.keyCode == 65 && (e.ctrlKey === true || e.metaKey === true)) ||
          (e.keyCode >= 35 && e.keyCode <= 40) ||
          $.inArray(e.keyCode, [46, 8, 9, 27, 13, 110, 190]) !== -1) {
@@ -28,26 +32,24 @@ $(document).ready(function () {
           e.preventDefault();
       }
 
-    $('.quantumIn').keypress(function() {
-        //falta hacer
+      $('.quantumIn').keypress(function() {
+          //falta hacer
+      });
+
     });
 
-   });
 
    //control de la obtención del tamaño de la memoria
    $(".optionOne").click(function(){
-      var te = $(".optionOne > input").val();
-      sizeMemory = te;
+      sizeMemory = parseInt($(".optionOne > input").val());
       console.log(sizeMemory)
    });
    $(".optionTwo").click(function(){
-       var te = $(".optionTwo > input").val();
-       sizeMemory = te;
+       sizeMemory = parseInt($(".optionTwo > input").val());
        console.log(sizeMemory)
    });
    $(".optionThree").click(function(){
-      var te = $(".optionThree > input").val();
-      sizeMemory = te;
+      sizeMemory = parseInt($(".optionThree > input").val());
       console.log(sizeMemory)
    });
    //--------------------------------
@@ -121,20 +123,62 @@ $(document).ready(function () {
    });
    //------------------------------------
 
-   //boton para agregar particiones
-   // $(".btn-add").click(function(){
-   //
-   // });
-
-   //---------------------------------
-
-   //falta hacer
-   $(".nexttab").click(function() {
-
+   //seguir
+   $(".startButton").click(function(){
+      $('.progress-bar').clone().addClass('newClass').insertAfter('.progress');
    });
    //--------------
 
 });
+
+
+var cont = 5;
+
+//inputs para crear las particiones
+$(document).on('click', '.btn-add', function(e){
+
+    $('.alertCustom').removeClass('show');
+    $('.alertCustom').addClass('hide');
+
+    e.preventDefault();
+
+      if(cont > 0){
+
+        if($('.inputMemory').val()){
+
+          var controlForm = $('.controls form:first'),
+              currentEntry = $(this).parents('.entry:first'),
+              newEntry = $(currentEntry.clone()).appendTo(controlForm);
+
+          newEntry.find('input').val('');
+          controlForm.find('.entry:not(:last) .inputMemory')
+            .addClass('classDisabled')
+            .removeClass('inputMemory')
+            .prop('disabled', true);
+
+          controlForm.find('.entry:not(:last) .btn-add')
+              .removeClass('btn-add').addClass('btn-remove')
+              .removeClass('btn-success').addClass('btn-danger')
+              .html('<span class="glyphicon glyphicon-minus">Quitar</span>');
+
+          cont = cont - 1; 
+
+        }else{
+          $('.alertCustom').addClass('show');
+        }
+
+      }else{
+          $('.alertCustom').addClass('show');
+      } 
+
+    }).on('click', '.btn-remove', function(e)
+    {
+    $(this).parents('.entry:first').remove();
+
+    e.preventDefault();
+    return false;
+  });
+//-------
 
 var config = {
     apiKey: "AIzaSyBPV-YDy4TwyVtAnKzG8SQ3fwKy4gyAHxQ",
@@ -230,3 +274,28 @@ function getData(){
 function secondStep(){
   $('[href="#profile"]').tab('show');
 }
+
+//algoritmo FCFS
+// function FCFS(procesosMemoria){
+//    var colaListo, i, tiempoE, salidaCPU, salidaES, bandera
+//    badera=true
+//    colaListo=procesosMemoria
+//    i=0
+//    while (colaListo!= null && bandera=true){
+//          salidaCPU[]=colaListo[i]
+
+//          if (colaListo[1]!=0 || colaListo[3]!=0){
+//              tiempoE= listaProcesosGeneral[salidaCPU]
+//              if (colaListo[1]!=0){
+//               salidaCPU[1]=arrayProcess
+//               }
+
+
+//           }else{if (colaListo[2]<>0) {
+
+
+//           }else{bandera=false}
+//               }
+//     }
+
+// }
