@@ -208,6 +208,16 @@ $(document).on('click', '.btn-add', function(e){
   });
 //-------
 
+//button siguiente
+$(document).on('click','.siguiente', function(e){
+  $('[href="#procesos"]').tab('show')
+});
+
+//button siguiente2
+$(document).on('click','.siguiente2', function(e){
+  $('[href="#visualizacion"]').tab('show')
+});
+
 var config = {
     apiKey: "AIzaSyBPV-YDy4TwyVtAnKzG8SQ3fwKy4gyAHxQ",
     authDomain: "proyectoprocesos-fddd5.firebaseapp.com",
@@ -299,9 +309,6 @@ function getData(){
     });
 }
 
-function secondStep(){
-  $('[href="#profile"]').tab('show');
-}
 
 //algoritmo FCFS
 // function FCFS(procesosMemoria){
