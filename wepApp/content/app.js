@@ -133,8 +133,9 @@ $(document).ready(function () {
 
 
 var cont = 0;
-var max = 5;
+var maxpart = 5;
 var memfija = []
+var part = { "partid":1, "size":0}
 //inputs para crear las particiones
 $(document).on('click', '.btn-add', function(e){
 
@@ -143,18 +144,37 @@ $(document).on('click', '.btn-add', function(e){
 
     e.preventDefault();
 
-      if(cont < max){
+      if(cont < maxpart){
         var controlForm = $('.controls form:first'),
             currentEntry = $(this).parents('.entry:first');
-        console.log(cont);
-        console.log(currentEntry.find('input').val());
 
-        if( (currentEntry.find('input').val()) < sizeMemory ){
+        //Variable que nos indica en cada momento el tamaño disponible
+        var tamdisp = sizeMemory
+
+        //Verificamos la existencia de alguna particion
+        if(memfija.length > 0){
+          memfija.forEach(function(sizepart,index) {
+            tamdisp =  tamdisp - sizepart
+          })
+        }
+
+        //Tamaño de particion ingreasda
+        var sizepart = currentEntry.find('input').val()
+
+        if( (sizepart <= tamdisp) & (sizepart > 0) ){
+
+          memfija.push(sizepart)
+
           var controlForm = $('.controls form:first'),
               currentEntry = $(this).parents('.entry:first'),
               newEntry = $(currentEntry.clone()).appendTo(controlForm);
 
-          newEntry.find('input').val('');
+          newEntry.find('input').val('')
+
+          cont = cont + 1;
+
+          controlForm.find('.entry:not(:last) .input-group-prepend .span .input-group-text').innerHTML ="Particion " +cont;
+
           controlForm.find('.entry:not(:last) .inputMemory')
             .addClass('classDisabled')
             .removeClass('inputMemory')
@@ -165,23 +185,26 @@ $(document).on('click', '.btn-add', function(e){
               .removeClass('btn-success').addClass('btn-danger')
               .html('<span class="glyphicon glyphicon-minus">Quitar</span>');
 
-          cont = cont + 1;
 
         }else{
+          //Alerta por Nueva Particion muy grande
           $('.alertCustom').addClass('show');
         }
 
       }else{
+          //alerta por cantidad maxima de particiones
           $('.alertCustom').addClass('show');
       }
 
-    }).on('click', '.btn-remove', function(e)
-    {
-    $(this).parents('.entry:first').remove();
-    cont = cont - 1;
+    }).on('click', '.btn-remove', function(e){
+      $(this).parents('.entry:first').remove();
+      cont = cont - 1;
+      console.log(memfija);
+      memfija.pop();
+      console.log(memfija);
+      e.preventDefault();
 
-    e.preventDefault();
-    return false;
+      return false;
   });
 //-------
 
