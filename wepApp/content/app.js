@@ -132,8 +132,9 @@ $(document).ready(function () {
 });
 
 
-var cont = 5;
-
+var cont = 0;
+var max = 5;
+var memfija = []
 //inputs para crear las particiones
 $(document).on('click', '.btn-add', function(e){
 
@@ -142,10 +143,13 @@ $(document).on('click', '.btn-add', function(e){
 
     e.preventDefault();
 
-      if(cont > 0){
+      if(cont < max){
+        var controlForm = $('.controls form:first'),
+            currentEntry = $(this).parents('.entry:first');
+        console.log(cont);
+        console.log(currentEntry.find('input').val());
 
-        if($('.inputMemory').val()){
-
+        if( (currentEntry.find('input').val()) < sizeMemory ){
           var controlForm = $('.controls form:first'),
               currentEntry = $(this).parents('.entry:first'),
               newEntry = $(currentEntry.clone()).appendTo(controlForm);
@@ -154,14 +158,14 @@ $(document).on('click', '.btn-add', function(e){
           controlForm.find('.entry:not(:last) .inputMemory')
             .addClass('classDisabled')
             .removeClass('inputMemory')
-            .prop('disabled', true);
+            .prop("disabled", true);
 
           controlForm.find('.entry:not(:last) .btn-add')
               .removeClass('btn-add').addClass('btn-remove')
               .removeClass('btn-success').addClass('btn-danger')
               .html('<span class="glyphicon glyphicon-minus">Quitar</span>');
 
-          cont = cont - 1; 
+          cont = cont + 1;
 
         }else{
           $('.alertCustom').addClass('show');
@@ -169,11 +173,12 @@ $(document).on('click', '.btn-add', function(e){
 
       }else{
           $('.alertCustom').addClass('show');
-      } 
+      }
 
     }).on('click', '.btn-remove', function(e)
     {
     $(this).parents('.entry:first').remove();
+    cont = cont - 1;
 
     e.preventDefault();
     return false;
