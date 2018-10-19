@@ -5,6 +5,8 @@ var algorithm = "FCFS";
 
 var arrayProcess = [];
 
+
+
 $(function () {
   $('[data-toggle="popover"]').popover()
 })
@@ -135,7 +137,7 @@ $(document).ready(function () {
 var cont = 0;
 var maxpart = 5;
 var memfija = []
-var part = { "partid":1, "size":0}
+//var part = { "partid":1, "size":0}
 //inputs para crear las particiones
 $(document).on('click', '.btn-add', function(e){
 
@@ -153,59 +155,77 @@ $(document).on('click', '.btn-add', function(e){
 
         //Verificamos la existencia de alguna particion
         if(memfija.length > 0){
-          memfija.forEach(function(sizepart,index) {
-            tamdisp =  tamdisp - sizepart
-          })
+          // memfija.forEach(function(sizepart,index) {
+          //   tamdisp =  tamdisp - sizepart
+          // })
+          for (var i = 0; i < memfija.length; i++) {
+            tamdisp = tamdisp - memfija[i].size;
+          }
+
         }
 
         //Tamaño de particion ingreasda
-        var sizepart = currentEntry.find('input').val()
+        var sizepart = currentEntry.find('input').val();
 
-        if( (sizepart <= tamdisp) & (sizepart > 0) ){
+        sizepart = parseInt(sizepart);
 
-          memfija.push(sizepart)
+        if (sizepart > 0) {
 
-          var controlForm = $('.controls form:first'),
-              currentEntry = $(this).parents('.entry:first'),
-              newEntry = $(currentEntry.clone()).appendTo(controlForm);
+          if (sizepart <= tamdisp) {
 
-          newEntry.find('input').val('')
+            //se puede agregar particion
+            //memfija.push(sizepart)
 
-          cont = cont + 1;
+            var objPart = {};
+            objPart.IdPart = cont;
+            objPart.size = sizepart;
+            objPart.used = 0;
 
-          controlForm.find('.entry:not(:last) .input-group-prepend .span .input-group-text').innerHTML ="Particion " +cont;
+            memfija.push(objPart);
 
-          controlForm.find('.entry:not(:last) .inputMemory')
-            .addClass('classDisabled')
-            .removeClass('inputMemory')
-            .prop("disabled", true);
+            cont = cont + 1;
 
-          controlForm.find('.entry:not(:last) .btn-add')
-              .removeClass('btn-add').addClass('btn-remove')
-              .removeClass('btn-success').addClass('btn-danger')
-              .html('<span class="glyphicon glyphicon-minus">Quitar</span>');
+            var controlForm = $('.controls form:first'),
+                currentEntry = $(this).parents('.entry:first'),
+                newEntry = $(currentEntry.clone()).appendTo(controlForm);
 
+            newEntry.find('input').val('');
 
-        }else{
-          //Alerta por Nueva Particion muy grande
+            newEntry.find('.textPart').text("Partición " + cont)
+
+            controlForm.find('.entry:not(:last) .inputMemory')
+              .addClass('classDisabled')
+              .removeClass('inputMemory')
+              .prop("disabled", true);
+
+            controlForm.find('.entry:not(:last) .btn-add')
+                .removeClass('btn-add').addClass('btn-remove')
+                .removeClass('btn-success').addClass('btn-danger')
+                .html('<span class="glyphicon glyphicon-minus deleteInput">Quitar</span>');
+
+          }else {
+
+            //Alerta por Nueva Particion muy grande
+            $(".textoalert").text("El valor supera la cantida de la partición.");
+            $('.alertCustom').addClass('show');
+
+          }
+
+        }else {
+
+          $(".textoalert").text("Debes ingresar un valor.");
           $('.alertCustom').addClass('show');
+
         }
+console.log(memfija);
+}});
 
-      }else{
-          //alerta por cantidad maxima de particiones
-          $('.alertCustom').addClass('show');
-      }
+//falta hacer el borrado de la particion
+$(".deleteInput").click(function(){
+    alert("dsfsefsef.");
+});
 
-    }).on('click', '.btn-remove', function(e){
-      $(this).parents('.entry:first').remove();
-      cont = cont - 1;
-      console.log(memfija);
-      memfija.pop();
-      console.log(memfija);
-      e.preventDefault();
 
-      return false;
-  });
 //-------
 
 //button siguiente
@@ -217,6 +237,58 @@ $(document).on('click','.siguiente', function(e){
 $(document).on('click','.siguiente2', function(e){
   $('[href="#visualizacion"]').tab('show')
 });
+
+//Algoritmo de planificacion de memoria,PARTICION FIJA
+//
+// function firstFit(part,proc){
+//   var asign = false
+//   part.forEach(function(sizepart,used,index) {
+//     if (proc.size <= sizepart & used = 0 & asign = false) {
+//       part[index].used = proc.size;
+//       asign = true;
+//     }
+//   })
+//   if (asign) {
+//     return true
+//   }else {
+//     return false
+//   }
+// };
+//
+// function bestFit(part,proc){
+//   var asign = false
+//   var ixbest = 0
+//   var minfrag =
+//   part.forEach(function(size,used,index) {
+//     if (proc.size <= size & used = 0 & ((size-proc.size) < (part[ixbest].size - proc.size))){
+//       ixbest = index
+//     }
+//   })
+//   part[ixbest].used = proc.size;
+//   asign = true;
+//   if (asign) {
+//     return true
+//   }else {
+//     return false
+//   }
+// };
+//
+// function worstFit(part,proc){};
+//
+//
+// var arrayMemoria = arrayProc();
+// //odenamos por arrivalTime
+// sort(arrayMemoria)
+// function PlaniMemFija(particiones,sizeMemory,fitMemory,arrayMemoria) {
+//   var listadeProc = []
+//   arrayMemoria.forEach((proc) => {
+//     if (proc.size) {
+//       listadeProc.push(proc)
+//     } }
+//   return listadeProc
+// };
+//
+//
 
 var config = {
     apiKey: "AIzaSyBPV-YDy4TwyVtAnKzG8SQ3fwKy4gyAHxQ",
@@ -230,6 +302,8 @@ var config = {
 firebase.initializeApp(config);
 
 var db = firebase.firestore();
+
+console.log(db.collection("process").orderBy('arrivalTime').get());
 
 function saveData() {
 
@@ -302,12 +376,21 @@ function getData(){
             index += 1;
 
           arrayProcess.push(doc.data());
-
-          console.log(arrayProcess[1])
-
         });
     });
+
+    console.log(arrayProcess)
 }
+
+function arrayProc(){
+    db.collection("process").orderBy('arrivalTime').get().then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {arrayProcess.push(doc.data());
+        });
+    });
+
+    return arrayProcess
+}
+
 
 
 //algoritmo FCFS
