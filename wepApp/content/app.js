@@ -127,10 +127,19 @@ $(document).ready(function () {
 
    //seguir
    $(".startButton").click(function(){
-      $('.progress-bar').clone().addClass('newClass').insertAfter('.progress');
+      var newItem = $('.one').clone();
+      var tag = newItem.find('a');
+      tag.removeClass('btn-danger').addClass('btn-success').text("Otro Proceso");
+
+      $('.progress').append(newItem);
    });
    //--------------
 
+});
+
+$(document).on('click', ".one", function (e) {
+    e.preventDefault();
+    $('[data-toggle="popover"]').popover();
 });
 
 
