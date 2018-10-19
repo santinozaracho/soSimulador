@@ -5,11 +5,14 @@ var algorithm = "FCFS";
 
 var arrayProcess = [];
 
-$(function () {
-  $('[data-toggle="popover"]').popover()
-})
+// $(function () {
+//   $('[data-toggle="popover"]').popover()
+// })
 
 $(document).ready(function () {
+
+    $('[data-toggle="popover"]').popover();
+
     getData();
 
     $(".quantumIn").hide();
@@ -125,11 +128,26 @@ $(document).ready(function () {
 
    //seguir
    $(".startButton").click(function(){
-      $('.progress-bar').clone().addClass('newClass').insertAfter('.progress');
+      var newItem = $('.one').clone();
+      var tag = newItem.find('a');
+      tag.removeClass('btn-danger').addClass('btn-success').text("Otro Proceso");
+
+      $('.progress').append(newItem);
    });
+
    //--------------
 
 });
+
+
+//popover
+
+$(document).on('click', ".one", function (e) {
+    e.preventDefault();
+    $('[data-toggle="popover"]').popover();
+});
+
+//----------------
 
 
 var cont = 5;
