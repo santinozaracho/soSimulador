@@ -310,7 +310,6 @@ function firstComeFirstServed(procesosMemoria){
 //-------------------------------
 
    for (var i=controladorBucle; i>0; i--) {
-          for(var n =0;i<colaBloqueados.length;i++){
             if (colaBloqueados[n].arrivalTime<= tiempo){colaListo.push(colaBloqueados[n]);
                                                         colaBloqueados=colaBloqueados.splice(n,1);}
           }

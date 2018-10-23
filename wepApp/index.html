@@ -24,7 +24,7 @@
     <div class="container-fluid">
 
         <nav class="navbar navbar-expand-lg navbar-light bg-light navCustom">
-            <a class="navbar-brand" href="#">Simulador</a>
+            <a class="navbar-brand">Simulador de Planificación de Memoria y Procesos</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
                 aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -33,12 +33,9 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item active">
-                        <a class="nav-link" href="#">Home
+                        <a class="nav-link" href="index.html">Iniciar
                             <span class="sr-only">(current)</span>
                         </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Link</a>
                     </li>
                 </ul>
             </div>
@@ -47,172 +44,256 @@
         <div class="col-lg-12 divTab">
 
         	<ul class="nav nav-tabs" id="myTab" role="tablist">
-			  <li class="nav-item">
-			    <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Control 1</a>
-			  </li>
-			  <li class="nav-item">
-			    <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Control 2</a>
-			  </li>
-			  <li class="nav-item">
-			    <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false">Control 3</a>
-			  </li>
-			</ul>
+    			  <li class="nav-item">
+    			    <a class="nav-link active" id="memoria-tab" data-toggle="tab" href="#memoria" role="tab" aria-controls="memoria" aria-selected="true">Configuracion de Memoria</a>
+    			  </li>
+    			  <li class="nav-item">
+    			    <a class="nav-link" id="procesos-tab" data-toggle="tab" href="#procesos" role="tab" aria-controls="procesos" aria-selected="false">Carga de Procesos</a>
+    			  </li>
+    			  <li class="nav-item">
+    			    <a class="nav-link" id="visualizacion-tab" data-toggle="tab" href="#visualizacion" role="tab" aria-controls="visualizacion" aria-selected="false">Presentacion</a>
+    			  </li>
+			    </ul>
 
-			<div class="tab-content" id="myTabContent">
+  			  <div class="tab-content" id="myTabContent">
 
-        <!--Primer pestaña-->
-		<div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+            <!--Primer pestaña-->
+    		     <div class="tab-pane fade show active" id="memoria" role="tabpanel" aria-labelledby="home-tab">
 
-          <div class="row buttonSelect">
+              <div class="row buttonSelect">
 
-            <div class="col-lg-4 memorySelect">
-	            <h5 class="card-title my-2">Selecciona el Tamaño de la memoria</h5>
-	            <div class="btn-group btn-group-toggle" data-toggle="buttons">
-	              <label class="btn btn-secondary active optionOne">
-	                <input type="radio" name="options" autocomplete="off" value="256"> 256 KB
-	              </label>
-	              <label class="btn btn-secondary optionTwo">
-	                <input type="radio" name="options" value="512" autocomplete="off"> 512 KB
-	              </label>
-	              <label class="btn btn-secondary optionThree">
-	                <input type="radio" name="options" value="1024" autocomplete="off" checked> 1024 KB
-	              </label>
-	            </div>
-	        </div>
+                <div class="col-lg-4 memorySelect">
+    	            <h5 class="card-title my-2">Selecciona el Tamaño de la memoria</h5>
+    	            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+    	              <label class="btn btn-secondary active optionOne">
+    	                <input type="radio" name="options" autocomplete="off" value="256"> 256 KB
+    	              </label>
+    	              <label class="btn btn-secondary optionTwo">
+    	                <input type="radio" name="options" value="512" autocomplete="off"> 512 KB
+    	              </label>
+    	              <label class="btn btn-secondary optionThree">
+    	                <input type="radio" name="options" value="1024" autocomplete="off" checked> 1024 KB
+    	              </label>
+    	            </div>
+    	           </div>
 
-            <div class="col-lg-4 memorySelect">
-	            <h5 class="card-title my-2">Selecciona el tipo de memoria</h5>
-	            <div class="btn-group btn-group-toggle" data-toggle="buttons">
-	            	<label class="btn btn-secondary active optionTypeTwo">
-		                <input type="radio" name="options" value="Variable" autocomplete="off" checked> Variable
-		            </label>
+                <div class="col-lg-4 memorySelect">
+    	            <h5 class="card-title my-2">Selecciona el tipo de memoria</h5>
+    	            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+    	            	<label class="btn btn-secondary active optionTypeTwo">
+    		                <input type="radio" name="options" value="Variable" autocomplete="off" checked> Variable
+    		            </label>
 
-	            	<label class="btn btn-secondary optionTypeOne">
-		            	<input type="radio" name="options" autocomplete="off" value="Fija"> Fija
-		            </label>
-	              
-	            </div>
-	        </div>
+    	            	<label class="btn btn-secondary optionTypeOne">
+    		            	<input type="radio" name="options" autocomplete="off" value="Fija"> Fija
+    		            </label>
 
-            <div class="col-lg-4 memorySelect">
-	            <h5 class="card-title my-2">Selecciona el ajuste de memoria</h5>
-	            <div class="btn-group btn-group-toggle" data-toggle="buttons">
-               <label class="btn btn-secondary active optionFitThree">
-	                <input type="radio" name="options" value="First Fit" checked autocomplete="off"> First Fit
-	               </label>
-	               <label class="btn btn-secondary optionFitOne">
-	                <input type="radio" name="options" autocomplete="off" value="Best Fit"> Best Fit
-	               </label>
-	               <label class="btn btn-secondary optionFitTwo">
-	                <input type="radio" name="options" value="Works Fit" autocomplete="off"> Worst Fit
-	               </label>
-	            </div>
-	        </div>
+    	            </div>
+    	            </div>
 
-          </div>
-
-          <div class="row collapse" id="collapseExample">
-
-
-            <div class="col-lg-4">
-
-            </div>
-
-            <div class="col-lg-4">
-
-
-              <h4>Generación de particiones</h4>
-
-              <div class="control-group" id="fields">
-
-                  <div class="controls">
-                      <form role="form" autocomplete="off">
-                          <div class="entry input-group-prepend">
-                            <span class="input-group-text">Particion 1</span>
-                            <input class="form-control" name="fields[]" disabled type="text" placeholder="Ingrese tamaño" />
-                          	<span class="input-group-btn">
-                                  <button class="btn btn-success btn-add" type="button">
-                                      <span class="glyphicon glyphicon-plus">Agregar</span>
-                                  </button>
-                              </span>
-                          </div>
-                      </form>
-                  </div>
-
-                  <div class="alert alert-danger alert-dismissible fade hide alertCustom" role="alert">
-                    <strong>Debes ingresar un valor para la partición</strong>
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                      <span aria-hidden="true">&times;</span>
-                    </button>
-			          	</div>
+                <div class="col-lg-4 memorySelect">
+    	            <h5 class="card-title my-2">Selecciona el ajuste de memoria</h5>
+    	            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                   <label class="btn btn-secondary active optionFitThree">
+    	                <input type="radio" name="options" value="First Fit" checked autocomplete="off"> First Fit
+    	               </label>
+    	               <label class="btn btn-secondary optionFitOne">
+    	                <input type="radio" name="options" autocomplete="off" value="Best Fit"> Best Fit
+    	               </label>
+    	               <label class="btn btn-secondary optionFitTwo">
+    	                <input type="radio" name="options" value="Works Fit" autocomplete="off"> Worst Fit
+    	               </label>
+    	            </div>
+    	           </div>
 
               </div>
 
-            </div>
-
-            <div class="col-lg-4">
-
-            </div>
-          </div>
-
-			  </div>
-			  <!--Fin de Primer pestaña-->
-
-			  <!--Segunda pesataña-->
-			  <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-
-			  	<div class="row buttonSelect">
+              <div class="row collapse" id="collapseExample">
 
 
-		          <div class="col-lg-6 memorySelect">
-		            <h5 class="card-title my-2">Selecciona el algortimo de planificación</h5>
-		            <div class="btn-group btn-group-toggle" data-toggle="buttons">
-		              <label class="btn btn-secondary active optionPlaningOne">
-		                <input type="radio" name="options" autocomplete="off" value="FCFS" checked> FCFS
-		              </label>
+                <div class="col-lg-4">
 
-		              <label class="btn btn-secondary optionPlaningTwo">
-		                <input type="radio" name="options" value="RR" autocomplete="off"> RR
-		              </label>
-		              <input type="text" class="quantumIn" placeholder="Quantum"/>
+                </div>
 
-		              <label class="btn btn-secondary optionPlaningThree">
-		                <input type="radio" name="options" value="SJF" autocomplete="off"> SJF
-		              </label>
-		              <label class="btn btn-secondary optionPlaningFour">
-		                <input type="radio" name="options" value="SRTF" autocomplete="off"> SRTF
-		              </label>
-		            </div>
-		          </div>
+                <div class="col-lg-4">
 
-          		</div>
+
+                  <h4>Generación de particiones</h4>
+
+                  <div class="control-group" id="fields">
+
+                      <div class="controls">
+                          <form role="form" autocomplete="off">
+                              <div class="entry input-group-prepend">
+                                <span class="input-group-text textPart">Particion 0</span>
+                                <input class="form-control inputMemory" name="fields[]" placeholder="Ingrese tamaño" />
+                              	<span class="input-group-btn">
+                                      <button class="btn btn-success btn-add" type="button">
+                                          <span class="glyphicon glyphicon-plus">Agregar</span>
+                                      </button>
+                                  </span>
+                              </div>
+                          </form>
+                      </div>
+
+                      <div class="alert alert-danger alert-dismissible fade hide alertCustom" role="alert">
+                        <strong class="textoalert">Error, el tamaño de memora excede, o no puede ingresar mas partciones</strong>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+    			          	</div>
+
+                  </div>
+
+                </div>
+
+                <div class="col-lg-4">
+
+                </div>
+              </div>
+
+              <div class="row m-2 buttonNext">
+
+                <div class="col-lg-3">
+
+                </div>
+
+                <div class="col-lg-3">
+
+                </div>
+
+                <div class="col-lg-3">
+
+                </div>
+
+                <div class="col-lg-3">
+                  <button class="btn btn-primary siguiente " type="button" name="button">Confirmar</button>
+                </div>
+
+              </div>
+
+              </div>
+    			  <!--Fin de Primer pestaña-->
+
+    			  <!--Segunda pesataña-->
+    			   <div class="tab-pane fade" id="procesos" role="tabpanel" aria-labelledby="profile-tab">
+
+    			  	<div class="row buttonSelect">
+
+    		          <div class="col-lg-4 memorySelect">
+    		            <h5 class="card-title my-2">Selecciona el algortimo de planificación</h5>
+    		            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+    		              <label class="btn btn-secondary active optionPlaningOne">
+    		                <input type="radio" name="options" autocomplete="off" value="FCFS" checked> FCFS
+    		              </label>
+
+    		              <label class="btn btn-secondary optionPlaningTwo">
+    		                <input type="radio" name="options" value="RR" autocomplete="off"> RR
+    		              </label>
+    		              <input type="text" style="width:40px" class=" quantumIn" placeholder="Q"/>
+
+    		              <label class="btn btn-secondary optionPlaningThree">
+    		                <input type="radio" name="options" value="SJF" autocomplete="off"> SJF
+    		              </label>
+    		              <label class="btn btn-secondary optionPlaningFour">
+    		                <input type="radio" name="options" value="SRTF" autocomplete="off"> SRTF
+    		              </label>
+    		            </div>
+    		          </div>
+
+                  <div class="col-lg-2 ">
+
+                  </div>
+
+                  <div class="col-lg-4 ">
+                    <h2>Tabla de Procesos</h2>
+                  </div>
+
+                  <div class="col-lg-2 ">
+
+                  </div>
+
+
+              </div>
 
               <div class="row">
 
   		            <div class="col-lg-4">
-  		                <h5 class="card-title my-2">Nuevo Trabajo (Proceso)</h5>
-  		                <input type="text" placeholder="Nombre de Proceso" class="name form-control my-3" />
-  		                <input type="text" placeholder="Tamaño del proceso" class="size form-control my-3 sizeInput" />
-  		                <input type="text" placeholder="Tiempo de Arribo" class="arrival form-control my-3 arrivalInput" />
+  		                <h5 class="card-title my-3">Cargar Nuevo Proceso</h5>
+
+                      <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                          <span class="input-group-text" id="basic-addon1">Nombre:</span>
+                        </div>
+  		                    <input type="text" placeholder="Nombre del Proceso" class="name form-control" />
+                      </div>
+
+                      <div class="row">
+
+                        <div class="col-lg-5 input-group mb-3">
+                          <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1">Tamaño:</span>
+                          </div>
+                          <input type="text" placeholder="" class="size form-control sizeInput" />
+                        </div>
+
+                        <div class="col-lg-7 input-group mb-3">
+                          <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1">Tiempo de Arribo:</span>
+                          </div>
+                          <input type="text" placeholder="" class="arrival form-control arrivalInput" />
+                        </div>
+
+                      </div>
 
   		                <div class="row">
   		                    <div class="col-lg-4 ">
-  		                        <input type="text" placeholder="CPU 1º" class="firstCpu form-control my-3" />
+
+                            <div class="input-group mb-3">
+                              <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon1">1° CPU:</span>
+                              </div>
+  		                        <input type="text" placeholder="" class="firstCpu form-control" />
+                            </div>
+
   		                    </div>
 
   		                    <div class="col-lg-4 ">
-  		                        <input type="text" placeholder="E/S" class="inOut form-control my-3" />
+
+                            <div class="input-group mb-3">
+                              <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon1">E/S:</span>
+                              </div>
+  		                        <input type="text" placeholder="" class="inOut form-control" />
+                            </div>
+
   		                    </div>
 
   		                    <div class="col-lg-4 ">
-  		                        <input type="text" placeholder="CPU 2º" class="lastCpu form-control my-3" />
+
+                            <div class="input-group mb-3">
+                              <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon1">2° CPU:</span>
+                              </div>
+  		                        <input type="text" placeholder="" class="lastCpu form-control " />
+                            </div>
+
   		                    </div>
+
   		                </div>
 
   		                <button class="btn btn-info" onclick="saveData()">Guardar</button>
+
+                      <div class="mt-4 alert alert-danger alert-dismissible fade hide alertProcess" role="alert">
+                        <strong class="textoalert">Error, el tamaño de memora excede, o no puede ingresar mas partciones</strong>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+
   		            </div>
 
-  		            <div class="col-lg-8 ">
+  		            <div class="col-lg-8 w-auto">
 
   		                <table class="table table-hover table-dark tableCustom" >
   		                    <thead>
@@ -230,43 +311,58 @@
 
   		                </table>
 
-  		        </div>
+  		            </div>
 
-          		</div>
+          	   </div>
 
-			  </div>
-			  <!--Fin de Segunda pesataña-->
+              <div class="row m-2 buttonNext2">
 
-			  <!--Tercer pesataña-->
-			  <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+                <div class="col-lg-3">
 
-			  		<div class="col-lg-12">
-			  			<button class="btn btn-success startButton">
-	                        Empezar
-	                    </button>
-			  		</div>
+                </div>
 
-			  		<div class="col-lg-12 divProgress">
-			  			<div class="progress">
-						  
-						  <div class="progress-bar" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
-						  	<a tabindex="0" class="btn btn-lg btn-danger" role="button" data-placement="top" data-toggle="popover" data-trigger="focus" title="Proceso 1" data-content="Datos del proceso uno">Proceso 1</a>
-						  </div>
+                <div class="col-lg-3">
 
-						  <div class="progress-bar" role="progressbar" style="width: 50%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
-						  	<a tabindex="0" class="btn btn-lg btn-danger" role="button" data-placement="top" data-toggle="popover" data-trigger="focus" title="Proceso 1" data-content="Datos del proceso uno">Proceso 1</a>
-						  </div>
+                </div>
 
-						</div>
-			  		</div>
+                <div class="col-lg-3">
 
-			  </div>
-			  <!--Fin de Tercer pesataña-->
+                </div>
 
-			</div>
+                <div class="col-lg-3">
+                  <button class="btn btn-primary siguiente2 " type="button" name="button">Continuar</button>
+                </div>
+
+              </div>
+
+             </div>
+    			  <!--Fin de Segunda pesataña-->
+
+    			  <!--Tercer pesataña-->
+    			  <div class="tab-pane fade" id="visualizacion" role="tabpanel" aria-labelledby="contact-tab">
+
+    			  		<div class="col-lg-12">
+    			  			<button class="btn btn-success startButton">
+    	                        Empezar
+    	                    </button>
+    			  		</div>
+
+    			  		<div class="col-lg-12 divProgress">
+    			  			<div class="progress">
+
+    						  <div class="progress-bar one" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
+    						  	<a tabindex="0" class="btn btn-lg btn-danger" role="button" data-placement="top" data-toggle="popover" data-trigger="focus" title="Proceso 1" data-content="Datos del proceso uno">Proceso 1</a>
+    						  </div>
+
+    						</div>
+    			  		</div>
+
+    			  </div>
+    			  <!--Fin de Tercer pesataña-->
+
+    			</div>
 
         </div>
-
 
     </div>
 
