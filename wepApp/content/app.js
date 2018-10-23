@@ -1,6 +1,6 @@
 var sizeMemory = 256;
-var typeMemory = "Fija";
-var fitMemory = "Best Fit";
+var typeMemory = "Variable";
+var fitMemory = "First Fit";
 var algorithm = "FCFS";
 
 var arrayProcess = [];
@@ -16,7 +16,7 @@ $(document).ready(function () {
 
     $(".quantumIn").hide();
 
-    $(".optionFitTwo").hide();
+    $(".optionFitOne").hide();
 
     console.log(sizeMemory);
     console.log(typeMemory);
@@ -145,7 +145,7 @@ $(document).on('click', ".one", function (e) {
 
 var cont = 0;
 var maxpart = 5;
-var memfija = []
+var memFija = []
 //var part = { "partid":1, "size":0}
 //inputs para crear las particiones
 $(document).on('click', '.btn-add', function(e){
@@ -163,12 +163,12 @@ $(document).on('click', '.btn-add', function(e){
         var tamdisp = sizeMemory
 
         //Verificamos la existencia de alguna particion
-        if(memfija.length > 0){
-          // memfija.forEach(function(sizepart,index) {
+        if(memFija.length > 0){
+          // memFija.forEach(function(sizepart,index) {
           //   tamdisp =  tamdisp - sizepart
           // })
-          for (var i = 0; i < memfija.length; i++) {
-            tamdisp = tamdisp - memfija[i].size;
+          for (var i = 0; i < memFija.length; i++) {
+            tamdisp = tamdisp - memFija[i].size;
           }
 
         }
@@ -183,14 +183,14 @@ $(document).on('click', '.btn-add', function(e){
           if (sizepart <= tamdisp) {
 
             //se puede agregar particion
-            //memfija.push(sizepart)
+            //memFija.push(sizepart)
 
             var objPart = {};
             objPart.IdPart = cont;
             objPart.size = sizepart;
             objPart.used = 0;
 
-            memfija.push(objPart);
+            memFija.push(objPart);
 
             cont = cont + 1;
 
@@ -226,7 +226,7 @@ $(document).on('click', '.btn-add', function(e){
           $('.alertCustom').addClass('show');
 
         }
-console.log(memfija);
+console.log(memFija);
 }});
 
 //falta hacer el borrado de la particion
@@ -288,7 +288,7 @@ $(document).on('click','.siguiente2', function(e){
 // var arrayMemoria = arrayProc();
 // //odenamos por arrivalTime
 // sort(arrayMemoria)
-// function PlaniMemFija(particiones,sizeMemory,fitMemory,arrayMemoria) {
+// function PlanimemFija(particiones,sizeMemory,fitMemory,arrayMemoria) {
 //   var listadeProc = []
 //   arrayMemoria.forEach((proc) => {
 //     if (proc.size) {
@@ -314,6 +314,21 @@ var db = firebase.firestore();
 
 console.log(db.collection("process").orderBy('arrivalTime').get());
 
+function getMaxProcessSize(typeMemory){
+  if (typeMemory == 'Fija') {
+    var maxPart = memFija[0].size;
+    for (var i = 0; i < memFija.length; i++) {
+      console.log(memFija[i].size);
+      if (memFija[i].size > maxPart) {
+          maxPart = memFija[i].size;
+      }
+    }
+    return maxPart
+  }else {
+    return sizeMemory
+    }
+}
+
 function saveData() {
 
     var name = $('.name').val();
@@ -323,7 +338,22 @@ function saveData() {
     var inOut = $('.inOut').val();
     var lastCpu = $('.lastCpu').val();
 
-    saveFirebase(name, size, arrival, firstCpu, inOut, lastCpu);
+      //Para Verificacion del Tamaño de Procesos
+    $('.alertProcess').removeClass('show');
+    $('.alertProcess').addClass('hide');
+    if (name&&size&&arrival&&firstCpu&&inOut&&lastCpu) {
+      var maxTamPocess = getMaxProcessSize(typeMemory)
+      if (size > maxTamPocess) {
+        $(".textoalert").text("El tamaño del proceso no puede ser mayor al tamaño de memoria.");
+        $('.alertProcess').addClass('show');
+      }else {
+        //Si el proceso entra en memoria se Guarda.
+        saveFirebase(name, size, arrival, firstCpu, inOut, lastCpu);
+    }
+  }else {
+    $(".textoalert").text("Ingrese los Datos.");
+    $('.alertProcess').addClass('show');
+  }
 }
 
 function saveFirebase(name, size, arrival, firstCpu, inOut, lastCpu) {

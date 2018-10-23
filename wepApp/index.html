@@ -190,7 +190,7 @@
     		              <label class="btn btn-secondary optionPlaningTwo">
     		                <input type="radio" name="options" value="RR" autocomplete="off"> RR
     		              </label>
-    		              <input type="text" style="width:110px" class=" quantumIn" placeholder="Q"/>
+    		              <input type="text" style="width:40px" class=" quantumIn" placeholder="Q"/>
 
     		              <label class="btn btn-secondary optionPlaningThree">
     		                <input type="radio" name="options" value="SJF" autocomplete="off"> SJF
@@ -219,26 +219,78 @@
               <div class="row">
 
   		            <div class="col-lg-4">
-  		                <h5 class="card-title w-75 my-2">Nuevo Trabajo (Proceso)</h5>
-  		                <input type="text" placeholder="Nombre de Proceso" class="name form-control my-3" />
-  		                <input type="text" placeholder="Tamaño del proceso" class="size form-control my-3 sizeInput" />
-  		                <input type="text" placeholder="Tiempo de Arribo" class="arrival form-control my-3 arrivalInput" />
+  		                <h5 class="card-title my-3">Cargar Nuevo Proceso</h5>
+
+                      <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                          <span class="input-group-text" id="basic-addon1">Nombre:</span>
+                        </div>
+  		                    <input type="text" placeholder="Nombre del Proceso" class="name form-control" />
+                      </div>
+
+                      <div class="row">
+
+                        <div class="col-lg-5 input-group mb-3">
+                          <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1">Tamaño:</span>
+                          </div>
+                          <input type="text" placeholder="" class="size form-control sizeInput" />
+                        </div>
+
+                        <div class="col-lg-7 input-group mb-3">
+                          <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1">Tiempo de Arribo:</span>
+                          </div>
+                          <input type="text" placeholder="" class="arrival form-control arrivalInput" />
+                        </div>
+
+                      </div>
 
   		                <div class="row">
   		                    <div class="col-lg-4 ">
-  		                        <input type="text" placeholder="CPU 1º" class="firstCpu form-control my-3" />
+
+                            <div class="input-group mb-3">
+                              <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon1">1° CPU:</span>
+                              </div>
+  		                        <input type="text" placeholder="" class="firstCpu form-control" />
+                            </div>
+
   		                    </div>
 
   		                    <div class="col-lg-4 ">
-  		                        <input type="text" placeholder="E/S" class="inOut form-control my-3" />
+
+                            <div class="input-group mb-3">
+                              <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon1">E/S:</span>
+                              </div>
+  		                        <input type="text" placeholder="" class="inOut form-control" />
+                            </div>
+
   		                    </div>
 
   		                    <div class="col-lg-4 ">
-  		                        <input type="text" placeholder="CPU 2º" class="lastCpu form-control my-3" />
+
+                            <div class="input-group mb-3">
+                              <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon1">2° CPU:</span>
+                              </div>
+  		                        <input type="text" placeholder="" class="lastCpu form-control " />
+                            </div>
+
   		                    </div>
+
   		                </div>
 
   		                <button class="btn btn-info" onclick="saveData()">Guardar</button>
+
+                      <div class="mt-4 alert alert-danger alert-dismissible fade hide alertProcess" role="alert">
+                        <strong class="textoalert">Error, el tamaño de memora excede, o no puede ingresar mas partciones</strong>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+
   		            </div>
 
   		            <div class="col-lg-8 w-auto">
