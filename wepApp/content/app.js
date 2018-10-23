@@ -310,12 +310,13 @@ function firstComeFirstServed(procesosMemoria){
 //-------------------------------
 
    for (var i=controladorBucle; i>0; i--) {
+          for(var n =0;n<colaBloqueados.length;n++){
             if (colaBloqueados[n].arrivalTime<= tiempo){colaListo.push(colaBloqueados[n]);
                                                         colaBloqueados=colaBloqueados.splice(n,1);}
           }
 
           if (colaListo[x].cpuTime!=0){
-            if (enCPU=[]){enCPU=colaListo[x];
+            if (enCPU=[]){enCPU=colaListo[x];elementoCPU[3].push(tiempo);
               if (enCPU.cpuTime!=0){
                   enCPU.cpuTime=enCPU.cpuTime-1;
                   elementoCPU[0].push(enCPU.name);
@@ -339,7 +340,7 @@ function firstComeFirstServed(procesosMemoria){
 
          if(colaListo[y].cpuTime=0){
            if (colaListo[y].ioTime!=0){
-             if(enES=[]){enES=colaListo[y]
+             if(enES=[]){enES=colaListo[y];elementoES[3].push(tiempo);
                enES.ioTime= enES.ioTime-1;
                elementoES[0].push(enES.name);
                elementoES[1].push(t2+1);
