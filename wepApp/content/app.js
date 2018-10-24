@@ -6,7 +6,6 @@ var algorithm = "FCFS";
 var arrayProcess = [];
 
 $(function () {
-  $('[data-toggle="popover"]').popover()
 })
 
 $(document).ready(function () {
