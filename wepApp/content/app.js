@@ -8,7 +8,9 @@ var arrayProcess = [];
 
 
 $(function () {
-  $('[data-toggle="popover"]').popover()
+  $("[data-toggle=popover]").popover({
+        html: true
+    });
 })
 
 $(document).ready(function () {
@@ -127,11 +129,85 @@ $(document).ready(function () {
 
    //seguir
    $(".startButton").click(function(){
-      var newItem = $('.one').clone();
-      var tag = newItem.find('a');
-      tag.removeClass('btn-danger').addClass('btn-success').text("Otro Proceso");
 
-      $('.progress').append(newItem);
+      //-----Es el formato del arreglo de objetos para pintar en el diagrama de gantt----
+      var arrayCpu = [];
+
+      var objCpu = {
+        name: "P1",
+        irrupctionTime: 10,
+        arrivalTime: 0,
+        inTime: 0,
+        outTime: 10
+      };
+      var objCpuDos = {
+        name: "P2",
+        irrupctionTime: 6,
+        arrivalTime: 0,
+        inTime: 10,
+        outTime: 16
+      };
+      var objCpuTres = {
+        name: "P3",
+        irrupctionTime: 2,
+        arrivalTime: 1,
+        inTime: 16,
+        outTime: 18
+      };
+
+      arrayCpu.push(objCpu);
+      arrayCpu.push(objCpuDos);
+      arrayCpu.push(objCpuTres);
+      //---------
+
+      $('#proccessBar').attr('aria-valuenow', arrayCpu[0].cpu).css('width',arrayCpu[0].irrupctionTime+'%');
+      var tagOne = $('#proccessBar').find('a');
+      tagOne.attr('data-original-title', 'Datos de '+arrayCpu[0].name);
+
+      var htmlPopover = '<div><b>De '+arrayCpu[0].inTime+' a '+arrayCpu[0].outTime+'</b></div>';
+
+      tagOne.attr('data-content', htmlPopover);
+      tagOne.text(arrayCpu[0].name);
+
+      var markupFirst = "<tr><th scope='row'>"+arrayCpu[0].name+"</th><td>"+arrayCpu[0].outTime+"</td><td>"+arrayCpu[0].arrivalTime+"</td><td>"+(arrayCpu[0].outTime-arrayCpu[0].arrivalTime)+"</td></tr>";
+      $('.tableResponse > tbody:last-child').append(markupFirst);
+
+      var markWaitFirst = "<tr><th scope='row'>"+arrayCpu[0].name+"</th><td>"+(arrayCpu[0].outTime-arrayCpu[0].arrivalTime)+"</td><td>"+arrayCpu[0].irrupctionTime+"</td><td>"+(arrayCpu[0].outTime-arrayCpu[0].arrivalTime-arrayCpu[0].irrupctionTime)+"</td></tr>";
+      $('.tableWait > tbody:last-child').append(markWaitFirst);
+
+      for (var i = 1; i < arrayCpu.length; i++) {
+
+          var randomColor = '#'+ ('000000' + Math.floor(Math.random()*16777215).toString(16)).slice(-6);
+
+          var item = arrayCpu[i];
+          var newItem = $('#proccessBar').clone();
+
+          var irruption = item.irrupctionTime;
+
+          if(irruption < 4){
+              irruption = 4
+          }
+
+          newItem.attr('aria-valuenow', item.cpu).css('width',irruption+'%');
+          var tag = newItem.find('a');
+          tag.attr('title', 'Datos de '+item.name);
+
+          var htmlTag = '<div><b>De '+item.inTime+' a '+item.outTime+'</b></div>';
+
+          tag.attr('data-content', htmlTag);
+          tag.css("background-color", randomColor).text(item.name);
+          tag.css("border-color", randomColor);
+          $('.progress').append(newItem);
+
+          var markup = "<tr><th scope='row'>"+item.name+"</th><td>"+item.outTime+"</td><td>"+item.arrivalTime+"</td><td>"+(item.outTime-item.arrivalTime)+"</td></tr>";
+          $('.tableResponse > tbody:last-child').append(markup);
+
+          var markWait = "<tr><th scope='row'>"+item.name+"</th><td>"+(item.outTime-item.arrivalTime)+"</td><td>"+item.irrupctionTime+"</td><td>"+(item.outTime-item.arrivalTime-item.irrupctionTime)+"</td></tr>";
+          $('.tableWait > tbody:last-child').append(markWait);
+
+      }
+
+      
    });
    //--------------
 
@@ -139,7 +215,9 @@ $(document).ready(function () {
 
 $(document).on('click', ".one", function (e) {
     e.preventDefault();
-    $('[data-toggle="popover"]').popover();
+    $("[data-toggle=popover]").popover({
+        html: true
+    });
 });
 
 
