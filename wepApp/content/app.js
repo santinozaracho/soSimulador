@@ -297,8 +297,6 @@ function firstComeFirstServed(procesosMemoria){
    var tiempo=0;
    var tiempoCpu;
    var x=0;
-   var elementoCPU=[];
-   var elementoES=[];
    var t1=0;
    var t2=0;
 
@@ -316,41 +314,24 @@ function firstComeFirstServed(procesosMemoria){
           }
 
           if (colaListo[x].cpuTime!=0){
-            if (enCPU=[]){enCPU=colaListo[x];elementoCPU[3].push(tiempo);
               if (enCPU.cpuTime!=0){
                   enCPU.cpuTime=enCPU.cpuTime-1;
-                  elementoCPU[0].push(enCPU.name);
-                  elementoCPU[1].push(t1+1);
-                  if (enCPU.cpuTime=0){salidaCPU.push(elementoCPU); t1=0;enCPU=[];x=x+1;}
                 }
               }else
                 {if (enCPU.cpuTime!=0){
                     enCPU.cpuTime=enCPU.cpuTime-1;
-                    elementoCPU[0].push(enCPU.name);
-                    elementoCPU[1].push(t1+1);
-                    if (enCPU.cpuTime=0){salidaCPU.push(elementoCPU); t1=0;enCPU=[];x=x+1;}
                     }
               }
            }else{if(enCPU.ioTime=0){if (enCPU.lastCpuTime!=0){
              enCPU.lastCpuTime=enCPU.lastCpuTime-1;
-             elementoCPU[0].push(enCPU.name);
-             elementoCPU[1].push(t1+1);
-             if (enCPU.lastCpuTime=0){salidaCPU.push(elementoCPU); t1=0;enCPU=[];x=x+1;}}
            }}
 
          if(colaListo[y].cpuTime=0){
            if (colaListo[y].ioTime!=0){
-             if(enES=[]){enES=colaListo[y];elementoES[3].push(tiempo);
                enES.ioTime= enES.ioTime-1;
-               elementoES[0].push(enES.name);
-               elementoES[1].push(t2+1);
-               if (enES.ioTime=0){salidaES.push(elementoES); t2=0;enES=[];y=y+1;}
               }
               else{if(enES.ioTime!=0){
                                       enES.ioTime= enES.ioTime-1;
-                                      elementoES[0].push(enES.name);
-                                      elementoES[1].push(t2+1);
-                                      if (enES.ioTime=0){salidaES.push(elementoES); t2=0;enES=[];y=y+1;}}
                                     }
               }}
           tiempo=tiempo+1;
