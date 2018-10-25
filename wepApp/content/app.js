@@ -2,7 +2,6 @@ var sizeMemory = 256;
 var typeMemory = "Variable";
 var fitMemory = "First Fit";
 var algorithm = "FCFS";
-
 var arrayProcess = [];
 
 
@@ -511,156 +510,248 @@ function arrayProc(){
 
 //obtención de la cantodad de tiempo de procesamiento
 function obtenerTiempoMax(){
-  var procesos = arrayProc();
+  var procesos = arrayProcess;
+  var tiempoMax = 0
   for (var i = 0; i < procesos.length; i++) {
-     var firstCpu = parseInt(procesos[i].ioTime) + parseInt(procesos[i].cpuTime) + parseInt(procesos[i].lastCpuTime);
-     var controladorBucle =controladorBucle + firstCpu;
+      tiempoMax = tiempoMax + parseInt(procesos[i].ioTime) + parseInt(procesos[i].cpuTime) + parseInt(procesos[i].lastCpuTime);
   }
-  return controladorBucle
+  return tiempoMax
+}
+
+function getIxByName(array,name){
+  for (var i = 0; i < array.length; i++) {
+    if (array[i].name == name){
+      return i
+    }
+  }
+  return false;
 }
 
 //Algoritmo de SAntino que me devuelve la cola de Listo
-function solicitarProcesos(){
-  return []
+function solicitarProcesos(name){
+  if (name == null) {
+    return arrayProcess
+  }else {
+    var indice = getIxByName(arrayProcess, name);
+    if(indice > -1){
+      var test = arrayProcess.splice(indice,1);
+      return arrayProcess;
+    }
+  }
+
 }
 
-//Procesa elemento del tipo 1cpu
-function procesarElemento1(enCPU,elementoCPU){
-  enCPU.cpuTime = enCPU.cpuTime-1;
-  elementoCPU.irrupctionTime +=1;
-  //Verificamos si debemos Sacar de CPU 1
-  if (enCPU.cpuTime == 0){
-      elementoCPU.outTime = elementoCPU.irrupctionTime + elementoCPU.inTime;
-      salidaCPU.push(elementoCPU);
-      //Agregamos a la lista de bloqueado los el proceso
-      colaBloqueados.push(enCPU);
-      enCPU = null;
-    }
-}
-//procesa elemento del tipo 2cpu
-function procesarElemento2(enCPU,elementoCPU){
-    enCPU.lastCpuTime -= 1;
-    elementoCPU.irrupctionTime +=1;
-    //Verificamos si debemos sacar de CPU
-    if (enCPU.lastCpuTime == 0){
-      elementoCPU.outTime = elementoCPU.irrupctionTime + elementoCPU.inTime;
-      salidaCPU.push(elementoCPU);
-      colaListo = solicitarProcesos(enCPU.name);
-      enCPU=null;
-    }
-  }
 //Obtiene el Siguiente proceso libre de la Memoria
-function siguienteProceso(){
-  var esBloq = false;
+function siguienteProceso(colaListo,colaBloqueados,colaESFin){
+  var noHayProc = true;
   for (var i = 0; i < colaListo.length; i++) {
-    for (var j = 0; j < colaBloqueados.length; j++) {
-      if (colaBloqueados[j].name == colaListo[i].name){
-        esBloq = true ;
-        break
-      }
-    }
-    if (esBloq) {
-        esBloq = false
-    }else {
+    console.log(colaESFin);
+    console.log(colaBloqueados);
+    var esBloq = estaEn(colaBloqueados,colaListo[i])
+    var esTer = estaEn(colaESFin,colaListo[i])
+    if (esBloq == false && esTer == false) {
       return colaListo[i]
+    }else {
+      noHayProc = false
     }
   }
-  if (esBloq == false){return null}
+  if (noHayProc == false){
+    return null
+  }
 }
+
 //Genera un nuevo elemento para la salida
-function nuevoElemento(proceso){
+function nuevoElemento(proceso,tiempo){
   var elemento = {};
   elemento.inTime = tiempo;
   elemento.name=proceso.name;
   elemento.arrivalTime = proceso.arrivalTime;//Analizar este Tiempo
   elemento.irrupctionTime = 0;
   elemento.outTime = 0;
-  return elementoCPU
+  return elemento
 }
 
-function procesarES(enES,elementoES){
-    enES.ioTime -= 1;
-    elementoES.irrupctionTime +=1;
-    //Verificamos si debemos sacar de CPU
-    if (enES.ioTime == 0){
-      elementoES.outTime = elementoCPU.irrupctionTime + elementoCPU.inTime;
-      salidaES.push(elementoCPU);
-      colaBloqueados = quitarPBloqueado(enCPU.name);
-      enES=null;
-    }
-  }
+//Verifica si un Proceso esta en una Cola
+function estaEn(cola,proceso){
+    var esta = false;
+      for (var i = 0; i < cola.length; i++) {
+        if (cola[i].name == proceso.name){
+          esta = true ;
+          break
+        }
+      }
+     return esta
+   }
+
 //Obtiene el Siguiente proceso libre de la Memoria
-
-function quitarPBloqueado(nameES){
-  if (colaBloqueados[0].name == nameES) {
-    colaBloqueados.slice(0,1);
-  }
-  return colaBloqueados
-}
 //algoritmo FCFS
 function firstComeFirstServed(){
+    //definimos las Vairables
    var colaBloqueados = [];
-   var colaListo= solicitarProcesos('Vacio');
-   var salidaCPU=[];
-   var salidaES=[];
-   var salidaFinal =[];
-   var enES = [];
-   var enCPU=[];
+   var colaListo = solicitarProcesos(null);
+   var colaESFin = []
+   var salidaCPU = [];
+   var salidaES = [];
+   var salidaFinal = [];
+   var enES = null;
+   var tiempo = 0;
+   var enCPU = null;
+   var bloqDeCiclo = false;
    var controladorBucle = obtenerTiempoMax();
-
-//Inicio del algoritmo, el For que controla la ejecucion total del algoritmo
+   console.log(controladorBucle);
+   console.log('obtenemos el controlador de bucle');
+    //Inicio del algoritmo, el For que controla la ejecucion total del algoritmo
    for (var i=controladorBucle; i > 0; i--) {
+     console.log(tiempo);
+     console.log('Nuevo TIEMPO');
+     console.log('ENTRADASALIDA');
+     //Analizamos el Trabajo en ES en el mismo tiempo t analizamos primero porque al pasar un proceso a bloqueado automaticamente ejecuta
+      if (enES != null) {
+       console.log('hay Proc en ES');
+       //Procesamso el elto else {
+       enES.ioTime -= 1;
+       elementoES.irrupctionTime +=1;
+       //Verificamos si debemos sacar de CPU
+       if (enES.ioTime < 1){
+         //if (elementoES.irrupctionTime == 1) {
+           if (colaESFin.length == 0) {
+             bloqDeCiclo = true
+           }
+    //     }
+         elementoES.outTime = tiempo+1;
+         salidaES.push(elementoES);
+         colaESFin.push(enES)
+         colaBloqueados.shift();
+         enES = null;
+       }
+       //controlamos ciclo de ejecucion ES
+      }else{
+       console.log('Cargamos proc en ES');
+       //Agregamos un Elemento de la COla de bloqueado
+         if (colaBloqueados.length > 0) {
+           enES = colaBloqueados[0];
+           elementoES = nuevoElemento(enES,tiempo);
+           //Pocesamos el Elto ES
+           enES.ioTime -= 1;
+           elementoES.irrupctionTime +=1;
+           //Verificamos si debemos sacar de CPU
+           if (enES.ioTime < 1){
+          //   if (elementoES.irrupctionTime == 1) {
+               if (colaESFin.length == 0){
+                bloqDeCiclo = true
+                }
+        //     }
+             elementoES.outTime = tiempo+1;
+             salidaES.push(elementoCPU);
+             colaESFin.push(enES)
+             colaBloqueados.shift()
+             enES = null;
+             }
+         }else{
+           console.log('No hay procesos en Bloqueados');
+         }
+       }
 
      //Analizamos el Trabajo en CPU en el tiempo t
-     if (enCPU.val()){
+     if (enCPU != null){
+       console.log('hay proc en CPU');
        //Verificamos si posee primer tiempo de CPU y Al terminar Pasamos a Bloquado para ser atendido en ES
-       if (enCPU.cpuTime != 0){
-         console.log(enCPU.cpuTime);
-         procesarElemento1();
+       if (enCPU.cpuTime > 0){
+         console.log('Analizamos el 1er CPu');
+         enCPU.cpuTime -= 1;
+         elementoCPU.irrupctionTime +=1;
+         //Verificamos si debemos Sacar de CPU 1
+         if (enCPU.cpuTime < 1){
+           console.log('Se proceso el Primer CPU y se pasa a Bloquado');
+            elementoCPU.outTime = tiempo+1;
+            salidaCPU.push(elementoCPU);
+            //Agregamos a la lista de bloqueado los el proceso
+            colaBloqueados.push(enCPU);
+            elementoCPU = null;
+            enCPU = null;
+          }
         }else{
+          console.log(enCPU);
+          console.log('No posee primer tiempo');
           //Verificamos si posee Segundo Tiempo
-          if (enCPU.lastCpuTime != 0){
-            console.log(enCPU.lastCpuTime);
-            procesarElemento2()
-            } else{
+          if (enCPU.lastCpuTime > 0){
+            console.log('Posee Segundo Tiempo ');
+            //Procesamos elto del tipo last CPU
+            enCPU.lastCpuTime -= 1;
+            elementoCPU.irrupctionTime +=1;
+            //Verificamos si debemos sacar de CPU
+            if (enCPU.lastCpuTime < 1){
+              console.log('Proceso Terminado, Solicitamos Nuevos Procesos de la Memoria');
+              elementoCPU.outTime = tiempo+1;
+              salidaCPU.push(elementoCPU);
+              colaListo = solicitarProcesos(enCPU.name);
+              elementoCPU = null;
+              enCPU = null;
+            }
+            }else{
               console.log('Error, Se metio un proceso de ES');
             }
         }
-        }else{
+      }else{
+        console.log('Cargamos un Nuevo proceso a CPU');
         //Primero analaizamos cola Bloaqueada y lo quitamos
         //Luego analaizamos Cola Listo
-        if (colaBloqueados.val()) {
-          enCPU = colaBloqueados[0];
-          colaBloqueados = quitarPBloqueado(colaBloqueados[0].name);
-          elementoCPU = nuevoElemento(enCPU)
-          procesarElemento2(enCPU,elementoCPU)
+        if (bloqDeCiclo == true) {
+          bloqDeCiclo = false
         }else {
-          // Solicitamos el Proximo Proceso en listo que no este bloqueddo
-          enCPU = siguienteProceso()
-          if (enCPU.val()){
-            elementoCPU = nuevoElemento(enCPU)
-            procesarElemento1(enCPU,elementoCPU)
-          } //si es Null entonces CPU ociosa
+          if (colaESFin.length > 0) {
+            console.log('Hay procesos listos de ES');
+            enCPU = colaESFin[0];
+            //una Vez que empezamos a tratar lo Eliminamos de la cola pendientes
+            colaESFin.shift();
+            elementoCPU = nuevoElemento(enCPU,tiempo);
+            //Procesamos elemento last clpu
+            enCPU.lastCpuTime -= 1;
+            elementoCPU.irrupctionTime +=1;
+            //Verificamos si debemos sacar de CPU
+            if (enCPU.lastCpuTime < 1){
+              console.log('Se Proceso por Completo el');
+              console.log(enCPU.name);
+              elementoCPU.outTime = tiempo;
+              salidaCPU.push(elementoCPU);
+              console.log(salidaCPU);
+              //Refrescamos la cola de listos
+              colaListo = solicitarProcesos(enCPU.name);
+              enCPU = null;
+              elementoCPU = null;
+            }
+          }else{
+            console.log('no hay terminados tomamos el siguiente no bloqueado');
+            // Solicitamos el Proximo Proceso en listo que no este bloqueddo
+            enCPU = siguienteProceso(colaListo,colaBloqueados,colaESFin);
+            console.log(enCPU);
+            //Verificamos si hay algun proceso en la CL
+            if (enCPU != null){
+              console.log('Se encontro un Proceso listo');
+              elementoCPU = nuevoElemento(enCPU,tiempo);
+              enCPU.cpuTime = enCPU.cpuTime-1;
+              elementoCPU.irrupctionTime +=1;
+              //Verificamos si debemos Sacar de CPU 1
+              if (enCPU.cpuTime < 1){
+                  //elementoCPU.outTime = elementoCPU.irrupctionTime + elementoCPU.inTime;
+                  elementoCPU.outTime = tiempo
+                  salidaCPU.push(elementoCPU);
+                  console.log(salidaCPU);
+                  //Agregamos a la lista de bloqueado los el proceso
+                  colaBloqueados.push(enCPU);
+                  elementoCPU = null;
+                  enCPU = null;
+                }
+            }else{
+              console.log('No hay mas Procesos no bloqueados');
+            }//si es Null entonces CPU ociosa
+          }
         }
       }
-
-    //Analizamos el Trabajo en ES en el mismo tiempo t
-    if (enES.val()) {
-      procesarES(enES,elementoES);
-      //controlamos ciclo de ejecucion ES
-    }else {
-      //Agregamos un Elemento de la COla de bloqueado
-      if (colaBloqueados.val()) {
-        enES = colaBloqueados[0];
-        elementoES = nuevoElemento(enES);
-        procesarES(enES,elementoES);
-      }
-    }
-
     //timer del PROCESADOR
     tiempo += 1;
     //Control FIN ALGORITMO
-    if( (colaListo == []) && (colaBloqueados == []) ){
+    if( (colaListo.length == 0) && (colaBloqueados.length == 0) && (colaESFin.length == 0) ){
       break
     }
   }
