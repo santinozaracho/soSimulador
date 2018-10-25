@@ -736,3 +736,100 @@ function firstComeFirstServed(){
 
   return salidaFinal;
 }
+function roundRobin(quantum){
+  var colaListo=solicitarProcesos(null);
+  var enCPU={};
+  var elementoCPU={};
+  var enES={};
+  var elementoES={};
+  var colaCpu=[];
+  var colaES=[];
+  var salidaCPU=[];
+  var salidaES=[];
+  var salidaFinal=[];
+  var i=0;
+  var j=0;
+  var x=0;
+  var controladorBucle=0;
+  var tiempo=0;
+  var t1=0;
+  var t2=0;
+  //para obtener una variable que me controle el ciclo for, el peor caso
+  for (i=0; i<colaListo.length; i++){
+    controladorBucle= controladorBucle+parseInt(colaListo[i].ioTime)+parseInt(colaListo[i].cpuTime)+parseInt(colaListo[i].lastCpuTime);
+  }
+  //for que controla todo el algoritmo
+  for (j = 0; j < controladorBucle; j++) {
+    //para solicitar procesos a la cola de listo en caso de que el proceso haya terminado
+    // y para repartir por cola de cpu y de e/s en caso de que no haya terminado
+    for (var x = 0; x < colaListo.length; x++) {
+      if (colaListo[x].cpuTime>0){
+        colaCPU.push(colaListo[x])
+      }else{
+          if(colaListo[x].ioTime>0){
+            colaES.push(colaListo[x])
+          }else{
+            if (colaListo[x].lastCpuTime>0){
+              colaCPU.push(colaListo[x]);
+            }else{colaListo=solicitarProcesos(colaListo[x].name)}
+              }
+        }
+    }
+    //para darle valores a enCPU
+    if (enCPU==[]){
+      enCPU=colaCpu[0];
+      elementoCPU.name=enCPU.name;
+      elementoCPU.arrivalTime=enCPU.arrivalTime;
+      elementoCPU.inTime= tiempo;
+      colaCpu.splice(0,1);
+      var indice = getIxByName(colaListo, enCPU.name);
+    }
+    //para darle valores a enES
+    if (enES==[]){
+      enES=colaES[0];
+      elementoES.name=enES.name;
+      elementoES.arrivalTime=enES.arrivalTime;
+      elementoES.inTime= tiempo;
+      colaES.splice(0,1);
+      var indice2 = getIxByName(colaListo, enES.name);
+    }
+    //para procesar el contenido de enCPU
+    if (enCPU!=[]){
+      elementoCPU.irrupctionTime+=1;t1+=1;
+      if(enCPU.cpuTime!=0){
+        enCPU.cpuTime-=1;
+        colaListo[indice].cpuTime-=1;
+        if (enCPU.cpuTime==0 || t1==quantum){elementoCPU.outTime=elementoCPU.inTime+elementoCPU.irrupctionTime;
+                                            enCPU=[];
+                                            salidaCPU.push(elementoCPU);
+                                            t1=0;
+                                            if(enCPU.cpuTime==0){elementoCPU.finish=true}
+                                          }
+
+      }else{enCPU.lastCpuTime-=1;t1+=1;
+            colaListo[indice].lastCpuTime-=1;
+            if (enCPU.lastCpuTime==0 || t1==quantum){elementoCPU.outTime=elementoCPU.inTime+elementoCPU.irrupctionTime;
+                                                    if(enCPU.lastCpuTime==0){elementoCPU.finish=true}
+                                                    enCPU=[];
+                                                    salidaCPU.push(elementoCPU);
+                                                    t1=0;}
+            }
+    }
+    //para procesar el contenido de enES
+    if (enES!=0){
+      elementoES.irrupctionTime+=1;t2+=1;
+      enES.ioTime-=1;
+      colaListo[indice2].ioTime-=1;
+      if (enES.ioTime==0 || t2==quantum){elementoES.outTime=elementoCPU.inTime+elementoCPU.irrupctionTime;
+                                        enES=[];
+                                        salidaES.push(elementoES);
+                                        t2=0;}
+    }
+    tiempo+=1;
+    if (colaListo==[]){break}
+
+  }
+  salidaFinal[0].push(salidaCPU);
+  salidaFinal[1].push(salidaES);
+  console.log("Es la salida final", salidaFinal);
+}
