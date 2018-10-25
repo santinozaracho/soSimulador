@@ -129,35 +129,9 @@ $(document).ready(function () {
    //seguir
    $(".startButton").click(function(){
 
-      //-----Es el formato del arreglo de objetos para pintar en el diagrama de gantt----
-      var arrayCpu = [];
+      var arrayFinish = firstComeFirstServed();
 
-      var objCpu = {
-        name: "P1",
-        irrupctionTime: 10,
-        arrivalTime: 0,
-        inTime: 0,
-        outTime: 10
-      };
-      var objCpuDos = {
-        name: "P2",
-        irrupctionTime: 6,
-        arrivalTime: 0,
-        inTime: 10,
-        outTime: 16
-      };
-      var objCpuTres = {
-        name: "P3",
-        irrupctionTime: 2,
-        arrivalTime: 1,
-        inTime: 16,
-        outTime: 18
-      };
-
-      arrayCpu.push(objCpu);
-      arrayCpu.push(objCpuDos);
-      arrayCpu.push(objCpuTres);
-      //---------
+      var arrayCpu = arrayFinish[0];
 
       $('#proccessBar').attr('aria-valuenow', arrayCpu[0].cpu).css('width',arrayCpu[0].irrupctionTime+'%');
       var tagOne = $('#proccessBar').find('a');
@@ -321,8 +295,7 @@ $(document).on('click','.siguiente', function(e){
 
 //button siguiente2
 $(document).on('click','.siguiente2', function(e){
-  $('[href="#visualizacion"]').tab('show')
-  console.log(firstComeFirstServed());
+  $('[href="#visualizacion"]').tab('show');
 });
 
 //Algoritmo de planificacion de memoria,PARTICION FIJA
@@ -602,6 +575,8 @@ function firstComeFirstServed(){
    console.log('obtenemos el controlador de bucle');
     //Inicio del algoritmo, el For que controla la ejecucion total del algoritmo
    for (var i=controladorBucle; i > 0; i--) {
+     //ya Cumplio ciclo ponemos en false
+     bloqDeCiclo = false
      console.log(tiempo);
      console.log('Nuevo TIEMPO');
      console.log('ENTRADASALIDA');
@@ -758,4 +733,6 @@ function firstComeFirstServed(){
   salidaFinal.push(salidaCPU);
   salidaFinal.push(salidaES);
   console.log("Es la salida final", salidaFinal);
+
+  return salidaFinal;
 }
