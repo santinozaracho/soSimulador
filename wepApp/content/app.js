@@ -301,7 +301,7 @@ $(document).on('click', '.btn-add', function(e){
             var objPart = {};
             objPart.IdPart = cont;
             objPart.size = sizepart;
-            objPart.used = 0;
+            objPart.used = null;
 
             memFija.push(objPart);
 
@@ -358,42 +358,139 @@ $(document).on('click','.siguiente', function(e){
 //button siguiente2
 $(document).on('click','.siguiente2', function(e){
   $('[href="#visualizacion"]').tab('show');
+  console.log(roundRobin(5));
 });
 
+function newPart(size){
+  var part = {};
+  part.IdPart = null;
+  part.size = size;
+  part.used = null;
+  return part
+}
+
+function usedMem(parts){
+  var totused = 0;
+  for (var i = 0; i < parts.length; i++) {
+    if (part.used != null){
+      totused += parts[i].used.size
+    }
+  }
+  return totused
+}
+
+function fragExt(parts,proc){
+    var used = usedMem(parts);
+    if (sizeMemory - used >= proc.size) {
+      return true
+    }
+    return false
+}
+//
+function desFrag(parts){
+return parts
+}
+
+function cargaIniMem(){
+    var proc = []
+    var particiones = []
+
+    if (fitMemory == 'Worst Fit'){
+      for (var i = 0; i < proc.length; i++) {
+        if (particiones.length == 0) {
+          part = newPart(sizeMemory);
+          part.size = proc[i].size;
+          part.process = proc[i].name;
+          part.used = proc[i].size;
+          particiones.push(part)
+        }else {
+          var ix = worstFit(particiones,proc[i]);
+          if (ix) {
+            particiones = asignarProcVar(particiones,proc[i],ix)
+          }else {
+            //no entra en alguna particion
+            if (fragExt(particiones, proc[i])) {
+              //hay fragmentacion externa
+              particiones = desFrag(particiones);
+            }
+
+          }
+
+        }
+
+      }
+    }
+    if (fitMemory == 'First Fit'){
+      for (var i = 0; i < listadeProc.length; i++) {
+        if (particiones.length == 0) {
+          newPart(size)
+        }
+        listadeProc[i]
+      }
+    }
+}
+//
+
+function asignarProcVar(parts, proc, ix){
+  var partRes = parts[ix];
+  parts.splice(ix,1);
+  var partProc = newPart(parseInt(proc.size))
+  partProc.IdPart = partRes.IdPart
+  partProc.used = proc;
+  parts.splice(ix,0,partProc);
+  var partEmpty = newPart(partRes.size - partProc.size);
+  partEmpty.IdPart = parts.length + 1;
+  partEmpty.used = null;
+  parts.splice(ix+1,0,partEmpty);
+  return parts
+}
+
+function reParticionar(){
+  return true
+}
+//This will sort your array
+function SortBySize(a, b){
+  var asize = a.size;
+  var bsize = b.size;
+  return ((asize < bsize) ? -1 : ((asize > bsize) ? 1 : 0));
+}
+function SortBySizeDes(a, b){
+  var asize = a.size;
+  var bsize = b.size;
+  return ((asize > bsize) ? -1 : ((asize < bsize) ? 1 : 0));
+}
+
 //Algoritmo de planificacion de memoria,PARTICION FIJA
-//
-// function firstFit(part,proc){
-//   var asign = false
-//   part.forEach(function(sizepart,used,index) {
-//     if (proc.size <= sizepart & used = 0 & asign = false) {
-//       part[index].used = proc.size;
-//       asign = true;
-//     }
-//   })
-//   if (asign) {
-//     return true
-//   }else {
-//     return false
-//   }
-// };
-//
-// function bestFit(part,proc){
-//   var asign = false
-//   var ixbest = 0
-//   var minfrag =
-//   part.forEach(function(size,used,index) {
-//     if (proc.size <= size & used = 0 & ((size-proc.size) < (part[ixbest].size - proc.size))){
-//       ixbest = index
-//     }
-//   })
-//   part[ixbest].used = proc.size;
-//   asign = true;
-//   if (asign) {
-//     return true
-//   }else {
-//     return false
-//   }
-// };
+function firstFit(parts,proc){
+  for (var i = 0; i < part.length; i++) {
+    if (proc.size <= part[i].size && part[i].used == null) {
+      return part[i].IdPart;
+    }
+  }
+  return false
+}
+
+function bestFit(parts,proc){
+  part = part.sort(SortBySize);
+  for (var i = 0; i < part.length; i++) {
+    if (proc.size <= part[i].size && part[i].used == null) {;
+      return part[i].IdPart;
+    }
+  }
+  return false
+}
+
+function worstFit(parts,proc){
+  part = part.sort(SortBySizeDes);
+  for (var i = 0; i < part.length; i++) {
+    if (proc.size <= part[i].size && part[i].used == null) {;
+      return part[i].IdPart;
+    }
+  }
+  return false
+}
+
+
 //
 // function worstFit(part,proc){};
 //
@@ -603,6 +700,7 @@ function nuevoElemento(proceso,tiempo){
   elemento.arrivalTime = proceso.arrivalTime;//Analizar este Tiempo
   elemento.irrupctionTime = 0;
   elemento.outTime = 0;
+  elemento.finish = false;
   return elemento
 }
 
@@ -802,11 +900,11 @@ function firstComeFirstServed(){
 
 function roundRobin(quantum){
   var colaListo=solicitarProcesos(null);
-  var enCPU={};
+  var enCPU = null;
   var elementoCPU={};
-  var enES={};
+  var enES = null;
   var elementoES={};
-  var colaCpu=[];
+  var colaCPU = [];
   var colaES=[];
   var salidaCPU=[];
   var salidaES=[];
@@ -814,86 +912,94 @@ function roundRobin(quantum){
   var i=0;
   var j=0;
   var x=0;
-  var controladorBucle=0;
+  var controladorBucle=obtenerTiempoMax();
   var tiempo=0;
   var t1=0;
   var t2=0;
-  //para obtener una variable que me controle el ciclo for, el peor caso
-  for (i=0; i<colaListo.length; i++){
-    controladorBucle= controladorBucle+parseInt(colaListo[i].ioTime)+parseInt(colaListo[i].cpuTime)+parseInt(colaListo[i].lastCpuTime);
-  }
+
   //for que controla todo el algoritmo
   for (j = 0; j < controladorBucle; j++) {
+    console.log(tiempo);
     //para solicitar procesos a la cola de listo en caso de que el proceso haya terminado
     // y para repartir por cola de cpu y de e/s en caso de que no haya terminado
     for (var x = 0; x < colaListo.length; x++) {
-      if (colaListo[x].cpuTime>0){
-        colaCPU.push(colaListo[x])
+      if (colaListo[x].cpuTime > 0){
+        if (estaEn(colaCPU,colaListo[x]) == false && enCPU != colaListo[x]) {
+          colaCPU.push(colaListo[x]);
+        }
       }else{
-          if(colaListo[x].ioTime>0){
-            colaES.push(colaListo[x])
+          if(colaListo[x].ioTime > 0 ){
+            if (estaEn(colaES,colaListo[x]) == false && enES != colaListo[x]) {
+              colaES.push(colaListo[x])
+            }
+
           }else{
-            if (colaListo[x].lastCpuTime>0){
-              colaCPU.push(colaListo[x]);
+            if (colaListo[x].lastCpuTime > 0  &&(estaEn(colaCPU,colaListo[x]) == false)){
+              if (colaListo[x].ioTime < 1) {
+                colaCPU.push(colaListo[x]);
+              }
             }else{colaListo=solicitarProcesos(colaListo[x].name)}
               }
         }
     }
     //para darle valores a enCPU
-    if (enCPU==[]){
-      enCPU=colaCpu[0];
-      elementoCPU.name=enCPU.name;
-      elementoCPU.arrivalTime=enCPU.arrivalTime;
-      elementoCPU.inTime= tiempo;
-      colaCpu.splice(0,1);
-      var indice = getIxByName(colaListo, enCPU.name);
+    if (enCPU == null){
+      if (colaCPU.length > 0) {
+        console.log('No hay CPU y hay elementos en colaCPU');
+        enCPU = colaCPU[0];
+        elementoCPU = nuevoElemento(enCPU,tiempo);
+        colaCPU.splice(0,1);
+        //var indice = getIxByName(colaListo, enCPU.name);
+      }
     }
     //para darle valores a enES
-    if (enES==[]){
-      enES=colaES[0];
-      elementoES.name=enES.name;
-      elementoES.arrivalTime=enES.arrivalTime;
-      elementoES.inTime= tiempo;
-      colaES.splice(0,1);
-      var indice2 = getIxByName(colaListo, enES.name);
+    if (enES == null){
+      if (colaES.length > 0) {
+        enES=colaES[0];
+        elementoES = nuevoElemento(enES,tiempo);
+        colaES.splice(0,1);
+        //var indice2 = getIxByName(colaListo, enES.name);
+      }
     }
     //para procesar el contenido de enCPU
-    if (enCPU!=[]){
-      elementoCPU.irrupctionTime+=1;t1+=1;
-      if(enCPU.cpuTime!=0){
+    if (enCPU != null){
+      elementoCPU.irrupctionTime+=1;
+      t1+=1;
+      if(enCPU.cpuTime > 0){
         enCPU.cpuTime-=1;
-        colaListo[indice].cpuTime-=1;
-        if (enCPU.cpuTime==0 || t1==quantum){elementoCPU.outTime=elementoCPU.inTime+elementoCPU.irrupctionTime;
-                                            enCPU=[];
+        //colaListo[indice].cpuTime-=1;
+        if (enCPU.cpuTime < 1 || t1==quantum){elementoCPU.outTime=elementoCPU.inTime+elementoCPU.irrupctionTime;
+                                            enCPU = null;
                                             salidaCPU.push(elementoCPU);
                                             t1=0;
-                                            if(enCPU.cpuTime==0){elementoCPU.finish=true}
                                           }
-
-      }else{enCPU.lastCpuTime-=1;t1+=1;
-            colaListo[indice].lastCpuTime-=1;
-            if (enCPU.lastCpuTime==0 || t1==quantum){elementoCPU.outTime=elementoCPU.inTime+elementoCPU.irrupctionTime;
+      }else{enCPU.lastCpuTime-=1;
+            //colaListo[indice].lastCpuTime-=1;
+            if (enCPU.lastCpuTime < 1 || t1==quantum){elementoCPU.outTime=elementoCPU.inTime+elementoCPU.irrupctionTime;
                                                     if(enCPU.lastCpuTime==0){elementoCPU.finish=true}
-                                                    enCPU=[];
+                                                    enCPU = null;
+                                                    if (quantum == 5) {
+                                                      console.log('Agoto el quanto');
+                                                    }
                                                     salidaCPU.push(elementoCPU);
                                                     t1=0;}
             }
     }
     //para procesar el contenido de enES
-    if (enES!=0){
-      elementoES.irrupctionTime+=1;t2+=1;
+    if (enES != null){
+      elementoES.irrupctionTime+=1;
       enES.ioTime-=1;
-      colaListo[indice2].ioTime-=1;
-      if (enES.ioTime==0 || t2==quantum){elementoES.outTime=elementoCPU.inTime+elementoCPU.irrupctionTime;
-                                        enES=[];
+      //colaListo[indice2].ioTime-=1;
+      if (enES.ioTime < 1){elementoES.outTime=elementoCPU.inTime+elementoCPU.irrupctionTime;
+                                        enES = null;
                                         salidaES.push(elementoES);
-                                        t2=0;}
+                                        }
     }
     tiempo+=1;
-    if (colaListo==[]){break}
+    if (colaListo.length == 0 && colaCPU.length == 0 && enCPU == null){break}
 
   }
-  salidaFinal[0].push(salidaCPU);
-  salidaFinal[1].push(salidaES);
+  salidaFinal.push(salidaCPU);
+  salidaFinal.push(salidaES);
   console.log("Es la salida final", salidaFinal);
 }
