@@ -133,24 +133,34 @@ $(document).ready(function () {
 
       var arrayCpu = arrayFinish[0];
 
-      $('#proccessBar').attr('aria-valuenow', arrayCpu[0].cpu).css('width',arrayCpu[0].irrupctionTime+'%');
+      var firstIrruption = arrayCpu[0].irrupctionTime;
+      arrayCpu[0].color = '#'+ ('000000' + Math.floor(Math.random()*16777215).toString(16)).slice(-6);
+      if(firstIrruption < 4){
+          firstIrruption = 4
+      }
+      $('#proccessBar').attr('aria-valuenow', firstIrruption).css('width',firstIrruption+'%');
       var tagOne = $('#proccessBar').find('a');
       tagOne.attr('data-original-title', 'Datos de '+arrayCpu[0].name);
-
       var htmlPopover = '<div><b>De '+arrayCpu[0].inTime+' a '+arrayCpu[0].outTime+'</b></div>';
-
       tagOne.attr('data-content', htmlPopover);
       tagOne.text(arrayCpu[0].name);
-
+      tagOne.css("background-color", arrayCpu[0].color).text(arrayCpu[0].name);
+      tagOne.css("border-color", arrayCpu[0].color);
       var markupFirst = "<tr><th scope='row'>"+arrayCpu[0].name+"</th><td>"+arrayCpu[0].outTime+"</td><td>"+arrayCpu[0].arrivalTime+"</td><td>"+(arrayCpu[0].outTime-arrayCpu[0].arrivalTime)+"</td></tr>";
       $('.tableResponse > tbody:last-child').append(markupFirst);
-
       var markWaitFirst = "<tr><th scope='row'>"+arrayCpu[0].name+"</th><td>"+(arrayCpu[0].outTime-arrayCpu[0].arrivalTime)+"</td><td>"+arrayCpu[0].irrupctionTime+"</td><td>"+(arrayCpu[0].outTime-arrayCpu[0].arrivalTime-arrayCpu[0].irrupctionTime)+"</td></tr>";
       $('.tableWait > tbody:last-child').append(markWaitFirst);
 
       for (var i = 1; i < arrayCpu.length; i++) {
 
-          var randomColor = '#'+ ('000000' + Math.floor(Math.random()*16777215).toString(16)).slice(-6);
+          if(arrayCpu[i].color == null){
+            var ind = arrayCpu.findIndex(x => x.name == arrayCpu[i].name);
+            if(ind > -1 && arrayCpu[ind].color != null){
+              arrayCpu[i].color = arrayCpu[ind].color;
+            }else{
+              arrayCpu[i].color = '#'+ ('000000' + Math.floor(Math.random()*16777215).toString(16)).slice(-6);
+            }
+          }
 
           var item = arrayCpu[i];
           var newItem = $('#proccessBar').clone();
@@ -161,24 +171,76 @@ $(document).ready(function () {
               irruption = 4
           }
 
-          newItem.attr('aria-valuenow', item.cpu).css('width',irruption+'%');
+          newItem.attr('aria-valuenow', item.irruption).css('width',irruption+'%');
           var tag = newItem.find('a');
           tag.attr('title', 'Datos de '+item.name);
 
           var htmlTag = '<div><b>De '+item.inTime+' a '+item.outTime+'</b></div>';
 
           tag.attr('data-content', htmlTag);
-          tag.css("background-color", randomColor).text(item.name);
-          tag.css("border-color", randomColor);
-          $('.progress').append(newItem);
+          tag.css("background-color", item.color).text(item.name);
+          tag.css("border-color", item.color);
+          $('#progressCpu').append(newItem);
 
           var markup = "<tr><th scope='row'>"+item.name+"</th><td>"+item.outTime+"</td><td>"+item.arrivalTime+"</td><td>"+(item.outTime-item.arrivalTime)+"</td></tr>";
           $('.tableResponse > tbody:last-child').append(markup);
 
           var markWait = "<tr><th scope='row'>"+item.name+"</th><td>"+(item.outTime-item.arrivalTime)+"</td><td>"+item.irrupctionTime+"</td><td>"+(item.outTime-item.arrivalTime-item.irrupctionTime)+"</td></tr>";
           $('.tableWait > tbody:last-child').append(markWait);
-
       }
+
+      //-------- E/S -----
+
+      var arrayEs = arrayFinish[1];
+      var firstIrruptionEs = arrayEs[0].irrupctionTime;
+      var indx = arrayCpu.findIndex(x => x.name == arrayEs[0].name);
+      arrayEs[0].color = arrayCpu[indx].color;
+      if(firstIrruptionEs < 4){
+          firstIrruptionEs = 4
+      }
+      $('#proccessEs').attr('aria-valuenow', firstIrruptionEs).css('width',firstIrruptionEs+'%');
+      var tagOneEs = $('#proccessEs').find('a');
+      tagOneEs.attr('data-original-title', 'Datos de '+arrayEs[0].name);
+      var htmlPopoverEs = '<div><b>De '+arrayEs[0].inTime+' a '+arrayEs[0].outTime+'</b></div>';
+      tagOneEs.attr('data-content', htmlPopoverEs);
+      tagOneEs.text(arrayEs[0].name);
+
+      tagOneEs.css("background-color", arrayEs[0].color).text(arrayEs[0].name);
+      tagOneEs.css("border-color", arrayEs[0].color);
+
+      for (var i = 1; i < arrayEs.length; i++) {
+
+          if(arrayEs[i].color == null){
+            var ind = arrayCpu.findIndex(x => x.name == arrayEs[i].name);
+            if(ind > -1 && arrayCpu[ind].color != null){
+              arrayEs[i].color = arrayCpu[ind].color;
+            }else{
+              arrayEs[i].color = '#'+ ('000000' + Math.floor(Math.random()*16777215).toString(16)).slice(-6);
+            }
+          }
+
+          var item = arrayEs[i];
+          var newItem = $('#proccessBar').clone();
+
+          var irruption = item.irrupctionTime;
+
+          if(irruption < 4){
+              irruption = 4
+          }
+
+          newItem.attr('aria-valuenow', item.irruption).css('width',irruption+'%');
+          var tag = newItem.find('a');
+          tag.attr('title', 'Datos de '+item.name);
+
+          var htmlTag = '<div><b>De '+item.inTime+' a '+item.outTime+'</b></div>';
+
+          tag.attr('data-content', htmlTag);
+          tag.css("background-color", item.color).text(item.name);
+          tag.css("border-color", item.color);
+          $('#progressEs').append(newItem);
+      }
+
+      //----- fin E/S --------
 
 
    });
@@ -834,6 +896,7 @@ function firstComeFirstServed(){
 
   return salidaFinal;
 }
+
 
 function roundRobin(quantum){
   var colaListo=solicitarProcesos(null);
