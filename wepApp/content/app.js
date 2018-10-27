@@ -2,6 +2,7 @@ var sizeMemory = 256;
 var typeMemory = "Variable";
 var fitMemory = "First Fit";
 var algorithm = "FCFS";
+var generalQuantum = 0;
 var arrayProcess = [];
 
 
@@ -35,12 +36,7 @@ $(document).ready(function () {
           e.preventDefault();
       }
 
-      $('.quantumIn').keypress(function() {
-          //falta hacer
-      });
-
     });
-
 
    //control de la obtención del tamaño de la memoria
    $(".optionOne").click(function(){
@@ -124,15 +120,30 @@ $(document).ready(function () {
       console.log(algorithm);
       $(".quantumIn").hide();
    });
+
+   $(".quantumIn").keyup(function(){
+        generalQuantum = $('.quantumIn').val();
+    });
+
    //------------------------------------
 
    //seguir
    $(".startButton").click(function(){
 
-      var arrayFinish = tiemposOcioso(firstComeFirstServed());
+      //var arrayFinish = tiemposOcioso(firstComeFirstServed());  roundRobin
+      //var arrayFinish = tiemposOcioso(roundRobin(5));
+      var algortimoLocal;
+
+      switch (algorithm) {
+        case "FCFS":
+          var arrayFinish = tiemposOcioso(firstComeFirstServed());
+          break;
+        case "RR":
+          var arrayFinish = tiemposOcioso(roundRobin(generalQuantum));
+          break;
+      }
 
       var arrayCpu = arrayFinish[0];
-
       var firstIrruption = arrayCpu[0].irrupctionTime;
       arrayCpu[0].color = '#'+ ('000000' + Math.floor(Math.random()*16777215).toString(16)).slice(-6);
       if(firstIrruption < 4){
@@ -141,7 +152,12 @@ $(document).ready(function () {
       $('#proccessBar').attr('aria-valuenow', firstIrruption).css('width',firstIrruption+'%');
       var tagOne = $('#proccessBar').find('a');
       tagOne.attr('data-original-title', 'Datos de '+arrayCpu[0].name);
+
       var htmlPopover = '<div><b>De '+arrayCpu[0].inTime+' a '+arrayCpu[0].outTime+'</b></div>';
+      if(arrayCpu[0].finish){
+          htmlPopover += '</br><div><b>Proceso Terminado</b></div>'
+      }
+
       tagOne.attr('data-content', htmlPopover);
       tagOne.text(arrayCpu[0].name);
       tagOne.css("background-color", arrayCpu[0].color).text(arrayCpu[0].name);
@@ -176,6 +192,10 @@ $(document).ready(function () {
           tag.attr('title', 'Datos de '+item.name);
 
           var htmlTag = '<div><b>De '+item.inTime+' a '+item.outTime+'</b></div>';
+
+          if(item.finish){
+            htmlTag += '</br><div><b>Proceso Terminado</b></div>';
+          }
 
           tag.attr('data-content', htmlTag);
           tag.css("background-color", item.color).text(item.name);
@@ -734,8 +754,15 @@ function tiemposOcioso(gantt){
         es.splice(i+1,0,vacio);
       }
     }
-
   }
+  var vacio = {};
+  vacio.inTime = 0;
+  vacio.name='O';
+  vacio.arrivalTime = 1;//Analizar este Tiempo
+  vacio.irrupctionTime = es[0].inTime;
+  vacio.outTime = es[0].inTime;
+  vacio.finish = false;
+  es.splice(0,0,vacio);
   var ganttconos = [];
   ganttconos.push(cpu);
   ganttconos.push(es);
@@ -911,7 +938,7 @@ function firstComeFirstServed(){
   return salidaFinal;
 }
 
-
+//Algoritmo RR
 function roundRobin(quantum){
   var colaListo=solicitarProcesos(null);
   var enCPU = null;
