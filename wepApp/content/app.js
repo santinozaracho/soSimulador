@@ -4,6 +4,9 @@ var fitMemory = "First Fit";
 var algorithm = "FCFS";
 var generalQuantum = 0;
 var arrayProcess = [];
+var procesosTerminados = [];
+var particiones = []
+var colaListo = []
 
 
 
@@ -381,6 +384,7 @@ $(document).on('click','.siguiente2', function(e){
   console.log(roundRobin(5));
 });
 
+//crea una particion nueva
 function newPart(size){
   var part = {};
   part.IdPart = null;
@@ -388,7 +392,7 @@ function newPart(size){
   part.used = null;
   return part
 }
-
+//calcula
 function usedMem(parts){
   var totused = 0;
   for (var i = 0; i < parts.length; i++) {
@@ -397,8 +401,9 @@ function usedMem(parts){
     }
   }
   return totused
-}
 
+}
+//Verifica si se produce fragmentacion ext.
 function fragExt(parts,proc){
     var used = usedMem(parts);
     if (sizeMemory - used >= proc.size) {
@@ -406,67 +411,112 @@ function fragExt(parts,proc){
     }
     return false
 }
-//
+//junta las particiones contiguas para obtener una mas grande
 function desFrag(parts){
-return parts
-}
-
-function cargaIniMem(){
-    var proc = []
-    var particiones = []
-
-    if (fitMemory == 'Worst Fit'){
-      for (var i = 0; i < proc.length; i++) {
-        if (particiones.length == 0) {
-          part = newPart(sizeMemory);
-          part.size = proc[i].size;
-          part.process = proc[i].name;
-          part.used = proc[i].size;
-          particiones.push(part)
-        }else {
-          var ix = worstFit(particiones,proc[i]);
-          if (ix) {
-            particiones = asignarProcVar(particiones,proc[i],ix)
-          }else {
-            //no entra en alguna particion
-            if (fragExt(particiones, proc[i])) {
-              //hay fragmentacion externa
-              particiones = desFrag(particiones);
-            }
-
-          }
-
+  var max = parts.length
+  for (var j = 0; j < max ; j++) {
+    for (var i = 0; i < parts.length - 1; i++) {
+        if (parts[i].used == null && parts[i+1].used == null) {
+          var rePar = newPart(parts[i].size + parts[i+1].size);
+          rePar.IdPart = parts[i].IdPart;
+          rePar.used = null
+          //parts.splice(i+1,1);
+          parts.splice(i,2);
+          parts.splice(i,0,rePar);
         }
-
-      }
     }
-    if (fitMemory == 'First Fit'){
-      for (var i = 0; i < listadeProc.length; i++) {
-        if (particiones.length == 0) {
-          newPart(size)
-        }
-        listadeProc[i]
-      }
-    }
-}
-//
-
-function asignarProcVar(parts, proc, ix){
-  var partRes = parts[ix];
-  parts.splice(ix,1);
-  var partProc = newPart(parseInt(proc.size))
-  partProc.IdPart = partRes.IdPart
-  partProc.used = proc;
-  parts.splice(ix,0,partProc);
-  var partEmpty = newPart(partRes.size - partProc.size);
-  partEmpty.IdPart = parts.length + 1;
-  partEmpty.used = null;
-  parts.splice(ix+1,0,partEmpty);
+  }
   return parts
 }
-
-function reParticionar(){
+//no hay desarollo todavia
+function reIndexarParts(){
   return true
+}
+//devuelve el IdPart mayor para poder crear una nueva unica particion
+function obtNewIdPart(parts){
+  maxid = 0
+  for (var i = 1; i < parts.length; i++) {
+    if (parts[i].IdPart > maxid){
+      maxid = parts[i].IdPart;
+    }
+  }
+  return maxid
+}
+//Funcion de carga de memoria inicial
+function cargaIniMem(){
+
+  if (typeMemory = 'Variable') {
+    //Para part Variables
+    if (particiones.length == 0) {
+      part = newPart(sizeMemory);
+      part.IdPart = 0
+      particiones.push(part)
+      //mandamos a la Cola de Listos
+      particiones = asignarProcVar(particiones,arrayProcess[0],0)
+      //agrego a la cola de listos el procesos nuevo
+    }
+    //tratamiento para Worst fitMemory
+    if (fitMemory == 'Worst Fit'){
+      for (var i = 0; i < arrayProcess.length; i++) {
+        var ix = worstFit(particiones,arrayProcess[i]);
+        if (ix) {
+          //asinamos el proceos a la particion
+          particiones = asignarProcVar(particiones,arrayProcess[i],ix)
+          i = -1
+        }else {
+          return colaListo
+          }
+        }
+        return colaListo
+      }
+    //Para First
+    if (fitMemory == 'First Fit'){
+      for (var i = 0; i < arrayProcess.length; i++) {
+        var ix = firstFit(particiones,arrayProcess[i]);
+        if (ix) {
+          //mandamos a la Cola de Listos
+          particiones = asignarProcVar(particiones,arrayProcess[i],ix)
+          i = -1
+        }else {
+          return colaListo
+          }
+        }
+        return colaListo
+      }
+  }
+
+  
+  }
+
+//funcion que asigna una proceso a una particion
+function asignarProcVar(parts, proc, ix){
+  //resguardo la particion para trabajar
+  var partRes = parts[ix];
+  //genero el nuevo id de part
+  var idnew = obtNewIdPart(parts);
+  //quito la particion resguardada
+  parts.splice(ix,1);
+  //agrego el Proc a la listo
+  colaListo.push(proc)
+  //creo particion de Proceso
+  var partProc = newPart(parseInt(proc.size));
+  partProc.IdPart = partRes.IdPart;
+  partProc.used = proc;
+  parts.splice(ix,0,partProc);
+  //Creo particion restante
+  var partEmpty = newPart(partRes.size - partProc.size);
+  partEmpty.IdPart = idnew + 1;
+  partEmpty.used = null;
+  parts.splice(ix+1,0,partEmpty);
+  //agrego el proceso a la lista de procesosTerminados
+  procesosTerminados.push(proc);
+
+  //Obtengo el id del proceso que ya se particiono
+  var iElim = getIxByName(arrayProcess,proc.name);
+  //elimino de la lista de procesos si es exitoso
+  arrayProcess.splice(iElim,1);
+  //devuelvo la particion
+  return parts
 }
 //This will sort your array
 function SortBySize(a, b){
@@ -482,52 +532,90 @@ function SortBySizeDes(a, b){
 
 //Algoritmo de planificacion de memoria,PARTICION FIJA
 function firstFit(parts,proc){
-  for (var i = 0; i < part.length; i++) {
-    if (proc.size <= part[i].size && part[i].used == null) {
-      return part[i].IdPart;
+  for (var i = 0; i < parts.length; i++) {
+    if (proc.size <= parts[i].size && parts[i].used == null) {
+      return parts[i].IdPart;
     }
   }
   return false
 }
 
 function bestFit(parts,proc){
-  part = part.sort(SortBySize);
-  for (var i = 0; i < part.length; i++) {
-    if (proc.size <= part[i].size && part[i].used == null) {;
-      return part[i].IdPart;
+  parts = parts.sort(SortBySize);
+  for (var i = 0; i < parts.length; i++) {
+    if (proc.size <= parts[i].size && parts[i].used == null) {;
+      return parts[i].IdPart;
     }
   }
   return false
 }
 
 function worstFit(parts,proc){
-  part = part.sort(SortBySizeDes);
-  for (var i = 0; i < part.length; i++) {
-    if (proc.size <= part[i].size && part[i].used == null) {;
-      return part[i].IdPart;
+  parts = parts.sort(SortBySizeDes);
+  for (var i = 0; i < parts.length; i++) {
+    if (proc.size <= parts[i].size && parts[i].used == null) {;
+      return parts[i].IdPart;
     }
   }
   return false
 }
 
+function solicitarProcesos(name){
+  //obtenemos el id del proceso a eliminar
+  var iElim = getIxByName(colaListo,name);
+  //Eliminamos el proc que ya ha terminado
+  colaListo.slice(iElim,1);
 
-//
-// function worstFit(part,proc){};
-//
-//
-// var arrayMemoria = arrayProc();
-// //odenamos por arrivalTime
-// sort(arrayMemoria)
-// function PlanimemFija(particiones,sizeMemory,fitMemory,arrayMemoria) {
-//   var listadeProc = []
-//   arrayMemoria.forEach((proc) => {
-//     if (proc.size) {
-//       listadeProc.push(proc)
-//     } }
-//   return listadeProc
-// };
-//
-//
+  if (arrayProcess.length > 0) {
+
+    if (typeMemory = "Variable"){
+      if (fitMemory == 'Worst Fit'){
+        for (var i = 0; i < arrayProcess.length; i++) {
+            var ix = worstFit(particiones,proc[i]);
+            if (ix) {
+              particiones = asignarProcVar(particiones,proc[i],ix);
+              i = -1;
+            }else {
+              //no entra en alguna particion
+              if (fragExt(particiones, proc[i])) {
+                //hay fragmentacion externa
+                particiones = desFrag(particiones);
+                var ix = worstFit(particiones,proc[i]);
+                if (ix) {
+                  particiones = asignarProcVar(particiones,proc[i],ix);
+                  i = -1;
+                }
+              }
+            }
+        }
+      }
+      if (fitMemory == 'First Fit'){
+        for (var i = 0; i < arrayProcess.length; i++) {
+            var ix = worstFit(particiones,proc[i]);
+            if (ix) {
+              particiones = asignarProcVar(particiones,proc[i],ix);
+              i = -1;
+            }else {
+              //no entra en alguna particion
+              if (fragExt(particiones, proc[i])) {
+                //hay fragmentacion externa
+                particiones = desFrag(particiones);
+                var ix = firstFit(particiones,proc[i]);
+                if (ix) {
+                  particiones = asignarProcVar(particiones,proc[i],ix);
+                  i = -1;
+                }
+              }
+            }
+        }
+      }
+    }
+
+    if (typeMemory = "Fija") {
+    }
+
+  }
+}
 
 var config = {
     apiKey: "AIzaSyBPV-YDy4TwyVtAnKzG8SQ3fwKy4gyAHxQ",
@@ -680,18 +768,6 @@ function getIxByName(array,name){
 }
 
 //Algoritmo de SAntino que me devuelve la cola de Listo
-function solicitarProcesos(name){
-  if (name == null) {
-    return arrayProcess
-  }else {
-    var indice = getIxByName(arrayProcess, name);
-    if(indice > -1){
-      var test = arrayProcess.splice(indice,1);
-      return arrayProcess;
-    }
-  }
-
-}
 
 //Obtiene el Siguiente proceso libre de la Memoria
 function siguienteProceso(colaListo,colaBloqueados,colaESFin){
