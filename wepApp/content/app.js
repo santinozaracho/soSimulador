@@ -176,11 +176,15 @@ $(document).ready(function () {
       for (var i = 1; i < arrayCpu.length; i++) {
 
           if(arrayCpu[i].color == null){
-            var ind = arrayCpu.findIndex(x => x.name == arrayCpu[i].name);
-            if(ind > -1 && arrayCpu[ind].color != null){
-              arrayCpu[i].color = arrayCpu[ind].color;
-            }else{
-              arrayCpu[i].color = '#'+ ('000000' + Math.floor(Math.random()*16777215).toString(16)).slice(-6);
+            if (arrayCpu[i].name == 'O') {
+              arrayCpu[i].color = '#e9ecef';
+            }else {
+              var ind = arrayCpu.findIndex(x => x.name == arrayCpu[i].name);
+              if(ind > -1 && arrayCpu[ind].color != null){
+                arrayCpu[i].color = arrayCpu[ind].color;
+              }else{
+                arrayCpu[i].color = '#'+ ('000000' + Math.floor(Math.random()*16777215).toString(16)).slice(-6);
+              }
             }
           }
 
@@ -220,7 +224,9 @@ $(document).ready(function () {
       var arrayEs = arrayFinish[1];
       var firstIrruptionEs = arrayEs[0].irrupctionTime;
       var indx = arrayCpu.findIndex(x => x.name == arrayEs[0].name);
-      arrayEs[0].color = arrayCpu[indx].color;
+      if (indx == -1){
+        arrayEs[0].color = '#e9ecef';
+      }
       if(firstIrruptionEs < 4){
           firstIrruptionEs = 4
       }
@@ -237,11 +243,18 @@ $(document).ready(function () {
       for (var i = 1; i < arrayEs.length; i++) {
 
           if(arrayEs[i].color == null){
-            var ind = arrayCpu.findIndex(x => x.name == arrayEs[i].name);
-            if(ind > -1 && arrayCpu[ind].color != null){
-              arrayEs[i].color = arrayCpu[ind].color;
-            }else{
-              arrayEs[i].color = '#'+ ('000000' + Math.floor(Math.random()*16777215).toString(16)).slice(-6);
+
+            if (arrayEs[i].name == 'O') {
+              arrayEs[i].color = '#e9ecef';
+
+            }else {
+              var ind = arrayCpu.findIndex(x => x.name == arrayEs[i].name);
+              if(ind > -1 && arrayCpu[ind].color != null){
+                arrayEs[i].color = arrayCpu[ind].color;
+              }else{
+                arrayEs[i].color = '#'+ ('000000' + Math.floor(Math.random()*16777215).toString(16)).slice(-6);
+              }
+
             }
           }
 
