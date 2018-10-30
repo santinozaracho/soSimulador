@@ -1,12 +1,15 @@
-var sizeMemory = 256;
-var typeMemory = "Variable";
-var fitMemory = "First Fit";
-var algorithm = "FCFS";
-var generalQuantum = 0;
-var arrayProcess = [];
-var procesosTerminados = [];
-var particiones = []
-var colaListo = []
+var sizeMemory = 256; // Tamaño de memoria
+var typeMemory = "Variable"; // tipo de Memoria
+var fitMemory = "First Fit"; //Ajuste de memoria
+var algorithm = "FCFS"; //Algoritmo de Planificacion
+var generalQuantum = 0; // Quantum para roundRobin
+var arrayProcess = []; //Arreglo con los procesos importados de la BD
+var procesosTerminados = []; // cola de procesos Terminado
+var particiones = []; // Memoria variable
+var colaListo = []; //Cola de procesos Listos
+var cont = 0;//contador de Particiones fijas
+var maxpart = 5; //cantidad maxima de particiones fijas
+var memFija = []; // memoria fija
 
 
 
@@ -279,9 +282,7 @@ $(document).on('click', ".one", function (e) {
 });
 
 
-var cont = 0;
-var maxpart = 5;
-var memFija = []
+
 //var part = { "partid":1, "size":0}
 //inputs para crear las particiones
 $(document).on('click', '.btn-add', function(e){
@@ -494,8 +495,7 @@ function cargaIniMem(){
 
 
   }
-
-//funcion que asigna una proceso a una particion
+//funcion que asigna una proceso a una particion variable
 function asignarProcVar(parts, proc, ix){
   //resguardo la particion para trabajar
   var partRes = parts[ix];
@@ -525,7 +525,22 @@ function asignarProcVar(parts, proc, ix){
   //devuelvo la particion
   return parts
 }
-//This will sort your array
+//Funcion que asigna procesos a particiones fijas
+function asignarProcFij(parts, proc, ix){
+  //resguardo la particion para trabajar
+  parts[ix].used = proc
+  //agrego el Proc a la listo
+  colaListo.push(proc)
+  //agrego el proceso a la lista de procesosTerminados
+  procesosTerminados.push(proc);
+  //Obtengo el id del proceso que ya se particiono
+  var iElim = getIxByName(arrayProcess,proc.name);
+  //elimino de la lista de procesos si es exitoso
+  arrayProcess.splice(iElim,1);
+  //devuelvo la particion
+  return parts
+}
+//Funciones para ordenar
 function SortBySize(a, b){
   var asize = a.size;
   var bsize = b.size;
@@ -600,7 +615,7 @@ function solicitarProcesos(name){
       }
       if (fitMemory == 'First Fit'){
         for (var i = 0; i < arrayProcess.length; i++) {
-            var ix = worstFit(particiones,arrayProcess[i]);
+            var ix = firstFit(particiones,arrayProcess[i]);
             if (ix) {
               particiones = asignarProcVar(particiones,arrayProcess[i],ix);
               i = -1;
@@ -621,8 +636,25 @@ function solicitarProcesos(name){
     }
 
     if (typeMemory = "Fija") {
+      if (fitMemory == 'Best Fit'){
+        for (var i = 0; i < arrayProcess.length; i++) {
+            var ix = bestFit(memFija,arrayProcess[i]);
+            if (ix) {
+              particiones = asignarProcFij(memFija,arrayProcess[i],ix);
+              i = -1;
+            }
+        }
+      }
+      if (fitMemory == 'First Fit'){
+        for (var i = 0; i < arrayProcess.length; i++) {
+            var ix = firstFit(memFija,arrayProcess[i]);
+            if (ix) {
+              particiones = asignarProcVar(memFija,arrayProcess[i],ix);
+              i = -1;
+            }
+        }
+      }
     }
-
   }
 }
 
