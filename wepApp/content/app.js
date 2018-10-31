@@ -160,6 +160,7 @@ $(document).ready(function () {
       tagOne.attr('data-original-title', 'Datos de '+arrayCpu[0].name);
 
       var htmlPopover = '<div><b>De '+arrayCpu[0].inTime+' a '+arrayCpu[0].outTime+'</b></div>';
+      htmlPopover += '</br><div><b>Tiempo de Ejecucion: '+arrayCpu[0].irrupctionTime+'</b></div>';
       if(arrayCpu[0].finish){
           htmlPopover += '</br><div><b>Proceso Terminado</b></div>'
       }
@@ -202,7 +203,7 @@ $(document).ready(function () {
           tag.attr('title', 'Datos de '+item.name);
 
           var htmlTag = '<div><b>De '+item.inTime+' a '+item.outTime+'</b></div>';
-
+          htmlTag += '</br><div><b>Tiempo de Ejecucion: '+item.irrupctionTime+'</b></div>';
           if(item.finish){
             htmlTag += '</br><div><b>Proceso Terminado</b></div>';
           }
@@ -226,6 +227,8 @@ $(document).ready(function () {
       var indx = arrayCpu.findIndex(x => x.name == arrayEs[0].name);
       if (indx == -1){
         arrayEs[0].color = '#e9ecef';
+      }else {
+        arrayEs[0].color = arrayCpu[indx].color
       }
       if(firstIrruptionEs < 4){
           firstIrruptionEs = 4
