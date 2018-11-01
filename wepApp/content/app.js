@@ -379,6 +379,7 @@ $(document).on('click', '.btn-add', function(e){
           $('.alertCustom').addClass('show');
 
         }
+
 console.log(memFija);
 }});
 
@@ -388,7 +389,11 @@ $(".deleteInput").click(function(){
 });
 
 
-//-------
+var proc = {};
+proc.name = 'Hola';
+proc.cpuTime = [];
+proc.ioTime = [];
+
 
 //button siguiente
 $(document).on('click','.siguiente', function(e){
@@ -704,26 +709,100 @@ function getMaxProcessSize(typeMemory){
     }
 }
 
+
+var raf=0;
+var maxraf=5;
+var cpuList = []
+var esList = []
+//agregar rafagas dinamicas
+$(document).on('click', '.btn-add-raf', function(e){
+
+    $('.alertProcess').removeClass('show');
+    $('.alertProcess').addClass('hide');
+
+    e.preventDefault();
+
+      if(raf < maxraf){
+
+        var controlForm = $('.rafdynamic form:first'),
+            currentEntry = $(this).parents('.entryRaf:first');
+
+        //rafaga de cpu ingreasda
+        var cpu = currentEntry.find('.inputcpu').val();
+        var es = currentEntry.find('.inputes').val();
+
+        cpu = parseInt(cpu);
+        es = parseInt(es);
+
+        if (cpu > 0 && es > 0 ) {
+          raf = raf + 1;
+          //se puede agregar particion
+          console.log(cpu);
+          console.log(es);
+          cpuList.push(cpu);
+          esList.push(es);
+
+          var controlForm = $('.rafdynamic form:first'),
+              currentEntry = $(this).parents('.entryRaf:first'),
+              newEntry = $(currentEntry.clone()).appendTo(controlForm);
+
+            newEntry.find('.inputcpu').val('');
+            newEntry.find('.inputes').val('');
+
+            newEntry.find('.textCpu').text("CPU " + raf);
+            newEntry.find('.textEs').text("E/S " + raf);
+
+            controlForm.find('.entryRaf:not(:last) .inputcpu')
+              .addClass('classDisabled')
+              .removeClass('inputcpu')
+              .prop("disabled", true);
+
+            controlForm.find('.entryRaf:not(:last) .inputes')
+                .addClass('classDisabled')
+                .removeClass('inputes')
+                .prop("disabled", true);
+
+            controlForm.find('.entryRaf:not(:last) .btn-add-raf')
+                .removeClass('btn-add-raf').addClass('btn-remove-raf')
+                .removeClass('btn-success').addClass('btn-danger')
+                .html('<span class="glyphicon glyphicon-minus deleteInput">Quitar</span>');
+        }else {
+          if (cpu > 0) {
+            $(".textoalert").text("Debes ingresar un valor en ES.");
+            $('.alertCustom').addClass('show');
+          }else {
+            $(".textoalert").text("Debes ingresar un valor en ES.");
+            $('.alertCustom').addClass('show');
+          }
+        }
+
+      }
+
+});
+
+
+
+
 function saveData() {
 
     var name = $('.name').val();
     var size = $('.size').val();
     var arrival = $('.arrival').val();
-    var firstCpu = $('.firstCpu').val();
-    var inOut = $('.inOut').val();
+    var cpuTimes = cpuList;
+    var ioTimes = esList;
     var lastCpu = $('.lastCpu').val();
 
       //Para Verificacion del Tamaño de Procesos
     $('.alertProcess').removeClass('show');
     $('.alertProcess').addClass('hide');
-    if (name&&size&&arrival&&firstCpu&&inOut&&lastCpu) {
+    if (name&&size&&arrival&&(cpuTimes.length > 0)&&(ioTimes.length > 0)&&lastCpu) {
       var maxTamPocess = getMaxProcessSize(typeMemory)
       if (size > maxTamPocess) {
         $(".textoalert").text("El tamaño del proceso no puede ser mayor al tamaño de memoria.");
         $('.alertProcess').addClass('show');
       }else {
         //Si el proceso entra en memoria se Guarda.
-        saveFirebase(name, size, arrival, firstCpu, inOut, lastCpu);
+        saveFirebase(name, size, arrival, cpuTimes, ioTimes, lastCpu);
     }
   }else {
     $(".textoalert").text("Ingrese los Datos.");
@@ -731,24 +810,25 @@ function saveData() {
   }
 }
 
-function saveFirebase(name, size, arrival, firstCpu, inOut, lastCpu) {
+function saveFirebase(name, size, arrival, cpuTimes, ioTimes, lastCpu) {
 
     db.collection("process").add({
         name: name,
         size: size,
         arrivalTime: arrival,
-        cpuTime: firstCpu,
-        ioTime: inOut,
+        cpuTime: cpuTimes,
+        ioTime: ioTimes,
         lastCpuTime: lastCpu
     }).then(function (docRef) {
         console.log("Document written with ID: ", docRef.id);
 
-        $('.name').val("");
-        $('.size').val("");
-        $('.arrival').val("");
-        $('.firstCpu').val("");
-        $('.inOut').val("");
-        $('.lastCpu').val("");
+
+      //  $('.name').val("");
+      //  $('.size').val("");
+      //  $('.arrival').val("");
+      //  cpuTimes = [];
+      //  ioTimes = [];
+      //  $('.lastCpu').val("");
 
         getData();
 
@@ -777,13 +857,17 @@ function getData(){
         var index = 1;
 
         querySnapshot.forEach((doc) => {
+          var tiempos = ''
+          for (var i = 0; i < doc.data().cpuTime.length; i++) {
+            tiempos = tiempos + doc.data().cpuTime[i] +'-'+ doc.data().ioTime[i]+'-';
+          }
 
           tabla.innerHTML += `
             <tr>
-                <td class="tdTable">${index}</td>
+                <td class="tdTable">${doc.data().name}</td>
                 <td class="tdTable">${doc.data().size}</td>
                 <td class="tdTable">${doc.data().arrivalTime}</td>
-                <td class="tdTable">${doc.data().cpuTime} - ${doc.data().ioTime} - ${doc.data().lastCpuTime}</td>
+                <td class="tdTable">${tiempos}${doc.data().lastCpuTime}</td>
                 <td class="tdTable"><button class="btn btn-danger" onclick="deleteData('${doc.id}')">Borrar</button></td>
             </tr>
             `;
