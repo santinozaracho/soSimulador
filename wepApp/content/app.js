@@ -1,9 +1,15 @@
-var sizeMemory = 256;
-var typeMemory = "Variable";
-var fitMemory = "First Fit";
-var algorithm = "FCFS";
-var generalQuantum = 0;
-var arrayProcess = [];
+var sizeMemory = 256; // Tamaño de memoria
+var typeMemory = "Variable"; // tipo de Memoria
+var fitMemory = "First Fit"; //Ajuste de memoria
+var algorithm = "FCFS"; //Algoritmo de Planificacion
+var generalQuantum = 0; // Quantum para roundRobin
+var arrayProcess = []; //Arreglo con los procesos importados de la BD
+var procesosTerminados = []; // cola de procesos Terminado
+var particiones = []; // Memoria variable
+var colaListo = []; //Cola de procesos Listos
+var cont = 0;//contador de Particiones fijas
+var maxpart = 5; //cantidad maxima de particiones fijas
+var memFija = []; // memoria fija
 
 
 
@@ -122,7 +128,7 @@ $(document).ready(function () {
    });
 
    $(".quantumIn").keyup(function(){
-        generalQuantum = $('.quantumIn').val();
+        generalQuantum = parseInt($('.quantumIn').val());
     });
 
    //------------------------------------
@@ -154,6 +160,7 @@ $(document).ready(function () {
       tagOne.attr('data-original-title', 'Datos de '+arrayCpu[0].name);
 
       var htmlPopover = '<div><b>De '+arrayCpu[0].inTime+' a '+arrayCpu[0].outTime+'</b></div>';
+      htmlPopover += '</br><div><b>Tiempo de Ejecucion: '+arrayCpu[0].irrupctionTime+'</b></div>';
       if(arrayCpu[0].finish){
           htmlPopover += '</br><div><b>Proceso Terminado</b></div>'
       }
@@ -170,11 +177,15 @@ $(document).ready(function () {
       for (var i = 1; i < arrayCpu.length; i++) {
 
           if(arrayCpu[i].color == null){
-            var ind = arrayCpu.findIndex(x => x.name == arrayCpu[i].name);
-            if(ind > -1 && arrayCpu[ind].color != null){
-              arrayCpu[i].color = arrayCpu[ind].color;
-            }else{
-              arrayCpu[i].color = '#'+ ('000000' + Math.floor(Math.random()*16777215).toString(16)).slice(-6);
+            if (arrayCpu[i].name == 'O') {
+              arrayCpu[i].color = '#e9ecef';
+            }else {
+              var ind = arrayCpu.findIndex(x => x.name == arrayCpu[i].name);
+              if(ind > -1 && arrayCpu[ind].color != null){
+                arrayCpu[i].color = arrayCpu[ind].color;
+              }else{
+                arrayCpu[i].color = '#'+ ('000000' + Math.floor(Math.random()*16777215).toString(16)).slice(-6);
+              }
             }
           }
 
@@ -192,7 +203,7 @@ $(document).ready(function () {
           tag.attr('title', 'Datos de '+item.name);
 
           var htmlTag = '<div><b>De '+item.inTime+' a '+item.outTime+'</b></div>';
-
+          htmlTag += '</br><div><b>Tiempo de Ejecucion: '+item.irrupctionTime+'</b></div>';
           if(item.finish){
             htmlTag += '</br><div><b>Proceso Terminado</b></div>';
           }
@@ -214,7 +225,11 @@ $(document).ready(function () {
       var arrayEs = arrayFinish[1];
       var firstIrruptionEs = arrayEs[0].irrupctionTime;
       var indx = arrayCpu.findIndex(x => x.name == arrayEs[0].name);
-      arrayEs[0].color = arrayCpu[indx].color;
+      if (indx == -1){
+        arrayEs[0].color = '#e9ecef';
+      }else {
+        arrayEs[0].color = arrayCpu[indx].color
+      }
       if(firstIrruptionEs < 4){
           firstIrruptionEs = 4
       }
@@ -231,11 +246,18 @@ $(document).ready(function () {
       for (var i = 1; i < arrayEs.length; i++) {
 
           if(arrayEs[i].color == null){
-            var ind = arrayCpu.findIndex(x => x.name == arrayEs[i].name);
-            if(ind > -1 && arrayCpu[ind].color != null){
-              arrayEs[i].color = arrayCpu[ind].color;
-            }else{
-              arrayEs[i].color = '#'+ ('000000' + Math.floor(Math.random()*16777215).toString(16)).slice(-6);
+
+            if (arrayEs[i].name == 'O') {
+              arrayEs[i].color = '#e9ecef';
+
+            }else {
+              var ind = arrayCpu.findIndex(x => x.name == arrayEs[i].name);
+              if(ind > -1 && arrayCpu[ind].color != null){
+                arrayEs[i].color = arrayCpu[ind].color;
+              }else{
+                arrayEs[i].color = '#'+ ('000000' + Math.floor(Math.random()*16777215).toString(16)).slice(-6);
+              }
+
             }
           }
 
@@ -276,9 +298,7 @@ $(document).on('click', ".one", function (e) {
 });
 
 
-var cont = 0;
-var maxpart = 5;
-var memFija = []
+
 //var part = { "partid":1, "size":0}
 //inputs para crear las particiones
 $(document).on('click', '.btn-add', function(e){
@@ -359,6 +379,7 @@ $(document).on('click', '.btn-add', function(e){
           $('.alertCustom').addClass('show');
 
         }
+
 console.log(memFija);
 }});
 
@@ -368,7 +389,11 @@ $(".deleteInput").click(function(){
 });
 
 
-//-------
+var proc = {};
+proc.name = 'Hola';
+proc.cpuTime = [];
+proc.ioTime = [];
+
 
 //button siguiente
 $(document).on('click','.siguiente', function(e){
@@ -378,9 +403,9 @@ $(document).on('click','.siguiente', function(e){
 //button siguiente2
 $(document).on('click','.siguiente2', function(e){
   $('[href="#visualizacion"]').tab('show');
-  console.log(roundRobin(5));
 });
 
+//crea una particion nueva
 function newPart(size){
   var part = {};
   part.IdPart = null;
@@ -388,7 +413,7 @@ function newPart(size){
   part.used = null;
   return part
 }
-
+//calcula
 function usedMem(parts){
   var totused = 0;
   for (var i = 0; i < parts.length; i++) {
@@ -397,8 +422,9 @@ function usedMem(parts){
     }
   }
   return totused
-}
 
+}
+//Verifica si se produce fragmentacion ext.
 function fragExt(parts,proc){
     var used = usedMem(parts);
     if (sizeMemory - used >= proc.size) {
@@ -406,69 +432,136 @@ function fragExt(parts,proc){
     }
     return false
 }
-//
+//junta las particiones contiguas para obtener una mas grande
 function desFrag(parts){
-return parts
-}
-
-function cargaIniMem(){
-    var proc = []
-    var particiones = []
-
-    if (fitMemory == 'Worst Fit'){
-      for (var i = 0; i < proc.length; i++) {
-        if (particiones.length == 0) {
-          part = newPart(sizeMemory);
-          part.size = proc[i].size;
-          part.process = proc[i].name;
-          part.used = proc[i].size;
-          particiones.push(part)
-        }else {
-          var ix = worstFit(particiones,proc[i]);
-          if (ix) {
-            particiones = asignarProcVar(particiones,proc[i],ix)
-          }else {
-            //no entra en alguna particion
-            if (fragExt(particiones, proc[i])) {
-              //hay fragmentacion externa
-              particiones = desFrag(particiones);
-            }
-
-          }
-
+  var max = parts.length
+  for (var j = 0; j < max ; j++) {
+    for (var i = 0; i < parts.length - 1; i++) {
+        if (parts[i].used == null && parts[i+1].used == null) {
+          var rePar = newPart(parts[i].size + parts[i+1].size);
+          rePar.IdPart = parts[i].IdPart;
+          rePar.used = null
+          //parts.splice(i+1,1);
+          parts.splice(i,2);
+          parts.splice(i,0,rePar);
         }
-
-      }
     }
-    if (fitMemory == 'First Fit'){
-      for (var i = 0; i < listadeProc.length; i++) {
-        if (particiones.length == 0) {
-          newPart(size)
-        }
-        listadeProc[i]
-      }
-    }
-}
-//
-
-function asignarProcVar(parts, proc, ix){
-  var partRes = parts[ix];
-  parts.splice(ix,1);
-  var partProc = newPart(parseInt(proc.size))
-  partProc.IdPart = partRes.IdPart
-  partProc.used = proc;
-  parts.splice(ix,0,partProc);
-  var partEmpty = newPart(partRes.size - partProc.size);
-  partEmpty.IdPart = parts.length + 1;
-  partEmpty.used = null;
-  parts.splice(ix+1,0,partEmpty);
+  }
   return parts
 }
-
-function reParticionar(){
-  return true
+//no hay desarollo todavia
+function liberarParts(name){
+  for (var i = 0; i < particiones.length; i++) {
+    if (particiones[i].used) {
+      if (particiones[i].used.name == name ) {
+        particiones[i].used = null
+        return true
+      }
+    }
+  }
+  return false
 }
-//This will sort your array
+//devuelve el IdPart mayor para poder crear una nueva unica particion
+function obtNewIdPart(parts){
+  maxid = 0
+  for (var i = 1; i < parts.length; i++) {
+    if (parts[i].IdPart > maxid){
+      maxid = parts[i].IdPart;
+    }
+  }
+  return maxid
+}
+//Funcion de carga de memoria inicial
+function cargaIniMem(){
+
+  if (typeMemory = 'Variable') {
+    //Para part Variables
+    if (particiones.length == 0) {
+      part = newPart(sizeMemory);
+      part.IdPart = 0
+      particiones.push(part)
+      //mandamos a la Cola de Listos
+      particiones = asignarProcVar(particiones,arrayProcess[0],0)
+      //agrego a la cola de listos el procesos nuevo
+    }
+    //tratamiento para Worst fitMemory
+    if (fitMemory == 'Worst Fit'){
+      for (var i = 0; i < arrayProcess.length; i++) {
+        var ix = worstFit(particiones,arrayProcess[i]);
+        if (ix) {
+          //asinamos el proceos a la particion
+          particiones = asignarProcVar(particiones,arrayProcess[i],ix)
+          i = -1
+        }else {
+          return false
+          }
+        }
+        return false
+      }
+    //Para First
+    if (fitMemory == 'First Fit'){
+      for (var i = 0; i < arrayProcess.length; i++) {
+        var ix = firstFit(particiones,arrayProcess[i]);
+        if (ix) {
+          //mandamos a la Cola de Listos
+          particiones = asignarProcVar(particiones,arrayProcess[i],ix)
+          i = -1
+        }else {
+          return false
+          }
+        }
+        return false
+      }
+  }
+
+
+  }
+//funcion que asigna una proceso a una particion variable
+function asignarProcVar(parts, proc, ix){
+  //resguardo la particion para trabajar
+  var partRes = parts[ix];
+  //genero el nuevo id de part
+  var idnew = obtNewIdPart(parts);
+  //quito la particion resguardada
+  parts.splice(ix,1);
+  //agrego el Proc a la listo
+  colaListo.push(proc)
+  //creo particion de Proceso
+  var partProc = newPart(parseInt(proc.size));
+  partProc.IdPart = partRes.IdPart;
+  partProc.used = proc;
+  parts.splice(ix,0,partProc);
+  //Creo particion restante
+  var partEmpty = newPart(partRes.size - partProc.size);
+  partEmpty.IdPart = idnew + 1;
+  partEmpty.used = null;
+  parts.splice(ix+1,0,partEmpty);
+  //agrego el proceso a la lista de procesosTerminados
+  procesosTerminados.push(proc);
+
+  //Obtengo el id del proceso que ya se particiono
+  var iElim = getIxByName(arrayProcess,proc.name);
+  //elimino de la lista de procesos si es exitoso
+  arrayProcess.splice(iElim,1);
+  //devuelvo la particion
+  return parts
+}
+//Funcion que asigna procesos a particiones fijas
+function asignarProcFij(parts, proc, ix){
+  //resguardo la particion para trabajar
+  parts[ix].used = proc
+  //agrego el Proc a la listo
+  colaListo.push(proc)
+  //agrego el proceso a la lista de procesosTerminados
+  procesosTerminados.push(proc);
+  //Obtengo el id del proceso que ya se particiono
+  var iElim = getIxByName(arrayProcess,proc.name);
+  //elimino de la lista de procesos si es exitoso
+  arrayProcess.splice(iElim,1);
+  //devuelvo la particion
+  return parts
+}
+//Funciones para ordenar
 function SortBySize(a, b){
   var asize = a.size;
   var bsize = b.size;
@@ -482,52 +575,109 @@ function SortBySizeDes(a, b){
 
 //Algoritmo de planificacion de memoria,PARTICION FIJA
 function firstFit(parts,proc){
-  for (var i = 0; i < part.length; i++) {
-    if (proc.size <= part[i].size && part[i].used == null) {
-      return part[i].IdPart;
+  for (var i = 0; i < parts.length; i++) {
+    if (proc.size <= parts[i].size && parts[i].used == null) {
+      return parts[i].IdPart;
     }
   }
   return false
 }
 
 function bestFit(parts,proc){
-  part = part.sort(SortBySize);
-  for (var i = 0; i < part.length; i++) {
-    if (proc.size <= part[i].size && part[i].used == null) {;
-      return part[i].IdPart;
+  parts = parts.sort(SortBySize);
+  for (var i = 0; i < parts.length; i++) {
+    if (proc.size <= parts[i].size && parts[i].used == null) {;
+      return parts[i].IdPart;
     }
   }
   return false
 }
 
 function worstFit(parts,proc){
-  part = part.sort(SortBySizeDes);
-  for (var i = 0; i < part.length; i++) {
-    if (proc.size <= part[i].size && part[i].used == null) {;
-      return part[i].IdPart;
+  parts = parts.sort(SortBySizeDes);
+  for (var i = 0; i < parts.length; i++) {
+    if (proc.size <= parts[i].size && parts[i].used == null) {;
+      return parts[i].IdPart;
     }
   }
   return false
 }
 
+function solicitarProcesos(name){
+  //liberamos la particio
+  var liberada = liberarParts(name)
+    //obtenemos el id del proceso a eliminar
+  var iElim = getIxByName(colaListo,name);
+    //Eliminamos el proc que ya ha terminado
+  colaListo.splice(iElim,1);
 
-//
-// function worstFit(part,proc){};
-//
-//
-// var arrayMemoria = arrayProc();
-// //odenamos por arrivalTime
-// sort(arrayMemoria)
-// function PlanimemFija(particiones,sizeMemory,fitMemory,arrayMemoria) {
-//   var listadeProc = []
-//   arrayMemoria.forEach((proc) => {
-//     if (proc.size) {
-//       listadeProc.push(proc)
-//     } }
-//   return listadeProc
-// };
-//
-//
+  if (arrayProcess.length > 0) {
+
+    if (typeMemory = "Variable"){
+      if (fitMemory == 'Worst Fit'){
+        for (var i = 0; i < arrayProcess.length; i++) {
+            var ix = worstFit(particiones,arrayProcess[i]);
+            if (ix) {
+              particiones = asignarProcVar(particiones,arrayProcess[i],ix);
+              i = -1;
+            }else {
+              //no entra en alguna particion
+              if (fragExt(particiones, arrayProcess[i])) {
+                //hay fragmentacion externa
+                particiones = desFrag(particiones);
+                var ix = worstFit(particiones,arrayProcess[i]);
+                if (ix) {
+                  particiones = asignarProcVar(particiones,arrayProcess[i],ix);
+                  i = -1;
+                }
+              }
+            }
+        }
+      }
+      if (fitMemory == 'First Fit'){
+        for (var i = 0; i < arrayProcess.length; i++) {
+            var ix = firstFit(particiones,arrayProcess[i]);
+            if (ix) {
+              particiones = asignarProcVar(particiones,arrayProcess[i],ix);
+              i = -1;
+            }else {
+              //no entra en alguna particion
+              if (fragExt(particiones, arrayProcess[i])) {
+                //hay fragmentacion externa
+                particiones = desFrag(particiones);
+                var ix = firstFit(particiones,arrayProcess[i]);
+                if (ix) {
+                  particiones = asignarProcVar(particiones,arrayProcess[i],ix);
+                  i = -1;
+                }
+              }
+            }
+        }
+      }
+    }
+
+    if (typeMemory = "Fija") {
+      if (fitMemory == 'Best Fit'){
+        for (var i = 0; i < arrayProcess.length; i++) {
+            var ix = bestFit(memFija,arrayProcess[i]);
+            if (ix) {
+              particiones = asignarProcFij(memFija,arrayProcess[i],ix);
+              i = -1;
+            }
+        }
+      }
+      if (fitMemory == 'First Fit'){
+        for (var i = 0; i < arrayProcess.length; i++) {
+            var ix = firstFit(memFija,arrayProcess[i]);
+            if (ix) {
+              particiones = asignarProcVar(memFija,arrayProcess[i],ix);
+              i = -1;
+            }
+        }
+      }
+    }
+  }
+}
 
 var config = {
     apiKey: "AIzaSyBPV-YDy4TwyVtAnKzG8SQ3fwKy4gyAHxQ",
@@ -559,26 +709,100 @@ function getMaxProcessSize(typeMemory){
     }
 }
 
+
+var raf=0;
+var maxraf=5;
+var cpuList = []
+var esList = []
+//agregar rafagas dinamicas
+$(document).on('click', '.btn-add-raf', function(e){
+
+    $('.alertProcess').removeClass('show');
+    $('.alertProcess').addClass('hide');
+
+    e.preventDefault();
+
+      if(raf < maxraf){
+
+        var controlForm = $('.rafdynamic form:first'),
+            currentEntry = $(this).parents('.entryRaf:first');
+
+        //rafaga de cpu ingreasda
+        var cpu = currentEntry.find('.inputcpu').val();
+        var es = currentEntry.find('.inputes').val();
+
+        cpu = parseInt(cpu);
+        es = parseInt(es);
+
+        if (cpu > 0 && es > 0 ) {
+          raf = raf + 1;
+          //se puede agregar particion
+          console.log(cpu);
+          console.log(es);
+          cpuList.push(cpu);
+          esList.push(es);
+
+          var controlForm = $('.rafdynamic form:first'),
+              currentEntry = $(this).parents('.entryRaf:first'),
+              newEntry = $(currentEntry.clone()).appendTo(controlForm);
+
+            newEntry.find('.inputcpu').val('');
+            newEntry.find('.inputes').val('');
+
+            newEntry.find('.textCpu').text("CPU " + raf);
+            newEntry.find('.textEs').text("E/S " + raf);
+
+            controlForm.find('.entryRaf:not(:last) .inputcpu')
+              .addClass('classDisabled')
+              .removeClass('inputcpu')
+              .prop("disabled", true);
+
+            controlForm.find('.entryRaf:not(:last) .inputes')
+                .addClass('classDisabled')
+                .removeClass('inputes')
+                .prop("disabled", true);
+
+            controlForm.find('.entryRaf:not(:last) .btn-add-raf')
+                .removeClass('btn-add-raf').addClass('btn-remove-raf')
+                .removeClass('btn-success').addClass('btn-danger')
+                .html('<span class="glyphicon glyphicon-minus deleteInput">Quitar</span>');
+        }else {
+          if (cpu > 0) {
+            $(".textoalert").text("Debes ingresar un valor en ES.");
+            $('.alertCustom').addClass('show');
+          }else {
+            $(".textoalert").text("Debes ingresar un valor en ES.");
+            $('.alertCustom').addClass('show');
+          }
+        }
+
+      }
+
+});
+
+
+
+
 function saveData() {
 
     var name = $('.name').val();
     var size = $('.size').val();
     var arrival = $('.arrival').val();
-    var firstCpu = $('.firstCpu').val();
-    var inOut = $('.inOut').val();
+    var cpuTimes = cpuList;
+    var ioTimes = esList;
     var lastCpu = $('.lastCpu').val();
 
       //Para Verificacion del Tamaño de Procesos
     $('.alertProcess').removeClass('show');
     $('.alertProcess').addClass('hide');
-    if (name&&size&&arrival&&firstCpu&&inOut&&lastCpu) {
+    if (name&&size&&arrival&&(cpuTimes.length > 0)&&(ioTimes.length > 0)&&lastCpu) {
       var maxTamPocess = getMaxProcessSize(typeMemory)
       if (size > maxTamPocess) {
         $(".textoalert").text("El tamaño del proceso no puede ser mayor al tamaño de memoria.");
         $('.alertProcess').addClass('show');
       }else {
         //Si el proceso entra en memoria se Guarda.
-        saveFirebase(name, size, arrival, firstCpu, inOut, lastCpu);
+        saveFirebase(name, size, arrival, cpuTimes, ioTimes, lastCpu);
     }
   }else {
     $(".textoalert").text("Ingrese los Datos.");
@@ -586,24 +810,25 @@ function saveData() {
   }
 }
 
-function saveFirebase(name, size, arrival, firstCpu, inOut, lastCpu) {
+function saveFirebase(name, size, arrival, cpuTimes, ioTimes, lastCpu) {
 
     db.collection("process").add({
         name: name,
         size: size,
         arrivalTime: arrival,
-        cpuTime: firstCpu,
-        ioTime: inOut,
+        cpuTime: cpuTimes,
+        ioTime: ioTimes,
         lastCpuTime: lastCpu
     }).then(function (docRef) {
         console.log("Document written with ID: ", docRef.id);
 
-        $('.name').val("");
-        $('.size').val("");
-        $('.arrival').val("");
-        $('.firstCpu').val("");
-        $('.inOut').val("");
-        $('.lastCpu').val("");
+
+      //  $('.name').val("");
+      //  $('.size').val("");
+      //  $('.arrival').val("");
+      //  cpuTimes = [];
+      //  ioTimes = [];
+      //  $('.lastCpu').val("");
 
         getData();
 
@@ -632,13 +857,17 @@ function getData(){
         var index = 1;
 
         querySnapshot.forEach((doc) => {
+          var tiempos = ''
+          for (var i = 0; i < doc.data().cpuTime.length; i++) {
+            tiempos = tiempos + doc.data().cpuTime[i] +'-'+ doc.data().ioTime[i]+'-';
+          }
 
           tabla.innerHTML += `
             <tr>
-                <td class="tdTable">${index}</td>
+                <td class="tdTable">${doc.data().name}</td>
                 <td class="tdTable">${doc.data().size}</td>
                 <td class="tdTable">${doc.data().arrivalTime}</td>
-                <td class="tdTable">${doc.data().cpuTime} - ${doc.data().ioTime} - ${doc.data().lastCpuTime}</td>
+                <td class="tdTable">${tiempos}${doc.data().lastCpuTime}</td>
                 <td class="tdTable"><button class="btn btn-danger" onclick="deleteData('${doc.id}')">Borrar</button></td>
             </tr>
             `;
@@ -680,25 +909,11 @@ function getIxByName(array,name){
 }
 
 //Algoritmo de SAntino que me devuelve la cola de Listo
-function solicitarProcesos(name){
-  if (name == null) {
-    return arrayProcess
-  }else {
-    var indice = getIxByName(arrayProcess, name);
-    if(indice > -1){
-      var test = arrayProcess.splice(indice,1);
-      return arrayProcess;
-    }
-  }
-
-}
 
 //Obtiene el Siguiente proceso libre de la Memoria
 function siguienteProceso(colaListo,colaBloqueados,colaESFin){
   var noHayProc = true;
   for (var i = 0; i < colaListo.length; i++) {
-    console.log(colaESFin);
-    console.log(colaBloqueados);
     var esBloq = estaEn(colaBloqueados,colaListo[i])
     var esTer = estaEn(colaESFin,colaListo[i])
     if (esBloq == false && esTer == false) {
@@ -784,9 +999,10 @@ function estaEn(cola,proceso){
 //Obtiene el Siguiente proceso libre de la Memoria
 //algoritmo FCFS
 function firstComeFirstServed(){
+  var controladorBucle = obtenerTiempoMax();
     //definimos las Vairables
    var colaBloqueados = [];
-   var colaListo = solicitarProcesos(null);
+   cargaIniMem();
    var colaESFin = []
    var salidaCPU = [];
    var salidaES = [];
@@ -795,9 +1011,9 @@ function firstComeFirstServed(){
    var tiempo = 0;
    var enCPU = null;
    var bloqDeCiclo = false;
-   var controladorBucle = obtenerTiempoMax();
+
     //Inicio del algoritmo, el For que controla la ejecucion total del algoritmo
-   for (var i=controladorBucle; i > 0; i--) {
+   for (var i=0; i < controladorBucle; i++) {
      //ya Cumplio ciclo ponemos en false
      bloqDeCiclo = false
      //Analizamos el Trabajo en ES en el mismo tiempo t analizamos primero porque al pasar un proceso a bloqueado automaticamente ejecuta
@@ -835,7 +1051,7 @@ function firstComeFirstServed(){
                 }
         //     }
              elementoES.outTime = tiempo+1;
-             salidaES.push(elementoCPU);
+             salidaES.push(elementoES);
              colaESFin.push(enES)
              colaBloqueados.shift()
              enES = null;
@@ -873,7 +1089,7 @@ function firstComeFirstServed(){
               elementoCPU.outTime = tiempo+1;
               elementoCPU.finish = true;
               salidaCPU.push(elementoCPU);
-              colaListo = solicitarProcesos(enCPU.name);
+              solicitarProcesos(enCPU.name);
               elementoCPU = null;
               enCPU = null;
             }
@@ -899,7 +1115,7 @@ function firstComeFirstServed(){
               elementoCPU.finish = true;
               salidaCPU.push(elementoCPU);
               //Refrescamos la cola de listos
-              colaListo = solicitarProcesos(enCPU.name);
+              solicitarProcesos(enCPU.name);
               enCPU = null;
               elementoCPU = null;
             }
@@ -928,19 +1144,19 @@ function firstComeFirstServed(){
     //timer del PROCESADOR
     tiempo += 1;
     //Control FIN ALGORITMO
-    if( (colaListo.length == 0) && (colaBloqueados.length == 0) && (colaESFin.length == 0) ){
+    if( (colaListo.length == 0) && ( (colaBloqueados.length == 0) && (colaESFin.length == 0) ) ){
       break
     }
   }
   salidaFinal.push(salidaCPU);
   salidaFinal.push(salidaES);
-  console.log(salidaFinal);
   return salidaFinal;
 }
 
 //Algoritmo RR
 function roundRobin(quantum){
-  var colaListo=solicitarProcesos(null);
+  var controladorBucle=obtenerTiempoMax();
+  cargaIniMem();
   var enCPU = null;
   var elementoCPU={};
   var enES = null;
@@ -953,14 +1169,13 @@ function roundRobin(quantum){
   var i=0;
   var j=0;
   var x=0;
-  var controladorBucle=obtenerTiempoMax();
+
   var tiempo=0;
   var t1=0;
   var t2=0;
 
   //for que controla todo el algoritmo
   for (j = 0; j < controladorBucle; j++) {
-    console.log(tiempo);
     //para solicitar procesos a la cola de listo en caso de que el proceso haya terminado
     // y para repartir por cola de cpu y de e/s en caso de que no haya terminado
     for (var x = 0; x < colaListo.length; x++) {
@@ -979,14 +1194,13 @@ function roundRobin(quantum){
               if (colaListo[x].ioTime < 1) {
                 colaCPU.push(colaListo[x]);
               }
-            }else{colaListo=solicitarProcesos(colaListo[x].name)}
+            }else{solicitarProcesos(colaListo[x].name)}
               }
         }
     }
     //para darle valores a enCPU
     if (enCPU == null){
       if (colaCPU.length > 0) {
-        console.log('No hay CPU y hay elementos en colaCPU');
         enCPU = colaCPU[0];
         elementoCPU = nuevoElemento(enCPU,tiempo);
         colaCPU.splice(0,1);
