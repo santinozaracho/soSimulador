@@ -710,8 +710,8 @@ function getMaxProcessSize(typeMemory){
 }
 
 
-raf=0;
-maxraf=5;
+var raf=0;
+var maxraf=5;
 var cpuList = []
 var esList = []
 //agregar rafagas dinamicas
@@ -831,8 +831,7 @@ function saveFirebase(name, size, arrival, cpuTimes, ioTimes, lastCpu) {
       //  $('.lastCpu').val("");
 
         getData();
-        location.refresh()
-        
+
     }).catch(function (error) {
         console.error("Error adding document: ", error);
     });
@@ -858,13 +857,17 @@ function getData(){
         var index = 1;
 
         querySnapshot.forEach((doc) => {
+          var tiempos = ''
+          for (var i = 0; i < doc.data().cpuTime.length; i++) {
+            tiempos = tiempos + doc.data().cpuTime[i] +'-'+ doc.data().ioTime[i]+'-';
+          }
 
           tabla.innerHTML += `
             <tr>
-                <td class="tdTable">${index}</td>
+                <td class="tdTable">${doc.data().name}</td>
                 <td class="tdTable">${doc.data().size}</td>
                 <td class="tdTable">${doc.data().arrivalTime}</td>
-                <td class="tdTable">${doc.data().cpuTime[0]} - ${doc.data().ioTime[0]} - ${doc.data().lastCpuTime}</td>
+                <td class="tdTable">${tiempos}${doc.data().lastCpuTime}</td>
                 <td class="tdTable"><button class="btn btn-danger" onclick="deleteData('${doc.id}')">Borrar</button></td>
             </tr>
             `;
