@@ -1195,6 +1195,7 @@ function roundRobin(quantum){
   var i=0;
   var j=0;
   var x=0;
+  var posicion=0;
   var tiempo=0;
   var t1=0;
   var t2=0;
@@ -1204,24 +1205,25 @@ function roundRobin(quantum){
     //para solicitar procesos a la cola de listo en caso de que el proceso haya terminado
     // y para repartir por cola de cpu y de e/s en caso de que no haya terminado
     for (var x = 0; x < colaListo.length; x++) {
-      if (colaListo[x].cpuTime > 0){
+      if (colaListo[x].cpuTime.length == colaListo[x].ioTime.length){
         if (estaEn(colaCPU,colaListo[x]) == false && enCPU != colaListo[x]) {
-          colaCPU.push(colaListo[x]);
+                  colaCPU.push(colaListo[x]);
         }
       }else{
-          if(colaListo[x].ioTime > 0 ){
-            if (estaEn(colaES,colaListo[x]) == false && enES != colaListo[x]) {
-              colaES.push(colaListo[x])
+        if(colaListo[x].ioTime.length == (colaListo[x].cpuTime.length + 1)){
+            if (estaEn(colaES,colaListo[x]) == false && enES != colaListo[x]){
+                colaES.push(colaListo[x])
             }
-
-          }else{
+        }else{
+          if (colaListo[x].cpuTime.length == 0 && colaListo[x].ioTime.length == 0){
             if (colaListo[x].lastCpuTime > 0  &&(estaEn(colaCPU,colaListo[x]) == false)){
-              if (colaListo[x].ioTime < 1) {
-                colaCPU.push(colaListo[x]);
-              }
-            }else{solicitarProcesos(colaListo[x].name)}
-              }
+              colaCPU.push(colaListo[x]);
+            }
+          }else{
+            solicitarProcesos(colaListo[x].name)
+          }
         }
+      }
     }
     //para darle valores a enCPU
     if (enCPU == null){
@@ -1245,14 +1247,19 @@ function roundRobin(quantum){
     if (enCPU != null){
       elementoCPU.irrupctionTime+=1;
       t1+=1;
-      if(enCPU.cpuTime > 0){
-        enCPU.cpuTime-=1;
+      if(enCPU.cpuTime[0] > 0){
+        enCPU.cpuTime[0]-=1;
         //colaListo[indice].cpuTime-=1;
-        if (enCPU.cpuTime < 1 || t1==quantum){elementoCPU.outTime=elementoCPU.inTime+elementoCPU.irrupctionTime;
-                                            enCPU = null;
-                                            salidaCPU.push(elementoCPU);
-                                            t1=0;
-                                          }
+        if (enCPU.cpuTime[0] < 1 || t1==quantum){elementoCPU.outTime=elementoCPU.inTime+elementoCPU.irrupctionTime;
+          if (estaEn(colaListo,enCPU) == true){
+            posicion=getIxByName(colaListo,enCPU.name);
+            var test = colaListo[posicion].cpuTime.splice(0,1);
+          }
+          enCPU = null;
+          salidaCPU.push(elementoCPU);
+          t1=0;
+        }
+
       }else{enCPU.lastCpuTime-=1;
             //colaListo[indice].lastCpuTime-=1;
             if (enCPU.lastCpuTime < 1 || t1==quantum){elementoCPU.outTime=elementoCPU.inTime+elementoCPU.irrupctionTime;
@@ -1268,9 +1275,11 @@ function roundRobin(quantum){
     //para procesar el contenido de enES
     if (enES != null){
       elementoES.irrupctionTime+=1;
-      enES.ioTime-=1;
+      enES.ioTime[0]-=1;
       //colaListo[indice2].ioTime-=1;
-      if (enES.ioTime < 1){elementoES.outTime=elementoCPU.inTime+elementoCPU.irrupctionTime;
+      if (enES.ioTime[0] < 1){elementoES.outTime=elementoCPU.inTime+elementoCPU.irrupctionTime;
+                                        if (estaEn(colaListo,enES) == true){posicion=getIxByName(colaListo,enES.name);
+                                                                              colaListo[posicion].ioTime.splice(0,1)}
                                         enES = null;
                                         salidaES.push(elementoES);
                                         }
