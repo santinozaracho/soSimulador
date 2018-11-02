@@ -140,6 +140,7 @@ $(document).ready(function () {
       //var arrayFinish = tiemposOcioso(roundRobin(5));
 
       $(".startButton").removeClass('btn-success').addClass('btn-secondary').text("Procesado");
+
       var algortimoLocal;
 
       switch (algorithm) {
