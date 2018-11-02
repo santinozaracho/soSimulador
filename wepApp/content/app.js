@@ -1016,7 +1016,11 @@ function estaEn(cola,proceso){
    }
 
 //Obtiene el Siguiente proceso libre de la Memoria
-//algoritmo FCFS
+
+
+// EN ESTA POLÍTICA DE PLANIFICACIÓN, EL PROCESADOR EJECUTA CADA PROCESO HASTA QUE TERMINA,
+//POR TANTO, LOS PROCESOS QUE EN COLA DE PROCESOS PREPARADOS PERMANECERÁN ENCOLADOS EN EL ORDEN
+//EN QUE LLEGUEN HASTA QUE LES TOQUE SU EJECUCIÓN.
 function firstComeFirstServed(){
   var controladorBucle = obtenerTiempoMax();
     //definimos las Vairables
@@ -1172,7 +1176,10 @@ function firstComeFirstServed(){
   return salidaFinal;
 }
 
-//Algoritmo RR
+
+
+//EJECUTA COMENZANDO POR EL PRIMER ELEMENTO Y DANDOLE UN TIEMPO DE EJECUCIÓN EQUITATIVO A TODOS LOS PROCEDIMIENTOS
+//DE LA LISTA, RECORRE DE PRINCIPIO HASTA LLEGAR AL ULTIMO Y NUEVAMENTE EMPEZANDO DESDE EL PRIMER ELEMENTO HASTA TERMINAR.
 function roundRobin(quantum){
   var controladorBucle=obtenerTiempoMax();
   cargaIniMem();
@@ -1188,7 +1195,6 @@ function roundRobin(quantum){
   var i=0;
   var j=0;
   var x=0;
-
   var tiempo=0;
   var t1=0;
   var t2=0;
@@ -1280,6 +1286,7 @@ function roundRobin(quantum){
 
 
 
+//ESTE ALGORITMO SELECCIONA AL PROCESO CON EL PRÓXIMO TIEMPO DE EJECUCIÓN MÁS CORTO
 function shortestJobFirst(){
   var controladorBucle=obtenerTiempoMax();
   cargaIniMem();
@@ -1323,6 +1330,7 @@ function shortestJobFirst(){
     //carga de procesos enCPU
       if (enCPU == null){
         if (colaCPU.length > 0) {
+          //busca el que menor tiempo de cpu tienga
           for (j = 0; j < colaCPU.length; j++) {
             if (colaCPU[j].cpuTime[0] > 0) {
               if (colaCPU[j].cpuTime[0] < min){enCPU=colaCPU[j]; min=colaCPU[j].cpuTime[0];posicion=j;}
@@ -1348,7 +1356,7 @@ function shortestJobFirst(){
       }
 
       //para procesar el contenido de enCPU
-      if (enCPU != null){
+      if (enCPU != null){//trata tiempo de cpuTime
         elementoCPU.irrupctionTime+=1;
         if(enCPU.cpuTime[0] > 0){
           enCPU.cpuTime[0]-=1;
@@ -1358,7 +1366,7 @@ function shortestJobFirst(){
                                 enCPU = null;
                                 salidaCPU.push(elementoCPU);
                                 }
-        }else{enCPU.lastCpuTime[0]-=1;
+        }else{enCPU.lastCpuTime[0]-=1;//trata tiempo de lastCpuTime
               if (enCPU.lastCpuTime[0] < 1){elementoCPU.outTime=elementoCPU.inTime+elementoCPU.irrupctionTime;
                                         if(enCPU.lastCpuTime == 0){elementoCPU.finish=true}
                                         enCPU = null;
@@ -1385,14 +1393,19 @@ function shortestJobFirst(){
   return salidaFinal
 }
 
-//ordena por cpuTime
+//ordena por tiempo de cpuTime
 function SortByCpuTime(a, b){
   var acpuTime = a.cpuTime;
   var bcpuTime = b.cpuTime;
   return ((acpuTime < bcpuTime) ? -1 : ((acpuTime > bcpuTime) ? 1 : 0));
 }
 
+//ES SIMILAR AL SJF, CON LA DIFERENCIA DE QUE SI UN NUEVO PROCESO PASA A LISTO SE ACTIVA UNA
+//BANDERA flag Y SE RESGUARDA colaListo  PARA VER SI ES MÁS CORTO QUE LO QUE QUEDA POR EJECUTAR
+//DEL PROCESO EN EJECUCIÓN. SI ES ASÍ, EL PROCESO EN EJECUCIÓN SALE DE enCPU PARA QUE INGRESE
+//EL NUEVO PROCESO
 function shortRemainingTimeFirst(){
+  var controladorBucle=obtenerTiempoMax();
   cargaIniMem();
   var colaResguardo=[]; //esta variable sirve para saber si existe un proceso nuevo para comparar
                           //su tiempo de CPU con el tiempo de cpu del proceso que esta enCPU
@@ -1408,7 +1421,6 @@ function shortRemainingTimeFirst(){
   var i=0;
   var j=0;
   var x=0;
-  var controladorBucle=obtenerTiempoMax();
   var tiempo=0;
   var posicion=0;
   var min=99999;
@@ -1443,6 +1455,7 @@ function shortRemainingTimeFirst(){
               }
         }
     }
+    //ordena los procesos nuevos en colaListo
     if(flag == true){
       newProcess= newProcess.sort(SortByCpuTime);
     }
@@ -1478,7 +1491,7 @@ function shortRemainingTimeFirst(){
       //para procesar el contenido de enCPU. Si flag es verdadero quiere decir que hay procesos que arribaron
       //y tengo que controlar si su cpu es menor a lo que le queda al proceso que esta enCPU
       if(flag == true){
-        if (enCPU.cpuTime[0] > 0){
+        if (enCPU.cpuTime[0] > 0){//trata tiempos de cpuTime
             if (enCPU.cpuTime[0] > newProcess[0].cpuTime[0]) {
               elementoCPU.outTime=elementoCPU.inTime+elementoCPU.irrupctionTime;
               salidaCPU.push(elementoCPU);
@@ -1495,7 +1508,7 @@ function shortRemainingTimeFirst(){
                                       salidaCPU.push(elementoCPU);
                                       }
             }
-        }else{if (enCPU.lastCpuTime > 0) {
+        }else{if (enCPU.lastCpuTime > 0) {//trata tiempos de lastCpuTime
                 if (enCPU.lastCpuTime > newProcess[0].cpuTime[0]) {
                   elementoCPU.outTime=elementoCPU.inTime+elementoCPU.irrupctionTime;
                   salidaCPU.push(elementoCPU);
@@ -1513,7 +1526,7 @@ function shortRemainingTimeFirst(){
                   }}
           }
         }else{//el tratamiento comun se ejecuta si no hubieron procesos nuevos en colaListo
-          if (enCPU != null){
+          if (enCPU != null){//trata tiempos de cpuTime
             elementoCPU.irrupctionTime+=1;
             if(enCPU.cpuTime[0] > 0){
               enCPU.cpuTime[0]-=1;
@@ -1523,7 +1536,7 @@ function shortRemainingTimeFirst(){
                                     enCPU = null;
                                     salidaCPU.push(elementoCPU);
                                     }
-            }else{enCPU.lastCpuTime-=1;
+            }else{enCPU.lastCpuTime-=1;//tratra tiempos de lastCpuTime
                   if (enCPU.lastCpuTime < 1){elementoCPU.outTime=elementoCPU.inTime+elementoCPU.irrupctionTime;
                                             if(enCPU.lastCpuTime==0){elementoCPU.finish=true}
                                             enCPU = null;
