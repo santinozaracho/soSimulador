@@ -1317,20 +1317,20 @@ function shortestJobFirst(){
 
   for (i = 0; i < controladorBucle; i++) {
     for (x = 0; x < colaListo.length; x++) {
-      if (colaListo[x].cpuTime[0] > 0){
+      if (colaListo[x].cpuTime.length == colaListo[x].ioTime.length){
         if (estaEn(colaCPU,colaListo[x]) == false && enCPU != colaListo[x]) {
-          if (colaListo[x].cpuTime.length == colaListo[x].ioTime.length){colaCPU.push(colaListo[x]);}
-        }
+          colaCPU.push(colaListo[x]);}
+
       }else{
-          if(colaListo[x].ioTime[0] > 0 ){
+          if(colaListo[x].ioTime.length == (colaListo[x].cpuTime.length + 1)){
             if (estaEn(colaES,colaListo[x]) == false && enES != colaListo[x]) {
-              if(colaListo[x].ioTime.length == (colaListo[x].cpuTime.length + 1)){colaES.push(colaListo[x])}
+              colaES.push(colaListo[x])
             }
           }else{
-            if (colaListo[x].lastCpuTime > 0  &&(estaEn(colaCPU,colaListo[x]) == false)){
-              if (colaListo[x].ioTime < 1) {
-                if (colaListo[x].cpuTime.length == 0 && colaListo[x].ioTime.length == 0){colaCPU.push(colaListo[x]);}
-              }
+            if (colaListo[x].cpuTime.length == 0 && colaListo[x].ioTime.length == 0){
+              if (colaListo[x].lastCpuTime > 0  &&(estaEn(colaCPU,colaListo[x]) == false)){
+                  colaCPU.push(colaListo[x]);
+                }
             }else{colaListo=solicitarProcesos(colaListo[x].name)}
               }
         }
@@ -1438,20 +1438,20 @@ function shortRemainingTimeFirst(){
 
   for (i = 0; i < controladorBucle; i++) {
     for (var x = 0; x < colaListo.length; x++) {
-      if (colaListo[x].cpuTime[0] > 0){
+      if (colaListo[x].cpuTime.length == colaListo[x].ioTime.length){
         if (estaEn(colaCPU,colaListo[x]) == false && enCPU != colaListo[x]) {
-          if (colaListo[x].cpuTime.length == colaListo[x].ioTime.length){colaCPU.push(colaListo[x]);}
+          colaCPU.push(colaListo[x]);
         }
       }else{
-          if(colaListo[x].ioTime[0] > 0 ){
+          if(colaListo[x].ioTime.length == (colaListo[x].cpuTime.length + 1)){
             if (estaEn(colaES,colaListo[x]) == false && enES != colaListo[x]) {
-              if(colaListo[x].ioTime.length == (colaListo[x].cpuTime.length + 1)){colaES.push(colaListo[x]);}
+              colaES.push(colaListo[x]);
             }
           }else{
-            if (colaListo[x].lastCpuTime > 0  &&(estaEn(colaCPU,colaListo[x]) == false)){
-              if (colaListo[x].ioTime < 1) {
-                if (colaListo[x].cpuTime.length == 0 && colaListo[x].ioTime.length == 0){colaCPU.push(colaListo[x]);}
-              }
+            if (colaListo[x].cpuTime.length == 0 && colaListo[x].ioTime.length == 0){
+              if (colaListo[x].lastCpuTime > 0  &&(estaEn(colaCPU,colaListo[x]) == false)){
+                  colaCPU.push(colaListo[x]);
+              }                
             }else{
                   colaResguardo=colaListo; flag=false;
                   colaListo=solicitarProcesos(colaListo[x].name);
