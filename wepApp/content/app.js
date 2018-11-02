@@ -138,6 +138,8 @@ $(document).ready(function () {
 
       //var arrayFinish = tiemposOcioso(firstComeFirstServed());  roundRobin
       //var arrayFinish = tiemposOcioso(roundRobin(5));
+
+      $(".startButton").removeClass('btn-success').addClass('btn-secondary').text("Procesado");
       var algortimoLocal;
 
       switch (algorithm) {
@@ -148,7 +150,7 @@ $(document).ready(function () {
           var arrayFinish = tiemposOcioso(roundRobin(generalQuantum));
           break;
       }
-
+      //Carga de las Barras
       var arrayCpu = arrayFinish[0];
       var firstIrruption = arrayCpu[0].irrupctionTime;
       arrayCpu[0].color = '#'+ ('000000' + Math.floor(Math.random()*16777215).toString(16)).slice(-6);
@@ -387,12 +389,6 @@ console.log(memFija);
 $(".deleteInput").click(function(){
     alert("dsfsefsef.");
 });
-
-
-var proc = {};
-proc.name = 'Hola';
-proc.cpuTime = [];
-proc.ioTime = [];
 
 
 //button siguiente
@@ -942,42 +938,65 @@ function nuevoElemento(proceso,tiempo){
 function tiemposOcioso(gantt){
   var cpu = gantt[0];
   var es = gantt[1];
-  for (var i = 0; i < cpu.length; i++) {
-    if (i < cpu.length-1) {
-      if (cpu[i].outTime != cpu[i+1].inTime) {
-        var vacio = {};
-        vacio.inTime = cpu[i].outTime;
-        vacio.name='O';
-        vacio.arrivalTime = 1;//Analizar este Tiempo
-        vacio.irrupctionTime = (cpu[i+1].inTime - cpu[i].outTime);
-        vacio.outTime = cpu[i+1].inTime;
-        vacio.finish = false;
-        cpu.splice(i+1,0,vacio);
+  if (cpu.length > 0) {
+    for (var i = 0; i < cpu.length - 1; i++) {
+    //  if (i < cpu.length-1) {
+        if (cpu[i].outTime != cpu[i+1].inTime) {
+          var vacio = {};
+          vacio.inTime = cpu[i].outTime;
+          vacio.name='O';
+          vacio.arrivalTime = 1;//Analizar este Tiempo
+          vacio.irrupctionTime = (cpu[i+1].inTime - cpu[i].outTime);
+          vacio.outTime = cpu[i+1].inTime;
+          vacio.finish = false;
+          cpu.splice(i+1,0,vacio);
+      //  }
       }
     }
+  }else {
+    var vacio = {};
+    vacio.inTime = 0;
+    vacio.name='NO HAY PROCESOS';
+    vacio.arrivalTime = 1;//Analizar este Tiempo
+    vacio.irrupctionTime = 100;
+    vacio.outTime = 100;
+    vacio.finish = false;
+    cpu.splice(0,0,vacio);
   }
-  for (var i = 0; i < es.length; i++) {
-    if (i < es.length -1) {
-      if (es[i].outTime != es[i+1].inTime) {
-        var vacio = {};
-        vacio.inTime = cpu[i].outTime;
-        vacio.name='O';
-        vacio.arrivalTime = 1;//Analizar este Tiempo
-        vacio.irrupctionTime = (es[i+1].inTime - es[i].outTime);
-        vacio.outTime = es[i+1].inTime;
-        vacio.finish = false;
-        es.splice(i+1,0,vacio);
+  if (es.length > 0) {
+    for (var i = 0; i < es.length -1; i++) {
+  //    if (i < es.length -1) {
+        if (es[i].outTime != es[i+1].inTime) {
+          var vacio = {};
+          vacio.inTime = es[i].outTime;
+          vacio.name='O';
+          vacio.arrivalTime = 1;//Analizar este Tiempo
+          vacio.irrupctionTime = (es[i+1].inTime - es[i].outTime);
+          vacio.outTime = es[i+1].inTime;
+          vacio.finish = false;
+          es.splice(i+1,0,vacio);
+    //    }
       }
     }
+    var vacio = {};
+    vacio.inTime = 0;
+    vacio.name='O';
+    vacio.arrivalTime = 1;//Analizar este Tiempo
+    vacio.irrupctionTime = es[0].inTime;
+    vacio.outTime = es[0].inTime;
+    vacio.finish = false;
+    es.splice(0,0,vacio);
+  }else {
+    var vacio = {};
+    vacio.inTime = 0;
+    vacio.name='NO HAY PROCESOS';
+    vacio.arrivalTime = 1;//Analizar este Tiempo
+    vacio.irrupctionTime = 100;
+    vacio.outTime = 100;
+    vacio.finish = false;
+    es.splice(0,0,vacio);
   }
-  var vacio = {};
-  vacio.inTime = 0;
-  vacio.name='O';
-  vacio.arrivalTime = 1;//Analizar este Tiempo
-  vacio.irrupctionTime = es[0].inTime;
-  vacio.outTime = es[0].inTime;
-  vacio.finish = false;
-  es.splice(0,0,vacio);
+
   var ganttconos = [];
   ganttconos.push(cpu);
   ganttconos.push(es);
