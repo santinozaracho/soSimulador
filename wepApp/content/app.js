@@ -1266,7 +1266,7 @@ function roundRobin(quantum){
                                                     if(enCPU.lastCpuTime==0){elementoCPU.finish=true}
                                                     enCPU = null;
                                                     if (quantum == 5) {
-                                                      console.log('Agoto el quanto');
+                                                      console.log('Agotó el quantum');
                                                     }
                                                     salidaCPU.push(elementoCPU);
                                                     t1=0;}
@@ -1277,7 +1277,7 @@ function roundRobin(quantum){
       elementoES.irrupctionTime+=1;
       enES.ioTime[0]-=1;
       //colaListo[indice2].ioTime-=1;
-      if (enES.ioTime[0] < 1){elementoES.outTime=elementoCPU.inTime+elementoCPU.irrupctionTime;
+      if (enES.ioTime[0] < 1){elementoES.outTime=elementoES.inTime+elementoES.irrupctionTime;
                                         if (estaEn(colaListo,enES) == true){posicion=getIxByName(colaListo,enES.name);
                                                                               colaListo[posicion].ioTime.splice(0,1)}
                                         enES = null;
@@ -1387,7 +1387,7 @@ function shortestJobFirst(){
       if (enES != null){
         elementoES.irrupctionTime+=1;
         enES.ioTime[0]-=1;
-        if (enES.ioTime[0] < 1){elementoES.outTime=elementoCPU.inTime+elementoCPU.irrupctionTime;
+        if (enES.ioTime[0] < 1){elementoES.outTime=elementoES.inTime+elementoES.irrupctionTime;
                             if (estaEn(colaListo,enES) == true){posicion=getIxByName(colaListo,enES.name);
                                                                   colaListo[posicion].ioTime.splice(0,1)}
                             enES = null;
@@ -1419,8 +1419,8 @@ function shortRemainingTimeFirst(){
   var colaResguardo=[]; //esta variable sirve para saber si existe un proceso nuevo para comparar
                           //su tiempo de CPU con el tiempo de cpu del proceso que esta enCPU
   var enCPU = null;
-  var elementoCPU={};
   var enES = null;
+  var elementoCPU={};
   var elementoES={};
   var colaCPU = [];
   var colaES=[];
@@ -1437,21 +1437,21 @@ function shortRemainingTimeFirst(){
   var flag = false;
 
   for (i = 0; i < controladorBucle; i++) {
-    for (var x = 0; x < colaListo.length; x++) {
-      if (colaListo[x].cpuTime.length == colaListo[x].ioTime.length){
-        if (estaEn(colaCPU,colaListo[x]) == false && enCPU != colaListo[x]) {
+    for (x = 0; x < colaListo.length; x++) {
+      if ((colaListo[x].cpuTime.length) == (colaListo[x].ioTime.length)){
+        if ((estaEn(colaCPU,colaListo[x]) == false) && (enCPU != colaListo[x])) {
           colaCPU.push(colaListo[x]);
         }
       }else{
-          if(colaListo[x].ioTime.length == (colaListo[x].cpuTime.length + 1)){
-            if (estaEn(colaES,colaListo[x]) == false && enES != colaListo[x]) {
+          if((colaListo[x].ioTime.length) == (colaListo[x].cpuTime.length + 1)){
+            if ((estaEn(colaES,colaListo[x]) == false) && (enES != colaListo[x])) {
               colaES.push(colaListo[x]);
             }
           }else{
-            if (colaListo[x].cpuTime.length == 0 && colaListo[x].ioTime.length == 0){
-              if (colaListo[x].lastCpuTime > 0  &&(estaEn(colaCPU,colaListo[x]) == false)){
+            if ((colaListo[x].cpuTime.length == 0) && (colaListo[x].ioTime.length == 0)){
+              if ((colaListo[x].lastCpuTime > 0)  && (estaEn(colaCPU,colaListo[x]) == false)){
                   colaCPU.push(colaListo[x]);
-              }                
+              }
             }else{
                   colaResguardo=colaListo; flag=false;
                   colaListo=solicitarProcesos(colaListo[x].name);
@@ -1463,6 +1463,7 @@ function shortRemainingTimeFirst(){
                   }
               }
         }
+      }
     }
     //ordena los procesos nuevos en colaListo
     if(flag == true){
@@ -1491,9 +1492,9 @@ function shortRemainingTimeFirst(){
       //carga de procesos enES
       if (enES == null){
         if (colaES.length > 0) {
-          enES=colaES[0];
-          elementoES = nuevoElemento(enES,tiempo);
-          colaES.splice(0,1);
+            enES=colaES[0];
+            elementoES = nuevoElemento(enES,tiempo);
+            colaES.splice(0,1);
         }
       }
 
@@ -1559,8 +1560,8 @@ function shortRemainingTimeFirst(){
       if (enES != null){
         elementoES.irrupctionTime+=1;
         enES.ioTime[0]-=1;
-        if (enES.ioTime[0] < 1){elementoES.outTime=elementoCPU.inTime+elementoCPU.irrupctionTime;
-                            if (estaEn(colaListo,enCPU) == true){posicion=getIxByName(colaListo,enCPU.name);
+        if (enES.ioTime[0] < 1){elementoES.outTime=elementoES.inTime+elementoES.irrupctionTime;
+                            if (estaEn(colaListo,enES) == true){posicion=getIxByName(colaListo,enES.name);
                                                                   colaListo[posicion].ioTime.splice(0,1)}
                             enES = null;
                             salidaES.push(elementoES);
@@ -1572,5 +1573,4 @@ function shortRemainingTimeFirst(){
   salidaFinal.push(salidaCPU);
   salidaFinal.push(salidaES);
   return salidaFinal
-}
 }
