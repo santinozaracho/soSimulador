@@ -140,6 +140,7 @@ $(document).ready(function () {
       //var arrayFinish = tiemposOcioso(roundRobin(5));
 
       $(".startButton").removeClass('btn-success').addClass('btn-secondary').text("Procesado");
+
       var algortimoLocal;
 
       switch (algorithm) {
@@ -1295,6 +1296,7 @@ function roundRobin(quantum){
 
 
 
+
 //ESTE ALGORITMO SELECCIONA AL PROCESO CON EL PRÓXIMO TIEMPO DE EJECUCIÓN MÁS CORTO
 function shortestJobFirst(){
   var controladorBucle=obtenerTiempoMax();
@@ -1317,6 +1319,7 @@ function shortestJobFirst(){
 
   for (i = 0; i < controladorBucle; i++) {
     for (x = 0; x < colaListo.length; x++) {
+
       if (colaListo[x].cpuTime.length == colaListo[x].ioTime.length){
         if (estaEn(colaCPU,colaListo[x]) == false && enCPU != colaListo[x]) {
           colaCPU.push(colaListo[x]);}
@@ -1331,6 +1334,7 @@ function shortestJobFirst(){
               if (colaListo[x].lastCpuTime > 0  &&(estaEn(colaCPU,colaListo[x]) == false)){
                   colaCPU.push(colaListo[x]);
                 }
+
             }else{colaListo=solicitarProcesos(colaListo[x].name)}
               }
         }
@@ -1339,7 +1343,9 @@ function shortestJobFirst(){
     //carga de procesos enCPU
       if (enCPU == null){
         if (colaCPU.length > 0) {
+
           //busca el que menor tiempo de cpu tienga
+
           for (j = 0; j < colaCPU.length; j++) {
             if (colaCPU[j].cpuTime[0] > 0) {
               if (colaCPU[j].cpuTime[0] < min){enCPU=colaCPU[j]; min=colaCPU[j].cpuTime[0];posicion=j;}
@@ -1365,7 +1371,9 @@ function shortestJobFirst(){
       }
 
       //para procesar el contenido de enCPU
+
       if (enCPU != null){//trata tiempo de cpuTime
+
         elementoCPU.irrupctionTime+=1;
         if(enCPU.cpuTime[0] > 0){
           enCPU.cpuTime[0]-=1;
@@ -1375,7 +1383,9 @@ function shortestJobFirst(){
                                 enCPU = null;
                                 salidaCPU.push(elementoCPU);
                                 }
+
         }else{enCPU.lastCpuTime[0]-=1;//trata tiempo de lastCpuTime
+
               if (enCPU.lastCpuTime[0] < 1){elementoCPU.outTime=elementoCPU.inTime+elementoCPU.irrupctionTime;
                                         if(enCPU.lastCpuTime == 0){elementoCPU.finish=true}
                                         enCPU = null;
@@ -1387,7 +1397,9 @@ function shortestJobFirst(){
       if (enES != null){
         elementoES.irrupctionTime+=1;
         enES.ioTime[0]-=1;
+
         if (enES.ioTime[0] < 1){elementoES.outTime=elementoES.inTime+elementoES.irrupctionTime;
+
                             if (estaEn(colaListo,enES) == true){posicion=getIxByName(colaListo,enES.name);
                                                                   colaListo[posicion].ioTime.splice(0,1)}
                             enES = null;
@@ -1402,12 +1414,15 @@ function shortestJobFirst(){
   return salidaFinal
 }
 
+
 //ordena por tiempo de cpuTime
+
 function SortByCpuTime(a, b){
   var acpuTime = a.cpuTime;
   var bcpuTime = b.cpuTime;
   return ((acpuTime < bcpuTime) ? -1 : ((acpuTime > bcpuTime) ? 1 : 0));
 }
+
 
 //ES SIMILAR AL SJF, CON LA DIFERENCIA DE QUE SI UN NUEVO PROCESO PASA A LISTO SE ACTIVA UNA
 //BANDERA flag Y SE RESGUARDA colaListo  PARA VER SI ES MÁS CORTO QUE LO QUE QUEDA POR EJECUTAR
@@ -1451,6 +1466,7 @@ function shortRemainingTimeFirst(){
             if ((colaListo[x].cpuTime.length == 0) && (colaListo[x].ioTime.length == 0)){
               if ((colaListo[x].lastCpuTime > 0)  && (estaEn(colaCPU,colaListo[x]) == false)){
                   colaCPU.push(colaListo[x]);
+
               }
             }else{
                   colaResguardo=colaListo; flag=false;
@@ -1463,9 +1479,11 @@ function shortRemainingTimeFirst(){
                   }
               }
         }
+
       }
     }
     //ordena los procesos nuevos en colaListo
+
     if(flag == true){
       newProcess= newProcess.sort(SortByCpuTime);
     }
@@ -1492,16 +1510,20 @@ function shortRemainingTimeFirst(){
       //carga de procesos enES
       if (enES == null){
         if (colaES.length > 0) {
+
             enES=colaES[0];
             elementoES = nuevoElemento(enES,tiempo);
             colaES.splice(0,1);
+
         }
       }
 
       //para procesar el contenido de enCPU. Si flag es verdadero quiere decir que hay procesos que arribaron
       //y tengo que controlar si su cpu es menor a lo que le queda al proceso que esta enCPU
       if(flag == true){
+
         if (enCPU.cpuTime[0] > 0){//trata tiempos de cpuTime
+
             if (enCPU.cpuTime[0] > newProcess[0].cpuTime[0]) {
               elementoCPU.outTime=elementoCPU.inTime+elementoCPU.irrupctionTime;
               salidaCPU.push(elementoCPU);
@@ -1518,7 +1540,9 @@ function shortRemainingTimeFirst(){
                                       salidaCPU.push(elementoCPU);
                                       }
             }
+
         }else{if (enCPU.lastCpuTime > 0) {//trata tiempos de lastCpuTime
+
                 if (enCPU.lastCpuTime > newProcess[0].cpuTime[0]) {
                   elementoCPU.outTime=elementoCPU.inTime+elementoCPU.irrupctionTime;
                   salidaCPU.push(elementoCPU);
@@ -1536,7 +1560,9 @@ function shortRemainingTimeFirst(){
                   }}
           }
         }else{//el tratamiento comun se ejecuta si no hubieron procesos nuevos en colaListo
+
           if (enCPU != null){//trata tiempos de cpuTime
+
             elementoCPU.irrupctionTime+=1;
             if(enCPU.cpuTime[0] > 0){
               enCPU.cpuTime[0]-=1;
@@ -1547,6 +1573,7 @@ function shortRemainingTimeFirst(){
                                     salidaCPU.push(elementoCPU);
                                     }
             }else{enCPU.lastCpuTime-=1;//tratra tiempos de lastCpuTime
+
                   if (enCPU.lastCpuTime < 1){elementoCPU.outTime=elementoCPU.inTime+elementoCPU.irrupctionTime;
                                             if(enCPU.lastCpuTime==0){elementoCPU.finish=true}
                                             enCPU = null;
@@ -1560,8 +1587,10 @@ function shortRemainingTimeFirst(){
       if (enES != null){
         elementoES.irrupctionTime+=1;
         enES.ioTime[0]-=1;
+
         if (enES.ioTime[0] < 1){elementoES.outTime=elementoES.inTime+elementoES.irrupctionTime;
                             if (estaEn(colaListo,enES) == true){posicion=getIxByName(colaListo,enES.name);
+
                                                                   colaListo[posicion].ioTime.splice(0,1)}
                             enES = null;
                             salidaES.push(elementoES);
@@ -1574,3 +1603,4 @@ function shortRemainingTimeFirst(){
   salidaFinal.push(salidaES);
   return salidaFinal
 }
+
