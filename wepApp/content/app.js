@@ -203,16 +203,23 @@ $(document).ready(function () {
 
           newItem.attr('aria-valuenow', item.irruption).css('width',irruption+'%');
           var tag = newItem.find('a');
-          tag.attr('title', 'Datos de '+item.name);
-
           var htmlTag = '<div><b>De '+item.inTime+' a '+item.outTime+'</b></div>';
-          htmlTag += '</br><div><b>Tiempo de Ejecucion: '+item.irrupctionTime+'</b></div>';
+
+          if(arrayCpu[i].name == 'O'){
+            tag.attr('title', 'Tiempo Ocioso');
+            tag.css("background-color", item.color).text("-");
+          }else{
+            tag.attr('title', 'Datos de '+item.name);
+            tag.css("background-color", item.color).text(item.name);
+            htmlTag += '</br><div><b>Tiempo de Ejecucion: '+item.irrupctionTime+'</b></div>';
+          }
+
           if(item.finish){
             htmlTag += '</br><div><b>Proceso Terminado</b></div>';
           }
 
           tag.attr('data-content', htmlTag);
-          tag.css("background-color", item.color).text(item.name);
+
           tag.css("border-color", item.color);
           $('#progressCpu').append(newItem);
 
@@ -1603,4 +1610,3 @@ function shortRemainingTimeFirst(){
   salidaFinal.push(salidaES);
   return salidaFinal
 }
-
