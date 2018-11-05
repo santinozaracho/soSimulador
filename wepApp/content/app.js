@@ -887,14 +887,19 @@ function arrayProc(){
 }
 
 //obtención de la cantodad de tiempo de procesamiento
+
 function obtenerTiempoMax(){
   var procesos = arrayProcess;
   var tiempoMax = 0
   for (var i = 0; i < procesos.length; i++) {
-      tiempoMax = tiempoMax + parseInt(procesos[i].ioTime) + parseInt(procesos[i].cpuTime) + parseInt(procesos[i].lastCpuTime);
+    tiempoMax += parseInt(procesos[i].lastCpuTime);
+    for (var j = 0; j < procesos[i].cpuTime.length; j++) {
+      tiempoMax += parseInt(procesos[i].ioTime[j]) + parseInt(procesos[i].cpuTime[j])
+    }
   }
   return tiempoMax
-}
+};
+
 
 function getIxByName(array,name){
   for (var i = 0; i < array.length; i++) {
@@ -903,7 +908,7 @@ function getIxByName(array,name){
     }
   }
   return false;
-}
+};
 
 //Algoritmo de SAntino que me devuelve la cola de Listo
 
@@ -1018,6 +1023,15 @@ function estaEn(cola,proceso){
 
 //Obtiene el Siguiente proceso libre de la Memoria
 
+//devuelve la rafaga actual
+function ixRafaga(proc){
+  for (var i = 0; i < proc.cpuTime.length; i++) {
+    if (proc.cpuTime[i] > 0) {
+      return i
+    }
+  }
+  return false //es decir que se termino la lista de cpu y debemos analizar lastCpu
+};
 
 // EN ESTA POLÍTICA DE PLANIFICACIÓN, EL PROCESADOR EJECUTA CADA PROCESO HASTA QUE TERMINA,
 //POR TANTO, LOS PROCESOS QUE EN COLA DE PROCESOS PREPARADOS PERMANECERÁN ENCOLADOS EN EL ORDEN
@@ -1043,66 +1057,79 @@ function firstComeFirstServed(){
      //Analizamos el Trabajo en ES en el mismo tiempo t analizamos primero porque al pasar un proceso a bloqueado automaticamente ejecuta
       if (enES != null) {
        //Procesamso el elto else {
-       enES.ioTime -= 1;
-       elementoES.irrupctionTime +=1;
-       //Verificamos si debemos sacar de CPU
-       if (enES.ioTime < 1){
-         //if (elementoES.irrupctionTime == 1) {
-           if (colaESFin.length == 0) {
-             bloqDeCiclo = true
-           }
-    //     }
-         elementoES.outTime = tiempo+1;
-         salidaES.push(elementoES);
-         colaESFin.push(enES)
-         colaBloqueados.shift();
-         enES = null;
-       }
-       //controlamos ciclo de ejecucion ES
-      }else{
-       //Agregamos un Elemento de la COla de bloqueado
-         if (colaBloqueados.length > 0) {
-           enES = colaBloqueados[0];
-           elementoES = nuevoElemento(enES,tiempo);
-           //Pocesamos el Elto ES
-           enES.ioTime -= 1;
-           elementoES.irrupctionTime +=1;
-           //Verificamos si debemos sacar de CPU
-           if (enES.ioTime < 1){
-          //   if (elementoES.irrupctionTime == 1) {
-               if (colaESFin.length == 0){
-                bloqDeCiclo = true
-                }
-        //     }
-             elementoES.outTime = tiempo+1;
-             salidaES.push(elementoES);
-             colaESFin.push(enES)
-             colaBloqueados.shift()
-             enES = null;
+       //controlamos la rafagas
+       var inxe = ixRafaga(enES);
+       if (inxe > -1) {
+         enES.ioTime[inxe] -= 1;
+         elementoES.irrupctionTime +=1;
+         //Verificamos si debemos sacar de CPU
+         if (enES.ioTime[inxe] < 1){
+           //if (elementoES.irrupctionTime == 1) {
+             if (colaESFin.length == 0) {
+               bloqDeCiclo = true
              }
+      //     }
+           elementoES.outTime = tiempo+1;
+           salidaES.push(elementoES);
+           colaESFin.push(enES)
+           colaBloqueados.shift();
+           enES = null;
          }
+         //controlamos ciclo de ejecucion ES
        }
+
+      }else{
+         //Agregamos un Elemento de la COla de bloqueado
+           if (colaBloqueados.length > 0) {
+             enES = colaBloqueados[0];
+             elementoES = nuevoElemento(enES,tiempo);
+             var inxe = ixRafaga(enES);
+             //Pocesamos el Elto ES
+             if (inxe > -1) {
+               enES.ioTime[inxe] -= 1;
+               elementoES.irrupctionTime +=1;
+               //Verificamos si debemos sacar de CPU
+               if (enES.ioTime[inxe] < 1){
+                 //if (elementoES.irrupctionTime == 1) {
+                   if (colaESFin.length == 0) {
+                     bloqDeCiclo = true
+                   }
+            //     }
+                 elementoES.outTime = tiempo+1;
+                 salidaES.push(elementoES);
+                 colaESFin.push(enES)
+                 colaBloqueados.shift();
+                 enES = null;
+               }
+               //controlamos ciclo de ejecucion ES
+             }
+           }
+         }
+
+
 
      //Analizamos el Trabajo en CPU en el tiempo t
      if (enCPU != null){
 
        //Verificamos si posee primer tiempo de CPU y Al terminar Pasamos a Bloquado para ser atendido en ES
-       if (enCPU.cpuTime > 0){
+       var inx = ixRafaga(enCPU);
+       if (inx > -1){
+         if (enCPU.cpuTime[inx] > 0){
 
-         enCPU.cpuTime -= 1;
-         elementoCPU.irrupctionTime +=1;
-         //Verificamos si debemos Sacar de CPU 1
-         if (enCPU.cpuTime < 1){
+           enCPU.cpuTime[inx] = enCPU.cpuTime[inx] - 1;
+           elementoCPU.irrupctionTime +=1;
+           //Verificamos si debemos Sacar de CPU 1
+           if (enCPU.cpuTime[inx] < 1){
 
-            elementoCPU.outTime = tiempo+1;
-            salidaCPU.push(elementoCPU);
-            //Agregamos a la lista de bloqueado los el proceso
-            colaBloqueados.push(enCPU);
-            elementoCPU = null;
-            enCPU = null;
+              elementoCPU.outTime = tiempo+1;
+              salidaCPU.push(elementoCPU);
+              //Agregamos a la lista de bloqueado los el proceso
+              colaBloqueados.push(enCPU);
+              elementoCPU = null;
+              enCPU = null;
+            }
           }
         }else{
-
           //Verificamos si posee Segundo Tiempo
           if (enCPU.lastCpuTime > 0){
             //Procesamos elto del tipo last CPU
@@ -1149,18 +1176,40 @@ function firstComeFirstServed(){
             //Verificamos si hay algun proceso en la CL
             if (enCPU != null){
               elementoCPU = nuevoElemento(enCPU,tiempo);
-              enCPU.cpuTime = enCPU.cpuTime-1;
-              elementoCPU.irrupctionTime +=1;
-              //Verificamos si debemos Sacar de CPU 1
-              if (enCPU.cpuTime < 1){
-                  //elementoCPU.outTime = elementoCPU.irrupctionTime + elementoCPU.inTime;
-                  elementoCPU.outTime = tiempo
-                  salidaCPU.push(elementoCPU);
-                  //Agregamos a la lista de bloqueado los el proceso
-                  colaBloqueados.push(enCPU);
-                  elementoCPU = null;
-                  enCPU = null;
-                }
+              var inx = ixRafaga(enCPU);
+              if (inx > -1){
+                if (enCPU.cpuTime[inx] > 0){
+
+                  enCPU.cpuTime[inx] -= 1;
+                  elementoCPU.irrupctionTime +=1;
+                  //Verificamos si debemos Sacar de CPU 1
+                  if (enCPU.cpuTime[inx] < 1){
+
+                     elementoCPU.outTime = tiempo+1;
+                     salidaCPU.push(elementoCPU);
+                     //Agregamos a la lista de bloqueado los el proceso
+                     colaBloqueados.push(enCPU);
+                     elementoCPU = null;
+                     enCPU = null;
+                   }
+                 }
+               }else{
+                 //Verificamos si posee Segundo Tiempo
+                 if (enCPU.lastCpuTime > 0){
+                   //Procesamos elto del tipo last CPU
+                   enCPU.lastCpuTime -= 1;
+                   elementoCPU.irrupctionTime +=1;
+                   //Verificamos si debemos sacar de CPU
+                   if (enCPU.lastCpuTime < 1){
+                     elementoCPU.outTime = tiempo+1;
+                     elementoCPU.finish = true;
+                     salidaCPU.push(elementoCPU);
+                     solicitarProcesos(enCPU.name);
+                     elementoCPU = null;
+                     enCPU = null;
+                   }
+                 }
+               }
             }//si es Null entonces CPU ociosa
           }
         }
@@ -1172,13 +1221,12 @@ function firstComeFirstServed(){
       break
     }
   }
+  console.log(salidaCPU);
+  console.log(salidaES);
   salidaFinal.push(salidaCPU);
   salidaFinal.push(salidaES);
   return salidaFinal;
 }
-
-
-
 //EJECUTA COMENZANDO POR EL PRIMER ELEMENTO Y DANDOLE UN TIEMPO DE EJECUCIÓN EQUITATIVO A TODOS LOS PROCEDIMIENTOS
 //DE LA LISTA, RECORRE DE PRINCIPIO HASTA LLEGAR AL ULTIMO Y NUEVAMENTE EMPEZANDO DESDE EL PRIMER ELEMENTO HASTA TERMINAR.
 function roundRobin(quantum){
@@ -1603,4 +1651,3 @@ function shortRemainingTimeFirst(){
   salidaFinal.push(salidaES);
   return salidaFinal
 }
-
