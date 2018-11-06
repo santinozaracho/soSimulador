@@ -1314,9 +1314,6 @@ function roundRobin(quantum){
             if (enCPU.lastCpuTime < 1 || t1==quantum){elementoCPU.outTime=elementoCPU.inTime+elementoCPU.irrupctionTime;
                                                     if(enCPU.lastCpuTime==0){elementoCPU.finish=true}
                                                     enCPU = null;
-                                                    if (quantum == 5) {
-                                                      console.log('Agotó el quantum');
-                                                    }
                                                     salidaCPU.push(elementoCPU);
                                                     t1=0;}
             }
@@ -1326,12 +1323,15 @@ function roundRobin(quantum){
       elementoES.irrupctionTime+=1;
       enES.ioTime[0]-=1;
       //colaListo[indice2].ioTime-=1;
-      if (enES.ioTime[0] < 1){elementoES.outTime=elementoES.inTime+elementoES.irrupctionTime;
-                                        if (estaEn(colaListo,enES) == true){posicion=getIxByName(colaListo,enES.name);
-                                                                              colaListo[posicion].ioTime.splice(0,1)}
-                                        enES = null;
-                                        salidaES.push(elementoES);
-                                        }
+      if (enES.ioTime[0] < 1){
+        elementoES.outTime=elementoES.inTime+elementoES.irrupctionTime;
+        if (estaEn(colaListo,enES) == true){
+          posicion=getIxByName(colaListo,enES.name);
+          colaListo[posicion].ioTime.splice(0,1);
+        }
+        enES = null;
+        salidaES.push(elementoES);
+      }
     }
     tiempo+=1;
     if (colaListo.length == 0 && colaCPU.length == 0 && enCPU == null){break}
