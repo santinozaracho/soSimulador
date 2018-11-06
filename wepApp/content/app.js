@@ -160,22 +160,29 @@ $(document).ready(function () {
       }
       $('#proccessBar').attr('aria-valuenow', firstIrruption).css('width',firstIrruption+'%');
       var tagOne = $('#proccessBar').find('a');
-      tagOne.attr('data-original-title', 'Datos de '+arrayCpu[0].name);
+
+      if(arrayCpu[0].name == "O"){
+        tagOne.attr('data-original-title', 'Tiempo Ocioso');
+      }else{
+        tagOne.attr('data-original-title', 'Datos de '+arrayCpu[0].name);
+      }
 
       var htmlPopover = '<div><b>De '+arrayCpu[0].inTime+' a '+arrayCpu[0].outTime+'</b></div>';
       htmlPopover += '</br><div><b>Tiempo de Ejecucion: '+arrayCpu[0].irrupctionTime+'</b></div>';
       if(arrayCpu[0].finish){
-          htmlPopover += '</br><div><b>Proceso Terminado</b></div>'
+          htmlPopover += '</br><div><b>Proceso Terminado</b></div>';
+          var markupFirst = "<tr><th scope='row'>"+arrayCpu[0].name+"</th><td>"+arrayCpu[0].outTime+"</td><td>"+arrayCpu[0].arrivalTime+"</td><td>"+(arrayCpu[0].outTime-arrayCpu[0].arrivalTime)+"</td></tr>";
+          $('.tableResponse > tbody:last-child').append(markupFirst);
+
+          var markWaitFirst = "<tr><th scope='row'>"+arrayCpu[0].name+"</th><td>"+(arrayCpu[0].outTime-arrayCpu[0].arrivalTime)+"</td><td>"+arrayCpu[0].irrupctionTime+"</td><td>"+(arrayCpu[0].outTime-arrayCpu[0].arrivalTime-arrayCpu[0].irrupctionTime)+"</td></tr>";
+          $('.tableWait > tbody:last-child').append(markWaitFirst);
       }
 
       tagOne.attr('data-content', htmlPopover);
       tagOne.text(arrayCpu[0].name);
       tagOne.css("background-color", arrayCpu[0].color).text(arrayCpu[0].name);
       tagOne.css("border-color", arrayCpu[0].color);
-      var markupFirst = "<tr><th scope='row'>"+arrayCpu[0].name+"</th><td>"+arrayCpu[0].outTime+"</td><td>"+arrayCpu[0].arrivalTime+"</td><td>"+(arrayCpu[0].outTime-arrayCpu[0].arrivalTime)+"</td></tr>";
-      $('.tableResponse > tbody:last-child').append(markupFirst);
-      var markWaitFirst = "<tr><th scope='row'>"+arrayCpu[0].name+"</th><td>"+(arrayCpu[0].outTime-arrayCpu[0].arrivalTime)+"</td><td>"+arrayCpu[0].irrupctionTime+"</td><td>"+(arrayCpu[0].outTime-arrayCpu[0].arrivalTime-arrayCpu[0].irrupctionTime)+"</td></tr>";
-      $('.tableWait > tbody:last-child').append(markWaitFirst);
+
 
       for (var i = 1; i < arrayCpu.length; i++) {
 
@@ -216,6 +223,13 @@ $(document).ready(function () {
 
           if(item.finish){
             htmlTag += '</br><div><b>Proceso Terminado</b></div>';
+
+            var markup = "<tr><th scope='row'>"+item.name+"</th><td>"+item.outTime+"</td><td>"+item.arrivalTime+"</td><td>"+(item.outTime-item.arrivalTime)+"</td></tr>";
+            $('.tableResponse > tbody:last-child').append(markup);
+
+            var markWait = "<tr><th scope='row'>"+item.name+"</th><td>"+(item.outTime-item.arrivalTime)+"</td><td>"+item.irrupctionTime+"</td><td>"+(item.outTime-item.arrivalTime-item.irrupctionTime)+"</td></tr>";
+            $('.tableWait > tbody:last-child').append(markWait);
+
           }
 
           tag.attr('data-content', htmlTag);
@@ -223,11 +237,6 @@ $(document).ready(function () {
           tag.css("border-color", item.color);
           $('#progressCpu').append(newItem);
 
-          var markup = "<tr><th scope='row'>"+item.name+"</th><td>"+item.outTime+"</td><td>"+item.arrivalTime+"</td><td>"+(item.outTime-item.arrivalTime)+"</td></tr>";
-          $('.tableResponse > tbody:last-child').append(markup);
-
-          var markWait = "<tr><th scope='row'>"+item.name+"</th><td>"+(item.outTime-item.arrivalTime)+"</td><td>"+item.irrupctionTime+"</td><td>"+(item.outTime-item.arrivalTime-item.irrupctionTime)+"</td></tr>";
-          $('.tableWait > tbody:last-child').append(markWait);
       }
 
       //-------- E/S -----
@@ -245,12 +254,18 @@ $(document).ready(function () {
       }
       $('#proccessEs').attr('aria-valuenow', firstIrruptionEs).css('width',firstIrruptionEs+'%');
       var tagOneEs = $('#proccessEs').find('a');
-      tagOneEs.attr('data-original-title', 'Datos de '+arrayEs[0].name);
+
       var htmlPopoverEs = '<div><b>De '+arrayEs[0].inTime+' a '+arrayEs[0].outTime+'</b></div>';
       tagOneEs.attr('data-content', htmlPopoverEs);
-      tagOneEs.text(arrayEs[0].name);
 
-      tagOneEs.css("background-color", arrayEs[0].color).text(arrayEs[0].name);
+      if(arrayEs[0].name == "O"){
+        tagOneEs.attr('data-original-title', 'Tiempo Ocioso');
+        tagOneEs.css("background-color", arrayEs[0].color).text("-");
+      }else{
+        tagOneEs.attr('data-original-title', 'Datos de '+arrayEs[0].name);
+        tagOneEs.css("background-color", arrayEs[0].color).text(arrayEs[0].name);
+      }
+
       tagOneEs.css("border-color", arrayEs[0].color);
 
       for (var i = 1; i < arrayEs.length; i++) {
@@ -282,12 +297,20 @@ $(document).ready(function () {
 
           newItem.attr('aria-valuenow', item.irruption).css('width',irruption+'%');
           var tag = newItem.find('a');
-          tag.attr('title', 'Datos de '+item.name);
 
           var htmlTag = '<div><b>De '+item.inTime+' a '+item.outTime+'</b></div>';
 
+          if(item.name == "O"){
+            tag.attr('title', 'Tiempo Ocioso');
+            tag.css("background-color", item.color).text("-");
+          }else{
+            tag.css("background-color", item.color).text(item.name);
+            tag.attr('title', 'Datos de '+item.name);
+            htmlTag += '</br><div><b>Tiempo de Ejecucion: '+item.irrupctionTime+'</b></div>';
+          }
+
           tag.attr('data-content', htmlTag);
-          tag.css("background-color", item.color).text(item.name);
+
           tag.css("border-color", item.color);
           $('#progressEs').append(newItem);
       }
