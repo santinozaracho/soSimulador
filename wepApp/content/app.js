@@ -10,7 +10,7 @@ var colaListo = []; //Cola de procesos Listos
 var cont = 0;//contador de Particiones fijas
 var maxpart = 5; //cantidad maxima de particiones fijas
 var memFija = []; // memoria fija
-
+var tiempo = 0
 
 
 $(function () {
@@ -149,6 +149,12 @@ $(document).ready(function () {
           break;
         case "RR":
           var arrayFinish = tiemposOcioso(roundRobin(generalQuantum));
+          break;
+        case "SJF":
+          var arrayFinish = tiemposOcioso(shortestJobFirst());
+          break;
+        case "SRTF":
+          var arrayFinish = tiemposOcioso(shortRemainingTimeFirst());
           break;
       }
       //Carga de las Barras
@@ -499,7 +505,7 @@ function obtNewIdPart(parts){
   return maxid
 }
 //Funcion de carga de memoria inicial
-function cargaIniMem(){
+function cargaMem(){
 
   if (typeMemory = 'Variable') {
     //Para part Variables
@@ -508,19 +514,23 @@ function cargaIniMem(){
       part.IdPart = 0
       particiones.push(part)
       //mandamos a la Cola de Listos
-      particiones = asignarProcVar(particiones,arrayProcess[0],0)
-      //agrego a la cola de listos el procesos nuevo
     }
     //tratamiento para Worst fitMemory
     if (fitMemory == 'Worst Fit'){
       for (var i = 0; i < arrayProcess.length; i++) {
-        var ix = worstFit(particiones,arrayProcess[i]);
-        if (ix) {
-          //asinamos el proceos a la particion
-          particiones = asignarProcVar(particiones,arrayProcess[i],ix)
-          i = -1
-        }else {
-          return false
+        if (arrayProcess[i].arrivalTime <= tiempo) {
+          var ix = worstFit(particiones,arrayProcess[i]);
+          if (ix > 0) {
+            //asinamos el proceos a la particion
+            particiones = asignarProcVar(particiones,arrayProcess[i],ix)
+            i = -1
+          }else {
+            if (ix == 0) {
+              particiones = asignarProcVar(particiones,arrayProcess[i],ix)
+              }else {
+                return false
+              }
+            }
           }
         }
         return false
@@ -528,21 +538,55 @@ function cargaIniMem(){
     //Para First
     if (fitMemory == 'First Fit'){
       for (var i = 0; i < arrayProcess.length; i++) {
-        var ix = firstFit(particiones,arrayProcess[i]);
-        if (ix) {
-          //mandamos a la Cola de Listos
-          particiones = asignarProcVar(particiones,arrayProcess[i],ix)
-          i = -1
-        }else {
-          return false
+        if (arrayProcess[i].arrivalTime <= tiempo){
+          var ix = firstFit(particiones,arrayProcess[i]);
+          if (ix > 0) {
+            //mandamos a la Cola de Listos
+            particiones = asignarProcVar(particiones,arrayProcess[i],ix)
+            i = -1
+          }else {
+            if (ix == 0) {
+              particiones = asignarProcVar(particiones,arrayProcess[i],ix)
+            }else {
+              return false
+            }
+
+            }
+        }
+      }
+      return false
+  }
+
+}
+
+  if (typeMemory = "Fija") {
+    if (fitMemory == 'Best Fit'){
+      for (var i = 0; i < arrayProcess.length; i++) {
+        if (arrayProcess[i].arrivalTime <= tiempo) {
+          var ix = bestFit(memFija,arrayProcess[i]);
+          if (ix) {
+            particiones = asignarProcFij(memFija,arrayProcess[i],ix);
+            i = -1;
           }
         }
-        return false
       }
-  }
+    }
+    if (fitMemory == 'First Fit'){
+      for (var i = 0; i < arrayProcess.length; i++) {
+        if (arrayProcess[i].arrivalTime <= tiempo) {
+          var ix = firstFit(memFija,arrayProcess[i]);
+          if (ix) {
+            particiones = asignarProcVar(memFija,arrayProcess[i],ix);
+            i = -1;
+          }
+        }
+      }
+    }
+}
+
+};
 
 
-  }
 //funcion que asigna una proceso a una particion variable
 function asignarProcVar(parts, proc, ix){
   //resguardo la particion para trabajar
@@ -552,7 +596,7 @@ function asignarProcVar(parts, proc, ix){
   //quito la particion resguardada
   parts.splice(ix,1);
   //agrego el Proc a la listo
-  colaListo.push(proc)
+  colaListo.push(proc);
   //creo particion de Proceso
   var partProc = newPart(parseInt(proc.size));
   partProc.IdPart = partRes.IdPart;
@@ -576,9 +620,9 @@ function asignarProcVar(parts, proc, ix){
 //Funcion que asigna procesos a particiones fijas
 function asignarProcFij(parts, proc, ix){
   //resguardo la particion para trabajar
-  parts[ix].used = proc
+  parts[ix].used = proc;
   //agrego el Proc a la listo
-  colaListo.push(proc)
+  colaListo.push(proc);
   //agrego el proceso a la lista de procesosTerminados
   procesosTerminados.push(proc);
   //Obtengo el id del proceso que ya se particiono
@@ -638,72 +682,72 @@ function solicitarProcesos(name){
     //Eliminamos el proc que ya ha terminado
   colaListo.splice(iElim,1);
 
-  if (arrayProcess.length > 0) {
-
-    if (typeMemory = "Variable"){
-      if (fitMemory == 'Worst Fit'){
-        for (var i = 0; i < arrayProcess.length; i++) {
-            var ix = worstFit(particiones,arrayProcess[i]);
-            if (ix) {
-              particiones = asignarProcVar(particiones,arrayProcess[i],ix);
-              i = -1;
-            }else {
-              //no entra en alguna particion
-              if (fragExt(particiones, arrayProcess[i])) {
-                //hay fragmentacion externa
-                particiones = desFrag(particiones);
-                var ix = worstFit(particiones,arrayProcess[i]);
-                if (ix) {
-                  particiones = asignarProcVar(particiones,arrayProcess[i],ix);
-                  i = -1;
-                }
-              }
-            }
-        }
-      }
-      if (fitMemory == 'First Fit'){
-        for (var i = 0; i < arrayProcess.length; i++) {
-            var ix = firstFit(particiones,arrayProcess[i]);
-            if (ix) {
-              particiones = asignarProcVar(particiones,arrayProcess[i],ix);
-              i = -1;
-            }else {
-              //no entra en alguna particion
-              if (fragExt(particiones, arrayProcess[i])) {
-                //hay fragmentacion externa
-                particiones = desFrag(particiones);
-                var ix = firstFit(particiones,arrayProcess[i]);
-                if (ix) {
-                  particiones = asignarProcVar(particiones,arrayProcess[i],ix);
-                  i = -1;
-                }
-              }
-            }
-        }
-      }
-    }
-
-    if (typeMemory = "Fija") {
-      if (fitMemory == 'Best Fit'){
-        for (var i = 0; i < arrayProcess.length; i++) {
-            var ix = bestFit(memFija,arrayProcess[i]);
-            if (ix) {
-              particiones = asignarProcFij(memFija,arrayProcess[i],ix);
-              i = -1;
-            }
-        }
-      }
-      if (fitMemory == 'First Fit'){
-        for (var i = 0; i < arrayProcess.length; i++) {
-            var ix = firstFit(memFija,arrayProcess[i]);
-            if (ix) {
-              particiones = asignarProcVar(memFija,arrayProcess[i],ix);
-              i = -1;
-            }
-        }
-      }
-    }
-  }
+  // if (arrayProcess.length > 0) {
+  //
+  //   if (typeMemory = "Variable"){
+  //     if (fitMemory == 'Worst Fit'){
+  //       for (var i = 0; i < arrayProcess.length; i++) {
+  //           var ix = worstFit(particiones,arrayProcess[i]);
+  //           if (ix) {
+  //             particiones = asignarProcVar(particiones,arrayProcess[i],ix);
+  //             i = -1;
+  //           }else {
+  //             //no entra en alguna particion
+  //             if (fragExt(particiones, arrayProcess[i])) {
+  //               //hay fragmentacion externa
+  //               particiones = desFrag(particiones);
+  //               var ix = worstFit(particiones,arrayProcess[i]);
+  //               if (ix) {
+  //                 particiones = asignarProcVar(particiones,arrayProcess[i],ix);
+  //                 i = -1;
+  //               }
+  //             }
+  //           }
+  //       }
+  //     }
+  //     if (fitMemory == 'First Fit'){
+  //       for (var i = 0; i < arrayProcess.length; i++) {
+  //           var ix = firstFit(particiones,arrayProcess[i]);
+  //           if (ix) {
+  //             particiones = asignarProcVar(particiones,arrayProcess[i],ix);
+  //             i = -1;
+  //           }else {
+  //             //no entra en alguna particion
+  //             if (fragExt(particiones, arrayProcess[i])) {
+  //               //hay fragmentacion externa
+  //               particiones = desFrag(particiones);
+  //               var ix = firstFit(particiones,arrayProcess[i]);
+  //               if (ix) {
+  //                 particiones = asignarProcVar(particiones,arrayProcess[i],ix);
+  //                 i = -1;
+  //               }
+  //             }
+  //           }
+  //       }
+  //     }
+  //   }
+  //
+  //   if (typeMemory = "Fija") {
+  //     if (fitMemory == 'Best Fit'){
+  //       for (var i = 0; i < arrayProcess.length; i++) {
+  //           var ix = bestFit(memFija,arrayProcess[i]);
+  //           if (ix) {
+  //             particiones = asignarProcFij(memFija,arrayProcess[i],ix);
+  //             i = -1;
+  //           }
+  //       }
+  //     }
+  //     if (fitMemory == 'First Fit'){
+  //       for (var i = 0; i < arrayProcess.length; i++) {
+  //           var ix = firstFit(memFija,arrayProcess[i]);
+  //           if (ix) {
+  //             particiones = asignarProcVar(memFija,arrayProcess[i],ix);
+  //             i = -1;
+  //           }
+  //       }
+  //     }
+  //   }
+  // }
 }
 
 var config = {
@@ -1072,18 +1116,19 @@ function firstComeFirstServed(){
   var controladorBucle = obtenerTiempoMax();
     //definimos las Vairables
    var colaBloqueados = [];
-   cargaIniMem();
+   //cargaIniMem();
    var colaESFin = []
    var salidaCPU = [];
    var salidaES = [];
    var salidaFinal = [];
    var enES = null;
-   var tiempo = 0;
+   tiempo = 0;
    var enCPU = null;
    var bloqDeCiclo = null;
 
     //Inicio del algoritmo, el For que controla la ejecucion total del algoritmo
    for (var i=0; i < controladorBucle; i++) {
+     cargaMem();
      //ya Cumplio ciclo ponemos en false
      bloqDeCiclo = null;
      //Analizamos el Trabajo en ES en el mismo tiempo t analizamos primero porque al pasar un proceso a bloqueado automaticamente ejecuta
