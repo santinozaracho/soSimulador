@@ -1261,25 +1261,34 @@ function roundRobin(quantum){
     //para solicitar procesos a la cola de listo en caso de que el proceso haya terminado
     // y para repartir por cola de cpu y de e/s en caso de que no haya terminado
     for (var x = 0; x < colaListo.length; x++) {
+
       if (colaListo[x].cpuTime.length == colaListo[x].ioTime.length){
-        if (estaEn(colaCPU,colaListo[x]) == false && enCPU != colaListo[x]) {
-                  colaCPU.push(colaListo[x]);
-        }
+        if (colaListo[x].cpuTime.length != 0){
+            if (estaEn(colaCPU,colaListo[x]) == false && enCPU != colaListo[x]) {
+                      colaCPU.push(colaListo[x]);
+            }
+          }
       }else{
         if(colaListo[x].ioTime.length == (colaListo[x].cpuTime.length + 1)){
             if (estaEn(colaES,colaListo[x]) == false && enES != colaListo[x]){
                 colaES.push(colaListo[x])
             }
-        }else{
-          if (colaListo[x].cpuTime.length == 0 && colaListo[x].ioTime.length == 0){
-            if (colaListo[x].lastCpuTime > 0  &&(estaEn(colaCPU,colaListo[x]) == false)){
-              colaCPU.push(colaListo[x]);
-            }
-          }else{
-            solicitarProcesos(colaListo[x].name)
-          }
         }
       }
+
+      if (colaListo[x].cpuTime.length == 0 && colaListo[x].ioTime.length == 0){
+        if ( (colaListo[x].lastCpuTime > 0)  && (estaEn(colaCPU,colaListo[x]) == false) && (enCPU != colaListo[x]) ){
+          colaCPU.push(colaListo[x]);
+        }
+      }
+
+      if (colaListo[x].cpuTime.length == 0 && colaListo[x].ioTime.length == 0){
+        if ((colaListo[x].lastCpuTime == 0)  &&(estaEn(colaCPU,colaListo[x]) == false)){
+          solicitarProcesos(colaListo[x].name)
+        }
+      }
+
+
     }
     //para darle valores a enCPU
     if (enCPU == null){
@@ -1341,7 +1350,9 @@ function roundRobin(quantum){
       }
     }
     tiempo+=1;
-    if (colaListo.length == 0 && colaCPU.length == 0 && enCPU == null){break}
+    if (colaListo.length == 0 && colaCPU.length == 0 && enCPU == null){
+      break;
+    }
 
   }
   salidaFinal.push(salidaCPU);
