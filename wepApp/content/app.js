@@ -65,16 +65,18 @@ $(document).ready(function () {
    //control del tipo de memoria
    $(".optionTypeOne").click(function(){
       $(".fixedPart").show();
+      $(".memInfo").text("Fija");
       var valueCurrent = $(".optionTypeOne > input").val();
       typeMemory = valueCurrent;
       console.log(typeMemory);
       $("#collapseExample").addClass("show");
       $(".optionFitTwo").hide();
       $(".optionFitOne").show();
-      $(".memInfo").text("Variable");
+
    });
    $(".optionTypeTwo").click(function(){
       $(".fixedPart").hide();
+      $(".memInfo").text("Variable");
       var valueCurrent = $(".optionTypeTwo > input").val();
       typeMemory = valueCurrent;
       console.log(typeMemory);
@@ -82,7 +84,7 @@ $(document).ready(function () {
       //$("#collapseExample").addClass("show");
       $(".optionFitTwo").show();
       $(".optionFitOne").hide();
-      $(".memInfo").text("Fija");
+
    });
    //-------------------------
 
@@ -91,13 +93,13 @@ $(document).ready(function () {
       var valueCurrent = $(".optionFitOne > input").val();
       fitMemory = valueCurrent;
       console.log(fitMemory);
-      $(".ajuInfo").text("First Fit");
+      $(".ajuInfo").text("Best Fit");
    });
    $(".optionFitTwo").click(function(){
       var valueCurrent = $(".optionFitTwo > input").val();
       fitMemory = valueCurrent;
       console.log(fitMemory);
-      $(".ajuInfo").text("Best Fit");
+      $(".ajuInfo").text("First Fit");
    });
    $(".optionFitThree").click(function(){
       var valueCurrent = $(".optionFitThree > input").val();
@@ -145,6 +147,17 @@ $(document).ready(function () {
     });
 
    //------------------------------------
+$(document).on('click','.memInfo',function(){
+     $('[href="#memoria"]').tab('show')});
+
+$(document).on('click','.ajuInfo',function(){
+     $('[href="#memoria"]').tab('show')});
+
+$(document).on('click','.tamInfo',function(){
+     $('[href="#memoria"]').tab('show')});
+
+$(document).on('click','.algoInfo',function(){
+     $('[href="#procesos"]').tab('show')});
 
    //seguir
    $(".startButton").click(function(){
