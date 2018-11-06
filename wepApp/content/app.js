@@ -47,14 +47,17 @@ $(document).ready(function () {
    //control de la obtención del tamaño de la memoria
    $(".optionOne").click(function(){
       sizeMemory = parseInt($(".optionOne > input").val());
+      $(".tamInfo").text("256");
       console.log(sizeMemory)
    });
    $(".optionTwo").click(function(){
        sizeMemory = parseInt($(".optionTwo > input").val());
+       $(".tamInfo").text("512");
        console.log(sizeMemory)
    });
    $(".optionThree").click(function(){
       sizeMemory = parseInt($(".optionThree > input").val());
+      $(".tamInfo").text("1024");
       console.log(sizeMemory)
    });
    //--------------------------------
@@ -62,15 +65,18 @@ $(document).ready(function () {
    //control del tipo de memoria
    $(".optionTypeOne").click(function(){
       $(".fixedPart").show();
+      $(".memInfo").text("Fija");
       var valueCurrent = $(".optionTypeOne > input").val();
       typeMemory = valueCurrent;
       console.log(typeMemory);
       $("#collapseExample").addClass("show");
       $(".optionFitTwo").hide();
       $(".optionFitOne").show();
+
    });
    $(".optionTypeTwo").click(function(){
       $(".fixedPart").hide();
+      $(".memInfo").text("Variable");
       var valueCurrent = $(".optionTypeTwo > input").val();
       typeMemory = valueCurrent;
       console.log(typeMemory);
@@ -78,6 +84,7 @@ $(document).ready(function () {
       //$("#collapseExample").addClass("show");
       $(".optionFitTwo").show();
       $(".optionFitOne").hide();
+
    });
    //-------------------------
 
@@ -86,16 +93,19 @@ $(document).ready(function () {
       var valueCurrent = $(".optionFitOne > input").val();
       fitMemory = valueCurrent;
       console.log(fitMemory);
+      $(".ajuInfo").text("Best Fit");
    });
    $(".optionFitTwo").click(function(){
       var valueCurrent = $(".optionFitTwo > input").val();
       fitMemory = valueCurrent;
       console.log(fitMemory);
+      $(".ajuInfo").text("First Fit");
    });
    $(".optionFitThree").click(function(){
       var valueCurrent = $(".optionFitThree > input").val();
       fitMemory = valueCurrent;
       console.log(fitMemory);
+      $(".ajuInfo").text("Worst Fit");
    });
    //------------------------------------
 
@@ -106,12 +116,14 @@ $(document).ready(function () {
       console.log(algorithm);
       $(".quantumIn").val("");
       $(".quantumIn").hide();
+      $(".algoInfo").text("FCFS");
    });
    $(".optionPlaningTwo").click(function(){
       var valueCurrent = $(".optionPlaningTwo > input").val();
       algorithm = valueCurrent;
       console.log(algorithm);
       $(".quantumIn").show();
+      $(".algoInfo").text("RR");
    });
    $(".optionPlaningThree").click(function(){
       var valueCurrent = $(".optionPlaningThree > input").val();
@@ -119,19 +131,33 @@ $(document).ready(function () {
       console.log(algorithm);
       $(".quantumIn").val("");
       $(".quantumIn").hide();
+      $(".algoInfo").text("SJF");
    });
    $(".optionPlaningFour").click(function(){
       var valueCurrent = $(".optionPlaningFour > input").val();
       algorithm = valueCurrent;
       console.log(algorithm);
       $(".quantumIn").hide();
+      $(".algoInfo").text("SRTF");
    });
 
    $(".quantumIn").keyup(function(){
         generalQuantum = parseInt($('.quantumIn').val());
+        $(".algoInfo").text("RR-Q:"+$('.quantumIn').val());
     });
 
    //------------------------------------
+$(document).on('click','.memInfo',function(){
+     $('[href="#memoria"]').tab('show')});
+
+$(document).on('click','.ajuInfo',function(){
+     $('[href="#memoria"]').tab('show')});
+
+$(document).on('click','.tamInfo',function(){
+     $('[href="#memoria"]').tab('show')});
+
+$(document).on('click','.algoInfo',function(){
+     $('[href="#procesos"]').tab('show')});
 
    //seguir
    $(".startButton").click(function(){
