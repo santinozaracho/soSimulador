@@ -1513,6 +1513,7 @@ function shortestJobFirst(){
 //  var tiempo=0;
   var posicion=0;
   var min=99999;
+  var arrivalTimeMin=0;
 
   for (i = 0; i < controladorBucle; i++) {
     cargaMem();
@@ -1553,7 +1554,17 @@ function shortestJobFirst(){
             if (colaCPU[j].cpuTime[0] < min){
               enCPU=colaCPU[j];
               min=colaCPU[j].cpuTime[0];
-              posicion=j;}
+              posicion=j;
+              arrivalTimeMin=colaCPU[j].arrivalTime;
+            }
+            if(colaCPU[j].cpuTime[0] == min){
+              if (colaCPU[j].arrivalTime < arrivalTimeMin){
+                enCPU=colaCPU[j];
+                min=colaCPU[j].cpuTime[0];
+                posicion=j;
+                arrivalTimeMin=colaCPU[j].arrivalTime;
+              }
+            }
           }else{if(colaCPU[j].ioTime.length == 0){
                 if (colaCPU[j].lastCpuTime < min){
                           enCPU=colaCPU[j];
@@ -1655,6 +1666,7 @@ function shortRemainingTimeFirst(){
   var min=99999;
   var newProcess =[];
   var flag = false;
+  var arrivalTimeMin = 0;
 
   for (i = 0; i < controladorBucle; i++) {
     cargaMem();
@@ -1704,9 +1716,19 @@ function shortRemainingTimeFirst(){
       if (colaCPU.length > 0) {
         for (j = 0; j < colaCPU.length; j++) {
           if (colaCPU[j].cpuTime[0] > 0) {
-            if (colaCPU[j].cpuTime[0] < min){enCPU=colaCPU[j];
-                                              min=colaCPU[j].cpuTime[0];
-                                              posicion=j;}
+            if (colaCPU[j].cpuTime[0] < min){
+              enCPU=colaCPU[j];
+              min=colaCPU[j].cpuTime[0];
+              posicion=j;
+              arrivalTimeMin=colaCPU[j].arrivalTime;
+            }
+            if(colaCPU[j].cpuTime[0] == min){
+              if (colaCPU[j].arrivalTime < arrivalTimeMin){
+                enCPU=colaCPU[j];
+                min=colaCPU[j].cpuTime[0];
+                posicion=j;
+                arrivalTimeMin=colaCPU[j].arrivalTime;
+              }
           }else{if(colaCPU[j].ioTime.length == 0){
               if (colaCPU[j].lastCpuTime < min){
                     enCPU=colaCPU[j];
