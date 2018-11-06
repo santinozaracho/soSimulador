@@ -1396,7 +1396,6 @@ function shortestJobFirst(){
           for (j = 0; j < colaCPU.length; j++) {
             if (colaCPU[j].cpuTime[0] > 0) {
                             enCPU=colaCPU[j];
-                            min=colaCPU[j].lastCpuTime[0];
                             posicion=j;}}}
           }
           console.log('No hay CPU y hay elementos en colaCPU');
