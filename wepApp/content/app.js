@@ -1586,7 +1586,7 @@ function shortestJobFirst(){
                             }
       }
       tiempo+=1;
-      if (colaListo.length == 0 && colaCPU.length == 0 && enCPU == null){break}
+      if (colaListo.length == 0 && colaCPU.length == 0 && enCPU == null && arrayProcess.length == 0){break}
   }
   salidaFinal.push(salidaCPU);
   salidaFinal.push(salidaES);
@@ -1781,7 +1781,7 @@ function shortRemainingTimeFirst(){
                             }
       }
       tiempo+=1;
-      if (colaListo.length == 0 && colaCPU.length == 0 && enCPU == null){break}
+      if (colaListo.length == 0 && colaCPU.length == 0 && enCPU == null && arrayProcess.length == 0){break}
   }
   salidaFinal.push(salidaCPU);
   salidaFinal.push(salidaES);
