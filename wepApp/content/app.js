@@ -1280,9 +1280,6 @@ function roundRobin(quantum){
         if ( (colaListo[x].lastCpuTime > 0)  && (estaEn(colaCPU,colaListo[x]) == false) && (enCPU != colaListo[x]) ){
           colaCPU.push(colaListo[x]);
         }
-      }
-
-      if (colaListo[x].cpuTime.length == 0 && colaListo[x].ioTime.length == 0){
         if ((colaListo[x].lastCpuTime == 0)  &&(estaEn(colaCPU,colaListo[x]) == false)){
           solicitarProcesos(colaListo[x].name)
         }
@@ -1385,23 +1382,7 @@ function shortestJobFirst(){
 
   for (i = 0; i < controladorBucle; i++) {
     for (x = 0; x < colaListo.length; x++) {
-
-      if (colaListo[x].cpuTime.length == colaListo[x].ioTime.length){
-        if (estaEn(colaCPU,colaListo[x]) == false && enCPU != colaListo[x]) {
-          colaCPU.push(colaListo[x]);}
-
-      }else{
-          if(colaListo[x].ioTime.length == (colaListo[x].cpuTime.length + 1)){
-            if (estaEn(colaES,colaListo[x]) == false && enES != colaListo[x]) {
-              colaES.push(colaListo[x])
             }
-          }else{
-            if (colaListo[x].cpuTime.length == 0 && colaListo[x].ioTime.length == 0){
-              if (colaListo[x].lastCpuTime > 0  &&(estaEn(colaCPU,colaListo[x]) == false)){
-                  colaCPU.push(colaListo[x]);
-                }
-
-            }else{colaListo=solicitarProcesos(colaListo[x].name)}
               }
         }
     }
@@ -1414,9 +1395,6 @@ function shortestJobFirst(){
 
           for (j = 0; j < colaCPU.length; j++) {
             if (colaCPU[j].cpuTime[0] > 0) {
-              if (colaCPU[j].cpuTime[0] < min){enCPU=colaCPU[j]; min=colaCPU[j].cpuTime[0];posicion=j;}
-            }else{if(colaListo[j].ioTime.length == 0){
-                  if (colaListo[j].lastCpuTime[0] < min){
                             enCPU=colaCPU[j];
                             min=colaCPU[j].lastCpuTime[0];
                             posicion=j;}}}
@@ -1450,9 +1428,7 @@ function shortestJobFirst(){
                                 salidaCPU.push(elementoCPU);
                                 }
 
-        }else{enCPU.lastCpuTime[0]-=1;//trata tiempo de lastCpuTime
 
-              if (enCPU.lastCpuTime[0] < 1){elementoCPU.outTime=elementoCPU.inTime+elementoCPU.irrupctionTime;
                                         if(enCPU.lastCpuTime == 0){elementoCPU.finish=true}
                                         enCPU = null;
                                         salidaCPU.push(elementoCPU);
@@ -1519,35 +1495,10 @@ function shortRemainingTimeFirst(){
 
   for (i = 0; i < controladorBucle; i++) {
     for (x = 0; x < colaListo.length; x++) {
-      if ((colaListo[x].cpuTime.length) == (colaListo[x].ioTime.length)){
-        if ((estaEn(colaCPU,colaListo[x]) == false) && (enCPU != colaListo[x])) {
-          colaCPU.push(colaListo[x]);
-        }
-      }else{
-          if((colaListo[x].ioTime.length) == (colaListo[x].cpuTime.length + 1)){
-            if ((estaEn(colaES,colaListo[x]) == false) && (enES != colaListo[x])) {
-              colaES.push(colaListo[x]);
-            }
-          }else{
-            if ((colaListo[x].cpuTime.length == 0) && (colaListo[x].ioTime.length == 0)){
-              if ((colaListo[x].lastCpuTime > 0)  && (estaEn(colaCPU,colaListo[x]) == false)){
-                  colaCPU.push(colaListo[x]);
-
-              }
             }else{
-                  colaResguardo=colaListo; flag=false;
-                  colaListo=solicitarProcesos(colaListo[x].name);
-                  for (var n = 0; n < colaListo.length; n++) {
-                    if (estaEn(colaResguardo, colaListo[n].name) == false) {
-                      newProcess.push(colaListo[n]);
-                      flag = true;
-                    }
                   }
               }
-        }
-
       }
-    }
     //ordena los procesos nuevos en colaListo
 
     if(flag == true){
@@ -1561,10 +1512,7 @@ function shortRemainingTimeFirst(){
               if (colaCPU[j].cpuTime[0] < min){enCPU=colaCPU[j];
                                                 min=colaCPU[j].cpuTime[0];
                                                 posicion=j;}
-            }else{if(colaListo[j].ioTime.length == 0){
-                if (colaListo[j].lastCpuTime < min){
                       enCPU=colaCPU[j];
-                      min=colaCPU[j].cpuTime[0];
                       posicion=j;}}}
           }
           console.log('No hay CPU y hay elementos en colaCPU');
@@ -1653,10 +1601,8 @@ function shortRemainingTimeFirst(){
       if (enES != null){
         elementoES.irrupctionTime+=1;
         enES.ioTime[0]-=1;
-
         if (enES.ioTime[0] < 1){elementoES.outTime=elementoES.inTime+elementoES.irrupctionTime;
                             if (estaEn(colaListo,enES) == true){posicion=getIxByName(colaListo,enES.name);
-
                                                                   colaListo[posicion].ioTime.splice(0,1)}
                             enES = null;
                             salidaES.push(elementoES);
