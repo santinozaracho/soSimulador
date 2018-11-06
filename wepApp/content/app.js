@@ -160,10 +160,14 @@ $(document).ready(function () {
       //Carga de las Barras
       var arrayCpu = arrayFinish[0];
       var firstIrruption = arrayCpu[0].irrupctionTime;
-      arrayCpu[0].color = '#'+ ('000000' + Math.floor(Math.random()*16777215).toString(16)).slice(-6);
-      if(firstIrruption < 4){
-          firstIrruption = 4
+      if (arrayCpu[0].name == 'O') {
+        arrayCpu[0].color = '#e9ecef'
+      }else {
+        arrayCpu[0].color = '#'+ ('000000' + Math.floor(Math.random()*16777215).toString(16)).slice(-6);
       }
+  //    if(firstIrruption < 4){
+          //firstIrruption = 4
+    //  }
       $('#proccessBar').attr('aria-valuenow', firstIrruption).css('width',firstIrruption+'%');
       var tagOne = $('#proccessBar').find('a');
 
@@ -186,7 +190,11 @@ $(document).ready(function () {
 
       tagOne.attr('data-content', htmlPopover);
       tagOne.text(arrayCpu[0].name);
-      tagOne.css("background-color", arrayCpu[0].color).text(arrayCpu[0].name);
+      if (firstIrruption < 4) {
+        tagOne.css("background-color", arrayCpu[0].color).text("-");
+      }else {
+        tagOne.css("background-color", arrayCpu[0].color).text(arrayCpu[0].name);
+      }
       tagOne.css("border-color", arrayCpu[0].color);
 
 
@@ -210,9 +218,9 @@ $(document).ready(function () {
 
           var irruption = item.irrupctionTime;
 
-          if(irruption < 4){
-              irruption = 4
-          }
+        //  if(irruption < 4){
+              //irruption = 4
+          //}
 
           newItem.attr('aria-valuenow', item.irruption).css('width',irruption+'%');
           var tag = newItem.find('a');
@@ -223,7 +231,12 @@ $(document).ready(function () {
             tag.css("background-color", item.color).text("-");
           }else{
             tag.attr('title', 'Datos de '+item.name);
-            tag.css("background-color", item.color).text(item.name);
+            if (irruption < 4 ) {
+              tag.css("background-color", item.color).text("-");
+            }else {
+              tag.css("background-color", item.color).text(item.name);
+            }
+
             htmlTag += '</br><div><b>Tiempo de Ejecucion: '+item.irrupctionTime+'</b></div>';
           }
 
@@ -255,9 +268,9 @@ $(document).ready(function () {
       }else {
         arrayEs[0].color = arrayCpu[indx].color
       }
-      if(firstIrruptionEs < 4){
-          firstIrruptionEs = 4
-      }
+    //  if(firstIrruptionEs < 4){
+        //  firstIrruptionEs = 4
+      //}
       $('#proccessEs').attr('aria-valuenow', firstIrruptionEs).css('width',firstIrruptionEs+'%');
       var tagOneEs = $('#proccessEs').find('a');
 
@@ -268,8 +281,13 @@ $(document).ready(function () {
         tagOneEs.attr('data-original-title', 'Tiempo Ocioso');
         tagOneEs.css("background-color", arrayEs[0].color).text("-");
       }else{
+        if (firstIrruptionEs < 4) {
+          tagOneEs.css("background-color", arrayEs[0].color).text("-");
+        }else {
+          tagOneEs.css("background-color", arrayEs[0].color).text(arrayEs[0].name);
+        }
         tagOneEs.attr('data-original-title', 'Datos de '+arrayEs[0].name);
-        tagOneEs.css("background-color", arrayEs[0].color).text(arrayEs[0].name);
+
       }
 
       tagOneEs.css("border-color", arrayEs[0].color);
@@ -297,9 +315,9 @@ $(document).ready(function () {
 
           var irruption = item.irrupctionTime;
 
-          if(irruption < 4){
-              irruption = 4
-          }
+          //if(irruption < 4){
+            //  irruption = 4
+        //  }
 
           newItem.attr('aria-valuenow', item.irruption).css('width',irruption+'%');
           var tag = newItem.find('a');
@@ -310,7 +328,12 @@ $(document).ready(function () {
             tag.attr('title', 'Tiempo Ocioso');
             tag.css("background-color", item.color).text("-");
           }else{
-            tag.css("background-color", item.color).text(item.name);
+            if (irruption < 4) {
+              tag.css("background-color", item.color).text("-");
+            }else {
+              tag.css("background-color", item.color).text(item.name);
+            }
+
             tag.attr('title', 'Datos de '+item.name);
             htmlTag += '</br><div><b>Tiempo de Ejecucion: '+item.irrupctionTime+'</b></div>';
           }
@@ -1034,6 +1057,16 @@ function tiemposOcioso(gantt){
           cpu.splice(i+1,0,vacio);
       //  }
       }
+    }
+    if (cpu[0].inTime > 0) {
+      var vacio = {};
+      vacio.inTime = 0;
+      vacio.name='O';
+      vacio.arrivalTime = 1;//Analizar este Tiempo
+      vacio.irrupctionTime = cpu[0].inTime;
+      vacio.outTime = cpu[0].inTime;
+      vacio.finish = false;
+      cpu.splice(0,0,vacio);
     }
   }else {
     var vacio = {};
