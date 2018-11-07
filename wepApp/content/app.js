@@ -22,11 +22,8 @@ $(function () {
 
 $(document).ready(function () {
     getData();
+
     $(".quantumIn").hide();
-
-    $('.alertProcess').removeClass('show');
-
-    $('.alertProcess').addClass('hide');
 
     $(".optionFitOne").hide();
 
@@ -52,16 +49,22 @@ $(document).ready(function () {
    $(".optionOne").click(function(){
       sizeMemory = parseInt($(".optionOne > input").val());
       $(".tamInfo").text("256");
+      maxpart = 5;
+      $(".textoAlertMem").text("5 es la cantidad maxima de particiones para el tamaño de memoria elegida.");
       console.log(sizeMemory)
    });
    $(".optionTwo").click(function(){
        sizeMemory = parseInt($(".optionTwo > input").val());
        $(".tamInfo").text("512");
+       maxpart = 8;
+       $(".textoAlertMem").text("8 es la cantidad maxima de particiones para el tamaño de memoria elegida.");
        console.log(sizeMemory)
    });
    $(".optionThree").click(function(){
       sizeMemory = parseInt($(".optionThree > input").val());
       $(".tamInfo").text("1024");
+      maxpart = 12;
+      $(".textoAlertMem").text("12 es la cantidad maxima de particiones para el tamaño de memoria elegida.");
       console.log(sizeMemory)
    });
    //--------------------------------
@@ -73,6 +76,7 @@ $(document).ready(function () {
       var valueCurrent = $(".optionTypeOne > input").val();
       typeMemory = valueCurrent;
       console.log(typeMemory);
+      $(".alertMem").addClass("show");
       $("#collapseExample").addClass("show");
       $(".optionFitTwo").hide();
       $(".optionFitOne").show();
@@ -84,6 +88,8 @@ $(document).ready(function () {
       var valueCurrent = $(".optionTypeTwo > input").val();
       typeMemory = valueCurrent;
       console.log(typeMemory);
+      $(".alertMem").removeClass("show");
+      $(".alertMem").addClass("hide");
       $("#collapseExample").removeClass("show");
       //$("#collapseExample").addClass("show");
       $(".optionFitTwo").show();
@@ -181,8 +187,6 @@ $(document).ready(function () {
    //------------------------------------
 $(document).on('click','.editarNombre',function(){
     $('.nomProc').prop("disabled", false)});
-
-
 
 $(document).on('click','.memInfo',function(){
      $('[href="#memoria"]').tab('show')});
@@ -428,90 +432,98 @@ $(document).on('click', ".one", function (e) {
 //inputs para crear las particiones
 $(document).on('click', '.btn-add', function(e){
 
-    $('.alertCustom').removeClass('show');
-    $('.alertCustom').addClass('hide');
+    $('.alertPart').removeClass('show');
+    $('.alertPart').addClass('hide');
 
     e.preventDefault();
 
-      if(cont < maxpart){
+    var controlForm = $('.controls form:first'),
+        currentEntry = $(this).parents('.entry:first');
+
+    //Variable que nos indica en cada momento el tamaño disponible
+    var tamdisp = sizeMemory
+
+    //Verificamos la existencia de alguna particion
+    if(memFija.length > 0){
+      // memFija.forEach(function(sizepart,index) {
+      //   tamdisp =  tamdisp - sizepart
+      // })
+      for (var i = 0; i < memFija.length; i++) {
+        tamdisp = tamdisp - memFija[i].size;
+      }
+
+    }
+
+    //Tamaño de particion ingreasda
+    var sizepart = currentEntry.find('input').val();
+
+    sizepart = parseInt(sizepart);
+
+    if (sizepart > 0) {
+
+      if (sizepart <= tamdisp) {
+
+        //se puede agregar particion
+        //memFija.push(sizepart)
+
+        var objPart = {};
+        objPart.IdPart = cont;
+        objPart.size = sizepart;
+        objPart.used = null;
+
+        memFija.push(objPart);
+
+        cont = cont + 1;
+
         var controlForm = $('.controls form:first'),
             currentEntry = $(this).parents('.entry:first');
 
-        //Variable que nos indica en cada momento el tamaño disponible
-        var tamdisp = sizeMemory
+        if (cont < maxpart) {
+          var newEntry = $(currentEntry.clone()).appendTo(controlForm);
 
-        //Verificamos la existencia de alguna particion
-        if(memFija.length > 0){
-          // memFija.forEach(function(sizepart,index) {
-          //   tamdisp =  tamdisp - sizepart
-          // })
-          for (var i = 0; i < memFija.length; i++) {
-            tamdisp = tamdisp - memFija[i].size;
-          }
+          newEntry.find('input').val('');
 
-        }
+          newEntry.find('.textPart').text("Partición " + cont)
 
-        //Tamaño de particion ingreasda
-        var sizepart = currentEntry.find('input').val();
+          controlForm.find('.entry:not(:last) .inputMemory')
+            .addClass('classDisabled')
+            .removeClass('inputMemory')
+            .prop("disabled", true);
 
-        sizepart = parseInt(sizepart);
-
-        if (sizepart > 0) {
-
-          if (sizepart <= tamdisp) {
-
-            //se puede agregar particion
-            //memFija.push(sizepart)
-
-            var objPart = {};
-            objPart.IdPart = cont;
-            objPart.size = sizepart;
-            objPart.used = null;
-
-            memFija.push(objPart);
-
-            cont = cont + 1;
-
-            var controlForm = $('.controls form:first'),
-                currentEntry = $(this).parents('.entry:first'),
-                newEntry = $(currentEntry.clone()).appendTo(controlForm);
-
-            newEntry.find('input').val('');
-
-            newEntry.find('.textPart').text("Partición " + cont)
-
-            controlForm.find('.entry:not(:last) .inputMemory')
-              .addClass('classDisabled')
-              .removeClass('inputMemory')
-              .prop("disabled", true);
-
-            controlForm.find('.entry:not(:last) .btn-add')
-                .removeClass('btn-add').addClass('btn-remove')
-                .removeClass('btn-success').addClass('btn-danger')
-                .html('<span class="glyphicon glyphicon-minus deleteInput">Quitar</span>');
-
-          }else {
-
-            //Alerta por Nueva Particion muy grande
-            $(".textoalert").text("El tamaño de la partición es mayor al disponible.");
-            $('.alertCustom').addClass('show');
-
-          }
+          controlForm.find('.entry:not(:last) .btn-add')
+              .removeClass('btn-add').addClass('btn-remove')
+              .removeClass('btn-success').addClass('btn-danger')
+              .html('<span class="glyphicon glyphicon-minus deleteInput">Quitar</span>');
 
         }else {
+          controlForm.find('.entry:last .inputMemory')
+            .addClass('classDisabled')
+            .removeClass('inputMemory')
+            .prop("disabled", true);
 
-          $(".textoalert").text("Debes ingresar un valor.");
-          $('.alertCustom').addClass('show');
-
+          controlForm.find('.entry:last .btn-add')
+              .removeClass('btn-add').addClass('btn-remove')
+              .removeClass('btn-success').addClass('btn-danger')
+              .html('<span class="glyphicon glyphicon-minus deleteInput">Quitar</span>');
         }
 
-console.log(memFija);
+      }else {
+
+        //Alerta por Nueva Particion muy grande
+        $(".textoAlertPart").text("El tamaño de la partición es mayor al disponible.");
+        $('.alertPart').addClass('show');
+
+      }
+
+//console.log(memFija);
 }});
 
+
 //falta hacer el borrado de la particion
-$(".deleteInput").click(function(){
-    alert("dsfsefsef.");
-});
+$(document).on('click','.btn-remove', function(){
+    $(".textoAlertPart").text("Funcion en Construccion");
+    $('.alertPart').addClass('show');
+  });
 
 
 //button siguiente
