@@ -76,16 +76,22 @@
     	              </label>
     	            </div>
 
-                  <div class="my-4 alert alert-secondary" hidden role="alert">
-                    Como maximo 5 Particiones.
+                  <div class=" mt-4 alert alert-warning alert-dismissible fade hide alertMem" role="alert">
+                    <strong class="textoAlertMem">5 es la cantidad maxima de particiones para el tamaño de memoria elegida.</strong>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
                   </div>
 
                 </div>
 
                 <div class="col-lg-4 memorySelect">
-    	            <h5 class="card-title my-2">Selecciona el tipo de memoria</h5>
-    	            <div class="btn-group btn-group-toggle" data-toggle="buttons">
-    	            	<label class="btn btn-secondary active optionTypeTwo">
+
+                  <h5 class="card-title my-2">Selecciona el tipo de memoria</h5>
+
+                  <div class="btn-group btn-group-toggle" data-toggle="buttons">
+
+                    <label class="btn btn-secondary active optionTypeTwo">
     		                <input type="radio" name="options" value="Variable" autocomplete="off" checked> Variable
     		            </label>
 
@@ -94,7 +100,39 @@
     		            </label>
 
     	            </div>
-    	            </div>
+
+                  <div class="mt-2 row collapse" id="collapseExample">
+
+                    <h5>Generación de particiones</h4>
+
+                    <div class="control-group" id="fields">
+
+                        <div class="px-5 controls">
+                            <form role="form" autocomplete="off">
+                                <div class="mt-2 entry input-group-prepend">
+                                  <span class="input-group-text textPart">Particion 0</span>
+                                  <input class="form-control inputMemory" name="fields[]" placeholder="Ingrese Tamaño" />
+                                  <span class="ml-2 input-group-btn">
+                                        <button class="btn btn-success btn-add" type="button">
+                                            <span class="glyphicon glyphicon-plus">Agregar</span>
+                                        </button>
+                                    </span>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="mt-2 alert alert-danger alert-dismissible fade hide alertPart" role="alert">
+                          <strong class="textoAlertPart">Error, No puede ingresar mas particiones.</strong>
+                          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                          </button>
+                        </div>
+
+                    </div>
+
+                  </div>
+
+                 </div>
 
                 <div class="col-lg-4 memorySelect">
     	            <h5 class="card-title my-2">Selecciona el ajuste de memoria</h5>
@@ -111,50 +149,6 @@
     	            </div>
     	           </div>
 
-              </div>
-
-              <div class="row collapse" id="collapseExample">
-
-
-                <div class="col-lg-4">
-
-                </div>
-
-                <div class="col-lg-4">
-
-
-                  <h4>Generación de particiones</h4>
-
-                  <div class="control-group" id="fields">
-
-                      <div class="controls">
-                          <form role="form" autocomplete="off">
-                              <div class="entry input-group-prepend">
-                                <span class="input-group-text textPart">Particion 0</span>
-                                <input class="form-control inputMemory" name="fields[]" placeholder="Ingrese tamaño" />
-                              	<span class="input-group-btn">
-                                      <button class="btn btn-success btn-add" type="button">
-                                          <span class="glyphicon glyphicon-plus">Agregar</span>
-                                      </button>
-                                  </span>
-                              </div>
-                          </form>
-                      </div>
-
-                      <div class="alert alert-danger alert-dismissible fade hide alertCustom" role="alert">
-                        <strong class="textoalert">Error, el tamaño de memora excede, o no puede ingresar mas partciones</strong>
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                          <span aria-hidden="true">&times;</span>
-                        </button>
-    			          	</div>
-
-                  </div>
-
-                </div>
-
-                <div class="col-lg-4">
-
-                </div>
               </div>
 
               <div class="row m-2 buttonNext">
