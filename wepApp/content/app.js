@@ -11,6 +11,7 @@ var cont = 0;//contador de Particiones fijas
 var maxpart = 5; //cantidad maxima de particiones fijas
 var memFija = []; // memoria fija
 var tiempo = 0
+var lenArrayProcess = 0
 
 
 $(function () {
@@ -21,8 +22,8 @@ $(function () {
 
 $(document).ready(function () {
     getData();
-
     $(".quantumIn").hide();
+
 
     $(".optionFitOne").hide();
 
@@ -147,6 +148,11 @@ $(document).ready(function () {
     });
 
    //------------------------------------
+$(document).on('click','.editarNombre',function(){
+    $('.nomProc').prop("disabled", false)});
+
+
+
 $(document).on('click','.memInfo',function(){
      $('[href="#memoria"]').tab('show')});
 
@@ -970,7 +976,8 @@ function deleteData(idData){
 }
 
 function getData(){
-
+    arrayProcess = [];
+    lenArrayProcess=0;
     var tabla = document.getElementById('tableId');
 
     db.collection("process").orderBy('arrivalTime').get().then((querySnapshot) => {
@@ -993,14 +1000,15 @@ function getData(){
                 <td class="tdTable"><button class="btn btn-danger" onclick="deleteData('${doc.id}')">Borrar</button></td>
             </tr>
             `;
-            index += 1;
-
+          index += 1;
+          lenArrayProcess += 1;
           arrayProcess.push(doc.data());
+          var ultNom = "P"+(lenArrayProcess+1);
+          $(".nomProc").val(ultNom);
         });
     });
-
     console.log(arrayProcess)
-}
+};
 
 function arrayProc(){
     db.collection("process").orderBy('arrivalTime').get().then((querySnapshot) => {
