@@ -24,6 +24,9 @@ $(document).ready(function () {
     getData();
     $(".quantumIn").hide();
 
+    $('.alertProcess').removeClass('show');
+
+    $('.alertProcess').addClass('hide');
 
     $(".optionFitOne").hide();
 
@@ -143,9 +146,37 @@ $(document).ready(function () {
    });
 
    $(".quantumIn").keyup(function(){
-        generalQuantum = parseInt($('.quantumIn').val());
-        $(".algoInfo").text("RR-Q:"+$('.quantumIn').val());
+
+     $('.alertProcess').removeClass('show');
+     $('.alertProcess').addClass('hide');
+
+     var quanto = parseInt($('.quantumIn').val())
+
+     if (quanto > 0) {
+       generalQuantum = quanto;
+       $(".algoInfo").text("RR - Q:"+quanto);
+     }else {
+
+       $(".textoAlertProc").text("Debe ingresar un Quanto mayor a cero.");
+       $('.alertProcess').addClass('show');
+     }
+
     });
+
+    $(".sizeInput").keyup(function(){
+
+      $('.alertProcess').removeClass('show');
+      $('.alertProcess').addClass('hide');
+
+      var tamProc = parseInt($('.sizeInput').val())
+      var maxTamPocess = getMaxProcessSize(typeMemory)
+
+      if (tamProc > maxTamPocess) {
+        $(".textoAlertProc").text("El tamaño del proceso no puede ser mayor al tamaño de la Memoria o Particion.");
+        $('.alertProcess').addClass('show');
+      }
+     });
+
 
    //------------------------------------
 $(document).on('click','.editarNombre',function(){
@@ -462,7 +493,7 @@ $(document).on('click', '.btn-add', function(e){
           }else {
 
             //Alerta por Nueva Particion muy grande
-            $(".textoalert").text("El valor supera la cantida de la partición.");
+            $(".textoalert").text("El tamaño de la partición es mayor al disponible.");
             $('.alertCustom').addClass('show');
 
           }
@@ -638,7 +669,7 @@ function cargaMem(){
         }
       }
     }
-}
+  }
 
 };
 
@@ -845,8 +876,7 @@ var esList = []
 //agregar rafagas dinamicas
 $(document).on('click', '.btn-add-raf', function(e){
 
-    $('.alertProcess').removeClass('show');
-    $('.alertProcess').addClass('hide');
+
 
     e.preventDefault();
 
@@ -899,7 +929,7 @@ $(document).on('click', '.btn-add-raf', function(e){
             $(".textoalert").text("Debes ingresar un valor en ES.");
             $('.alertCustom').addClass('show');
           }else {
-            $(".textoalert").text("Debes ingresar un valor en ES.");
+            $(".textoalert").text("Debes ingresar un valor en CPU.");
             $('.alertCustom').addClass('show');
           }
         }
@@ -921,19 +951,17 @@ function saveData() {
     var lastCpu = $('.lastCpu').val();
 
       //Para Verificacion del Tamaño de Procesos
-    $('.alertProcess').removeClass('show');
-    $('.alertProcess').addClass('hide');
     if (name&&size&&arrival&&(cpuTimes.length > 0)&&(ioTimes.length > 0)&&lastCpu) {
       var maxTamPocess = getMaxProcessSize(typeMemory)
       if (size > maxTamPocess) {
-        $(".textoalert").text("El tamaño del proceso no puede ser mayor al tamaño de memoria.");
+        $(".textoAlertProc").text("El tamaño del proceso no puede ser mayor al tamaño de memoria.");
         $('.alertProcess').addClass('show');
       }else {
         //Si el proceso entra en memoria se Guarda.
         saveFirebase(name, size, arrival, cpuTimes, ioTimes, lastCpu);
     }
   }else {
-    $(".textoalert").text("Ingrese los Datos.");
+    $(".textoAlertProc").text("Ingrese los Datos.");
     $('.alertProcess').addClass('show');
   }
 }
