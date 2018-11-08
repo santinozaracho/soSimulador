@@ -225,8 +225,13 @@ $(document).on('click','.algoInfo',function(){
           break;
       }
       //Carga de las Barras
+      //calculamos el tamaño de cada Tiempo para representarlo en la barra de porcentajes
+
+
       var arrayCpu = arrayFinish[0];
-      var firstIrruption = arrayCpu[0].irrupctionTime;
+      var ultTiempo = arrayCpu[arrayCpu.length -1].outTime;
+      var unit = 100/ultTiempo;
+      var firstIrruption = arrayCpu[0].irrupctionTime * unit;
       if (arrayCpu[0].name == 'O') {
         arrayCpu[0].color = '#e9ecef'
       }else {
@@ -283,7 +288,7 @@ $(document).on('click','.algoInfo',function(){
           var item = arrayCpu[i];
           var newItem = $('#proccessBar').clone();
 
-          var irruption = item.irrupctionTime;
+          var irruption = item.irrupctionTime * unit;
 
         //  if(irruption < 4){
               //irruption = 4
@@ -317,7 +322,16 @@ $(document).on('click','.algoInfo',function(){
             $('.tableWait > tbody:last-child').append(markWait);
 
           }
+          //Graficamos la Memoria
+          if (arrayCpu[i].name != 'O' && arrayCpu[i].memoria != null ) {
+            htmlTag += 'Memoria:';
+            //--Grafico de memoria
+            htmlTag += graficarMem(arrayCpu[i].memoria);
+          }
 
+
+
+          //--Fin grafico de memoira
           tag.attr('data-content', htmlTag);
 
           tag.css("border-color", item.color);
@@ -328,7 +342,7 @@ $(document).on('click','.algoInfo',function(){
       //-------- E/S -----
 
       var arrayEs = arrayFinish[1];
-      var firstIrruptionEs = arrayEs[0].irrupctionTime;
+      var firstIrruptionEs = arrayEs[0].irrupctionTime * unit;
       var indx = arrayCpu.findIndex(x => x.name == arrayEs[0].name);
       if (indx == -1){
         arrayEs[0].color = '#e9ecef';
@@ -339,6 +353,7 @@ $(document).on('click','.algoInfo',function(){
         //  firstIrruptionEs = 4
       //}
       $('#proccessEs').attr('aria-valuenow', firstIrruptionEs).css('width',firstIrruptionEs+'%');
+
       var tagOneEs = $('#proccessEs').find('a');
 
       var htmlPopoverEs = '<div><b>De '+arrayEs[0].inTime+' a '+arrayEs[0].outTime+'</b></div>';
@@ -380,7 +395,7 @@ $(document).on('click','.algoInfo',function(){
           var item = arrayEs[i];
           var newItem = $('#proccessBar').clone();
 
-          var irruption = item.irrupctionTime;
+          var irruption = item.irrupctionTime * unit;
 
           //if(irruption < 4){
             //  irruption = 4
@@ -536,7 +551,7 @@ function elimPart(partSize){
   }
 };
 
-//falta hacer el borrado de la particion
+//Borrado de particion
 $(document).on('click','.btn-remove', function(){
 
   var currentEntry = $(this).parents('.entry:first');
@@ -565,34 +580,33 @@ function setPart(sizePart){
     };
   }
 };
+//Reinput luego de haber borrado una particion
+$(document).on('click','.btn-udp', function(){
+  $('.alertPart').removeClass('show');
+  $('.alertPart').addClass('hide');
 
-  $(document).on('click','.btn-udp', function(){
-    $('.alertPart').removeClass('show');
-    $('.alertPart').addClass('hide');
+  var currentEntry = $(this).parents('.entry:first');
+  var sizeadd = parseInt(currentEntry.find('input').val());
+  if (sizeadd > 0) {
+    setPart(sizeadd);
 
-    var currentEntry = $(this).parents('.entry:first');
-    var sizeadd = parseInt(currentEntry.find('input').val());
-    if (sizeadd > 0) {
-      setPart(sizeadd);
+    currentEntry.find('.inputMemory')
+      .addClass('classDisabled')
+      .removeClass('inputMemory')
+      .prop("disabled", true);
 
-      currentEntry.find('.inputMemory')
-        .addClass('classDisabled')
-        .removeClass('inputMemory')
-        .prop("disabled", true);
+    currentEntry.find('.btn-udp')
+        .removeClass('btn-add').addClass('btn-remove')
+        .removeClass('btn-success').addClass('btn-danger')
+        .html('<span class="glyphicon glyphicon-minus deleteInput">Quitar</span>');
 
-      currentEntry.find('.btn-udp')
-          .removeClass('btn-add').addClass('btn-remove')
-          .removeClass('btn-success').addClass('btn-danger')
-          .html('<span class="glyphicon glyphicon-minus deleteInput">Quitar</span>');
-
-    }else {
-      $(".textoAlertPart").text("Debes Ingresar un Valor");
-      $('.alertPart').removeClass('alert-success');
-      $('.alertPart').addClass('alert-danger');
-      $('.alertPart').addClass('show');
-    }
-    });
-
+  }else {
+    $(".textoAlertPart").text("Debes Ingresar un Valor");
+    $('.alertPart').removeClass('alert-success');
+    $('.alertPart').addClass('alert-danger');
+    $('.alertPart').addClass('show');
+  }
+  });
 
 //button siguiente
 $(document).on('click','.siguiente', function(e){
@@ -604,6 +618,7 @@ $(document).on('click','.siguiente2', function(e){
   $('[href="#visualizacion"]').tab('show');
 });
 
+//Funciones para la adminitracuon de al me
 //crea una particion nueva
 function newPart(size){
   var part = {};
@@ -753,6 +768,40 @@ function cargaMem(){
 
 };
 
+function graficarMem(particiones){
+  barraProg = $('.barraMem');
+  itemProg = barraProg.find('.itemMem');
+  perc = 100/sizeMemory;
+  //Carga del primer elememento de la barra
+  tamBar = particiones[0].size * perc;
+//  var tagB = itemProg.find('a');
+  itemProg.attr('aria-valuenow', tamBar ).css('width',tamBar+'%');
+  if (particiones[0].used == null) {
+    itemProg.text('F').removeClass('bg-warning').addClass('bg-success');
+  //  tagB.css("background-color","#28a745" ).text("F");
+  }else {
+    itemProg.text(particiones[0].used.name).removeClass('bg-success').addClass('bg-warning');
+  //  tagB.css("background-color", "#ffc107").text(particiones[0].used.name);
+  }
+  //carga de los siguientes elemeetos
+  for (var i = 1; i < particiones.length; i++) {
+    tamBar = particiones[i].size * perc;
+    var newBar = itemProg.clone();
+  //  var tagB = newBar.find('a');
+    newBar.attr('aria-valuenow', tamBar ).css('width',tamBar+'%');
+    if (particiones[i].used == null) {
+    //  tagB.css("background-color","#28a745" ).text("F");
+  //    tagB.css("border-color", "#28a745");
+      newBar.text("F").removeClass('bg-warning').addClass('bg-success');
+    }else {
+      //tagB.css("background-color", "#ffc107").text(particiones[i].used.name);
+      //tagB.css("border-color", "#ffc107");
+      newBar.text(particiones[i].used.name).removeClass('bg-success').addClass('bg-warning');
+    }
+    barraProg.append(newBar);
+  }
+  return barraProg.html()
+};
 
 //funcion que asigna una proceso a una particion variable
 function asignarProcVar(parts, proc, ix){
@@ -1018,9 +1067,6 @@ $(document).on('click', '.btn-add-raf', function(e){
 
 });
 
-
-
-
 function saveData() {
 
     var name = $('.name').val();
@@ -1181,6 +1227,7 @@ function nuevoElemento(proceso,tiempo){
   elemento.irrupctionTime = 0;
   elemento.outTime = 0;
   elemento.finish = false;
+  elemento.memoria = null;
   return elemento
 }
 //funcion que rellena el arreglo con tiempos muertos
@@ -1378,6 +1425,7 @@ function firstComeFirstServed(){
 
               elementoCPU.outTime = tiempo+1;
               enCPU.cpuTime.shift();
+              elementoCPU.memoria = particiones;
               salidaCPU.push(elementoCPU);
               //Agregamos a la lista de bloqueado los el proceso
               colaBloqueados.push(enCPU);
@@ -1395,6 +1443,7 @@ function firstComeFirstServed(){
             if (enCPU.lastCpuTime < 1){
               elementoCPU.outTime = tiempo+1;
               elementoCPU.finish = true;
+              elementoCPU.memoria = particiones;
               salidaCPU.push(elementoCPU);
               solicitarProcesos(enCPU.name);
               elementoCPU = null;
