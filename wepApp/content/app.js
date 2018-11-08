@@ -431,9 +431,11 @@ $(document).on('click', ".one", function (e) {
 //var part = { "partid":1, "size":0}
 //inputs para crear las particiones
 $(document).on('click', '.btn-add', function(e){
-
     $('.alertPart').removeClass('show');
     $('.alertPart').addClass('hide');
+
+    $('.alertPart').removeClass('alert-success');
+    $('.alertPart').addClass('alert-danger');
 
     e.preventDefault();
 
@@ -473,6 +475,7 @@ $(document).on('click', '.btn-add', function(e){
 
         memFija.push(objPart);
 
+
         cont = cont + 1;
 
         var controlForm = $('.controls form:first'),
@@ -495,7 +498,7 @@ $(document).on('click', '.btn-add', function(e){
               .removeClass('btn-success').addClass('btn-danger')
               .html('<span class="glyphicon glyphicon-minus deleteInput">Quitar</span>');
 
-        }else {
+            }else {
           controlForm.find('.entry:last .inputMemory')
             .addClass('classDisabled')
             .removeClass('inputMemory')
@@ -515,15 +518,80 @@ $(document).on('click', '.btn-add', function(e){
 
       }
 
-//console.log(memFija);
-}});
+    }else {
+      $(".textoAlertPart").text("Debes Ingresar un Valor");
+      $('.alertPart').addClass('show');
+      }
 
+//console.log(memFija);
+});
+
+
+function elimPart(partSize){
+  //EliminamosFisicamente
+  for (var i = 0; i < memFija.length; i++) {
+    if (memFija[i].size == partSize){
+      memFija[i].size = 0;
+    }
+  }
+};
 
 //falta hacer el borrado de la particion
 $(document).on('click','.btn-remove', function(){
-    $(".textoAlertPart").text("Funcion en Construccion");
-    $('.alertPart').addClass('show');
+
+  var currentEntry = $(this).parents('.entry:first');
+  var sizeElim = currentEntry.find('input').val();
+  elimPart(sizeElim);
+  currentEntry.find('input').val('');
+  currentEntry.find('.classDisabled')
+    .addClass('inputMemory')
+    .removeClass('classDisabled')
+    .prop("disabled", false);
+
+  currentEntry.find('.btn-remove')
+      .removeClass('btn-remove').addClass('btn-udp')
+      .removeClass('btn-danger').addClass('btn-success')
+      .html('<span class="glyphicon glyphicon-plus">Agregar</span>');
+  $(".textoAlertPart").text("Particion Eliminada Correctamente.");
+  $('.alertPart').removeClass('alert-danger');
+  $('.alertPart').addClass('alert-success');
+  $('.alertPart').addClass('show');
   });
+
+function setPart(sizePart){
+  for (var i = 0; i < memFija.length; i++) {
+    if (memFija[i].size == 0){
+      memFija[i].size = sizePart;
+    };
+  }
+};
+
+  $(document).on('click','.btn-udp', function(){
+    $('.alertPart').removeClass('show');
+    $('.alertPart').addClass('hide');
+
+    var currentEntry = $(this).parents('.entry:first');
+    var sizeadd = parseInt(currentEntry.find('input').val());
+    if (sizeadd > 0) {
+      setPart(sizeadd);
+
+      currentEntry.find('.inputMemory')
+        .addClass('classDisabled')
+        .removeClass('inputMemory')
+        .prop("disabled", true);
+
+      currentEntry.find('.btn-udp')
+          .removeClass('btn-add').addClass('btn-remove')
+          .removeClass('btn-success').addClass('btn-danger')
+          .html('<span class="glyphicon glyphicon-minus deleteInput">Quitar</span>');
+
+    }else {
+      $(".textoAlertPart").text("Debes Ingresar un Valor");
+      $('.alertPart').removeClass('alert-success');
+      $('.alertPart').addClass('alert-danger');
+      $('.alertPart').addClass('show');
+    }
+    });
 
 
 //button siguiente
