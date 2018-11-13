@@ -309,7 +309,7 @@ $(document).on('click','.algoInfo',function(){
               tag.css("background-color", item.color).text(item.name);
             }
 
-            htmlTag += '</br><div><b>Tiempo de Ejecucion: '+item.irrupctionTime+'</b></div>';
+            htmlTag += '<div><b>Tiempo de Ejecucion: '+item.irrupctionTime+'</b></div>';
           }
 
           if(item.finish){
@@ -772,6 +772,8 @@ function cargaMem(){
 
 function graficarMem(particiones){
   barraProg = $('.barraMem');
+  barraProg.empty();
+  barraProg.append('<div class="progress-bar itemMem" role="progressbar" style="width: 100%;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">F</div>');
   itemProg = barraProg.find('.itemMem');
   perc = 100/sizeMemory;
   //Carga del primer elememento de la barra
@@ -802,7 +804,8 @@ function graficarMem(particiones){
     }
     barraProg.append(newBar);
   }
-  return barraProg.html()
+  contentBarra = $('.contentBarra').html();
+  return contentBarra
 };
 
 //funcion que asigna una proceso a una particion variable
@@ -1427,7 +1430,7 @@ function firstComeFirstServed(){
 
               elementoCPU.outTime = tiempo+1;
               enCPU.cpuTime.shift();
-              elementoCPU.memoria = particiones;
+              elementoCPU.memoria = [...particiones];
               salidaCPU.push(elementoCPU);
               //Agregamos a la lista de bloqueado los el proceso
               colaBloqueados.push(enCPU);
@@ -1445,7 +1448,7 @@ function firstComeFirstServed(){
             if (enCPU.lastCpuTime < 1){
               elementoCPU.outTime = tiempo+1;
               elementoCPU.finish = true;
-              elementoCPU.memoria = particiones;
+              elementoCPU.memoria = [...particiones];
               salidaCPU.push(elementoCPU);
               solicitarProcesos(enCPU.name);
               elementoCPU = null;
