@@ -1404,7 +1404,7 @@ function firstComeFirstServed(){
       }else{
         //Primero analaizamos cola Bloaqueada y lo quitamos
         //Luego analaizamos Cola Listo
-          if (colaESFin.length > 0 && (bloqDeCiclo == null)) {
+          if (colaESFin.length > 1 || (colaESFin.length > 0 && (bloqDeCiclo == null))) {
             enCPU = colaESFin[0];
             //una Vez que empezamos a tratar lo Eliminamos de la cola pendientes
             colaESFin.shift();
