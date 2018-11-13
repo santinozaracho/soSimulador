@@ -1083,7 +1083,7 @@ function getData(){
     lenArrayProcess=0;
     var tabla = document.getElementById('tableId');
 
-    db.collection("process").orderBy('arrivalTime').get().then((querySnapshot) => {
+    db.collection("process").orderBy('name').get().then((querySnapshot) => {
 
         tabla.innerHTML = '';
         var index = 1;
