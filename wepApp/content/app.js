@@ -696,7 +696,7 @@ function obtNewIdPart(parts){
 //Funcion de carga de memoria inicial
 function cargaMem(){
 
-  if (typeMemory = 'Variable') {
+  if (typeMemory == 'Variable') {
     //Para part Variables
     if (particiones.length == 0) {
       part = newPart(sizeMemory);
@@ -751,7 +751,7 @@ function cargaMem(){
 
 }
 
-  if (typeMemory = "Fija") {
+  if (typeMemory == "Fija") {
     if (fitMemory == 'Best Fit'){
       for (var i = 0; i < arrayProcess.length; i++) {
         if (arrayProcess[i].arrivalTime <= tiempo) {
@@ -770,7 +770,7 @@ function cargaMem(){
           var ix = firstFit(memFija,arrayProcess[i]);
           if (ix > -1) {
             //Verificar
-            particiones = asignarProcVar(memFija,arrayProcess[i],ix);
+            particiones = asignarProcFij(memFija,arrayProcess[i],ix);
             i = -1;
           }
         }
