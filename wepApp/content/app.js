@@ -709,6 +709,7 @@ function cargaMem(){
           }else {
             if (ix == 0) {
               particiones = asignarProcVar(particiones,arrayProcess[i],ix)
+              i = -1
               }else {
                 return false
               }
@@ -729,6 +730,7 @@ function cargaMem(){
           }else {
             if (ix == 0) {
               particiones = asignarProcVar(particiones,arrayProcess[i],ix)
+              i = -1
             }else {
               return false
             }
