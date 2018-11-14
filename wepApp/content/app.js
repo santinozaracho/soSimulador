@@ -571,7 +571,8 @@ $(document).on('click','.btn-remove', function(){
   $('.alertPart').removeClass('alert-danger');
   $('.alertPart').addClass('alert-success');
   $('.alertPart').addClass('show');
-  });
+});
+
 
 function setPart(sizePart){
   for (var i = 0; i < memFija.length; i++) {
@@ -1007,8 +1008,6 @@ var esList = []
 //agregar rafagas dinamicas
 $(document).on('click', '.btn-add-raf', function(e){
 
-
-
     e.preventDefault();
 
       if(raf < maxraf){
@@ -1040,6 +1039,7 @@ $(document).on('click', '.btn-add-raf', function(e){
 
             newEntry.find('.textCpu').text("CPU " + raf);
             newEntry.find('.textEs').text("E/S " + raf);
+            $(this).parents('.entryRaf:first').addClass('divDelete'+raf);
 
             controlForm.find('.entryRaf:not(:last) .inputcpu')
               .addClass('classDisabled')
@@ -1054,7 +1054,9 @@ $(document).on('click', '.btn-add-raf', function(e){
             controlForm.find('.entryRaf:not(:last) .btn-add-raf')
                 .removeClass('btn-add-raf').addClass('btn-remove-raf')
                 .removeClass('btn-success').addClass('btn-danger')
+                .attr('onClick', 'removeElement('+raf+');')
                 .html('<span class="glyphicon glyphicon-minus deleteInput">Quitar</span>');
+
         }else {
           if (cpu > 0) {
             $(".textoalert").text("Debes ingresar un valor en ES.");
@@ -1069,8 +1071,17 @@ $(document).on('click', '.btn-add-raf', function(e){
 
 });
 
+
+function removeElement(element){
+  cpuList.splice(element-1, 1);
+  esList.splice(element-1, 1);
+  $(".divDelete"+element).remove();
+}
+
 function saveData() {
 
+    $('.alertProcess').addClass('hide');
+    
     var name = $('.name').val();
     var size = $('.size').val();
     var arrival = $('.arrival').val();
@@ -1104,17 +1115,19 @@ function saveFirebase(name, size, arrival, cpuTimes, ioTimes, lastCpu) {
         ioTime: ioTimes,
         lastCpuTime: lastCpu
     }).then(function (docRef) {
-        console.log("Document written with ID: ", docRef.id);
 
+      $('.sizeInput').val("");
+      $('.arrivalInput').val("");
+      $('.lastCpu').val("");
+      
+      for (var i = 0; i < cpuTimes.length; i++) {
+        $(".divDelete"+(i+1)).remove();
+      }
 
-      //  $('.name').val("");
-      //  $('.size').val("");
-      //  $('.arrival').val("");
-      //  cpuTimes = [];
-      //  ioTimes = [];
-      //  $('.lastCpu').val("");
+      cpuTimes = [];
+      ioTimes = [];
 
-        getData();
+      getData();
 
     }).catch(function (error) {
         console.error("Error adding document: ", error);
