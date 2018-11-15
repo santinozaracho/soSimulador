@@ -1028,7 +1028,7 @@ function removeElement(element){
 function saveData() {
 
     $('.alertProcess').addClass('hide');
-    
+
     var name = $('.name').val();
     var size = $('.size').val();
     var arrival = $('.arrival').val();
@@ -1066,7 +1066,7 @@ function saveFirebase(name, size, arrival, cpuTimes, ioTimes, lastCpu) {
       $('.sizeInput').val("");
       $('.arrivalInput').val("");
       $('.lastCpu').val("");
-      
+
       for (var i = 0; i < cpuTimes.length; i++) {
         $(".divDelete"+(i+1)).remove();
       }
@@ -1757,7 +1757,7 @@ function shortestJobFirst(){
   salidaFinal.push(salidaCPU);
   salidaFinal.push(salidaES);
   return salidaFinal
-}
+};
 
 
 //ordena por tiempo de cpuTime
@@ -1766,7 +1766,7 @@ function SortByCpuTime(a, b){
   var acpuTime = a.cpuTime;
   var bcpuTime = b.cpuTime;
   return ((acpuTime < bcpuTime) ? -1 : ((acpuTime > bcpuTime) ? 1 : 0));
-}
+};
 
 
 //ES SIMILAR AL SJF, CON LA DIFERENCIA DE QUE SI UN NUEVO PROCESO PASA A LISTO SE ACTIVA UNA
@@ -1964,3 +1964,4 @@ function shortRemainingTimeFirst(){
   salidaFinal.push(salidaES);
   return salidaFinal
 }
+};
