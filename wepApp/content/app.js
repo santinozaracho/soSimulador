@@ -1071,7 +1071,7 @@ $(document).on('click', '.btn-add-raf', function(e){
 
 });
 
-
+//funcion que remueve las rafagas de los procesos
 function removeElement(element){
   cpuList.splice(element-1, 1);
   esList.splice(element-1, 1);
