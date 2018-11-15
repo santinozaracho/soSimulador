@@ -11,6 +11,7 @@ var cont = 0;//contador de Particiones fijas
 var maxpart = 5; //cantidad maxima de particiones fijas
 var memFija = []; // memoria fija
 var tiempo = 0
+var lenArrayProcess = 0
 
 
 $(function () {
@@ -48,16 +49,22 @@ $(document).ready(function () {
    $(".optionOne").click(function(){
       sizeMemory = parseInt($(".optionOne > input").val());
       $(".tamInfo").text("256");
+      maxpart = 5;
+      $(".textoAlertMem").text("5 es la cantidad maxima de particiones para el tamaño de memoria elegida.");
       console.log(sizeMemory)
    });
    $(".optionTwo").click(function(){
        sizeMemory = parseInt($(".optionTwo > input").val());
        $(".tamInfo").text("512");
+       maxpart = 8;
+       $(".textoAlertMem").text("8 es la cantidad maxima de particiones para el tamaño de memoria elegida.");
        console.log(sizeMemory)
    });
    $(".optionThree").click(function(){
       sizeMemory = parseInt($(".optionThree > input").val());
       $(".tamInfo").text("1024");
+      maxpart = 12;
+      $(".textoAlertMem").text("12 es la cantidad maxima de particiones para el tamaño de memoria elegida.");
       console.log(sizeMemory)
    });
    //--------------------------------
@@ -69,6 +76,7 @@ $(document).ready(function () {
       var valueCurrent = $(".optionTypeOne > input").val();
       typeMemory = valueCurrent;
       console.log(typeMemory);
+      $(".alertMem").addClass("show");
       $("#collapseExample").addClass("show");
       $(".optionFitTwo").hide();
       $(".optionFitOne").show();
@@ -80,6 +88,8 @@ $(document).ready(function () {
       var valueCurrent = $(".optionTypeTwo > input").val();
       typeMemory = valueCurrent;
       console.log(typeMemory);
+      $(".alertMem").removeClass("show");
+      $(".alertMem").addClass("hide");
       $("#collapseExample").removeClass("show");
       //$("#collapseExample").addClass("show");
       $(".optionFitTwo").show();
@@ -142,11 +152,42 @@ $(document).ready(function () {
    });
 
    $(".quantumIn").keyup(function(){
-        generalQuantum = parseInt($('.quantumIn').val());
-        $(".algoInfo").text("RR-Q:"+$('.quantumIn').val());
+
+     $('.alertProcess').removeClass('show');
+     $('.alertProcess').addClass('hide');
+
+     var quanto = parseInt($('.quantumIn').val())
+
+     if (quanto > 0) {
+       generalQuantum = quanto;
+       $(".algoInfo").text("RR - Q:"+quanto);
+     }else {
+
+       $(".textoAlertProc").text("Debe ingresar un Quanto mayor a cero.");
+       $('.alertProcess').addClass('show');
+     }
+
     });
 
+    $(".sizeInput").keyup(function(){
+
+      $('.alertProcess').removeClass('show');
+      $('.alertProcess').addClass('hide');
+
+      var tamProc = parseInt($('.sizeInput').val())
+      var maxTamPocess = getMaxProcessSize(typeMemory)
+
+      if (tamProc > maxTamPocess) {
+        $(".textoAlertProc").text("El tamaño del proceso no puede ser mayor al tamaño de la Memoria o Particion.");
+        $('.alertProcess').addClass('show');
+      }
+     });
+
+
    //------------------------------------
+$(document).on('click','.editarNombre',function(){
+    $('.nomProc').prop("disabled", false)});
+
 $(document).on('click','.memInfo',function(){
      $('[href="#memoria"]').tab('show')});
 
@@ -184,8 +225,13 @@ $(document).on('click','.algoInfo',function(){
           break;
       }
       //Carga de las Barras
+      //calculamos el tamaño de cada Tiempo para representarlo en la barra de porcentajes
+
+
       var arrayCpu = arrayFinish[0];
-      var firstIrruption = arrayCpu[0].irrupctionTime;
+      var ultTiempo = arrayCpu[arrayCpu.length -1].outTime;
+      var unit = 100/ultTiempo;
+      var firstIrruption = arrayCpu[0].irrupctionTime * unit;
       if (arrayCpu[0].name == 'O') {
         arrayCpu[0].color = '#e9ecef'
       }else {
@@ -242,7 +288,7 @@ $(document).on('click','.algoInfo',function(){
           var item = arrayCpu[i];
           var newItem = $('#proccessBar').clone();
 
-          var irruption = item.irrupctionTime;
+          var irruption = item.irrupctionTime * unit;
 
         //  if(irruption < 4){
               //irruption = 4
@@ -276,7 +322,16 @@ $(document).on('click','.algoInfo',function(){
             $('.tableWait > tbody:last-child').append(markWait);
 
           }
+          //Graficamos la Memoria
+          if (arrayCpu[i].name != 'O' && arrayCpu[i].memoria != null ) {
+            htmlTag += 'Memoria:';
+            //--Grafico de memoria
+            htmlTag += graficarMem(arrayCpu[i].memoria);
+          }
 
+
+
+          //--Fin grafico de memoira
           tag.attr('data-content', htmlTag);
 
           tag.css("border-color", item.color);
@@ -287,7 +342,7 @@ $(document).on('click','.algoInfo',function(){
       //-------- E/S -----
 
       var arrayEs = arrayFinish[1];
-      var firstIrruptionEs = arrayEs[0].irrupctionTime;
+      var firstIrruptionEs = arrayEs[0].irrupctionTime * unit;
       var indx = arrayCpu.findIndex(x => x.name == arrayEs[0].name);
       if (indx == -1){
         arrayEs[0].color = '#e9ecef';
@@ -298,6 +353,7 @@ $(document).on('click','.algoInfo',function(){
         //  firstIrruptionEs = 4
       //}
       $('#proccessEs').attr('aria-valuenow', firstIrruptionEs).css('width',firstIrruptionEs+'%');
+
       var tagOneEs = $('#proccessEs').find('a');
 
       var htmlPopoverEs = '<div><b>De '+arrayEs[0].inTime+' a '+arrayEs[0].outTime+'</b></div>';
@@ -339,7 +395,7 @@ $(document).on('click','.algoInfo',function(){
           var item = arrayEs[i];
           var newItem = $('#proccessBar').clone();
 
-          var irruption = item.irrupctionTime;
+          var irruption = item.irrupctionTime * unit;
 
           //if(irruption < 4){
             //  irruption = 4
@@ -390,92 +446,167 @@ $(document).on('click', ".one", function (e) {
 //var part = { "partid":1, "size":0}
 //inputs para crear las particiones
 $(document).on('click', '.btn-add', function(e){
+    $('.alertPart').removeClass('show');
+    $('.alertPart').addClass('hide');
 
-    $('.alertCustom').removeClass('show');
-    $('.alertCustom').addClass('hide');
+    $('.alertPart').removeClass('alert-success');
+    $('.alertPart').addClass('alert-danger');
 
     e.preventDefault();
 
-      if(cont < maxpart){
+    var controlForm = $('.controls form:first'),
+        currentEntry = $(this).parents('.entry:first');
+
+    //Variable que nos indica en cada momento el tamaño disponible
+    var tamdisp = sizeMemory
+
+    //Verificamos la existencia de alguna particion
+    if(memFija.length > 0){
+      // memFija.forEach(function(sizepart,index) {
+      //   tamdisp =  tamdisp - sizepart
+      // })
+      for (var i = 0; i < memFija.length; i++) {
+        tamdisp = tamdisp - memFija[i].size;
+      }
+
+    }
+
+    //Tamaño de particion ingreasda
+    var sizepart = currentEntry.find('input').val();
+
+    sizepart = parseInt(sizepart);
+
+    if (sizepart > 0) {
+
+      if (sizepart <= tamdisp) {
+
+        //se puede agregar particion
+        //memFija.push(sizepart)
+
+        var objPart = {};
+        objPart.IdPart = cont;
+        objPart.size = sizepart;
+        objPart.used = null;
+
+        memFija.push(objPart);
+
+
+        cont = cont + 1;
+
         var controlForm = $('.controls form:first'),
             currentEntry = $(this).parents('.entry:first');
 
-        //Variable que nos indica en cada momento el tamaño disponible
-        var tamdisp = sizeMemory
+        if (cont < maxpart) {
+          var newEntry = $(currentEntry.clone()).appendTo(controlForm);
 
-        //Verificamos la existencia de alguna particion
-        if(memFija.length > 0){
-          // memFija.forEach(function(sizepart,index) {
-          //   tamdisp =  tamdisp - sizepart
-          // })
-          for (var i = 0; i < memFija.length; i++) {
-            tamdisp = tamdisp - memFija[i].size;
-          }
+          newEntry.find('input').val('');
 
+          newEntry.find('.textPart').text("Partición " + cont)
+
+          controlForm.find('.entry:not(:last) .inputMemory')
+            .addClass('classDisabled')
+            .removeClass('inputMemory')
+            .prop("disabled", true);
+
+          controlForm.find('.entry:not(:last) .btn-add')
+              .removeClass('btn-add').addClass('btn-remove')
+              .removeClass('btn-success').addClass('btn-danger')
+              .html('<span class="glyphicon glyphicon-minus deleteInput">Quitar</span>');
+
+            }else {
+          controlForm.find('.entry:last .inputMemory')
+            .addClass('classDisabled')
+            .removeClass('inputMemory')
+            .prop("disabled", true);
+
+          controlForm.find('.entry:last .btn-add')
+              .removeClass('btn-add').addClass('btn-remove')
+              .removeClass('btn-success').addClass('btn-danger')
+              .html('<span class="glyphicon glyphicon-minus deleteInput">Quitar</span>');
         }
 
-        //Tamaño de particion ingreasda
-        var sizepart = currentEntry.find('input').val();
+      }else {
 
-        sizepart = parseInt(sizepart);
+        //Alerta por Nueva Particion muy grande
+        $(".textoAlertPart").text("El tamaño de la partición es mayor al disponible.");
+        $('.alertPart').addClass('show');
 
-        if (sizepart > 0) {
+      }
 
-          if (sizepart <= tamdisp) {
+    }else {
+      $(".textoAlertPart").text("Debes Ingresar un Valor");
+      $('.alertPart').addClass('show');
+      }
 
-            //se puede agregar particion
-            //memFija.push(sizepart)
-
-            var objPart = {};
-            objPart.IdPart = cont;
-            objPart.size = sizepart;
-            objPart.used = null;
-
-            memFija.push(objPart);
-
-            cont = cont + 1;
-
-            var controlForm = $('.controls form:first'),
-                currentEntry = $(this).parents('.entry:first'),
-                newEntry = $(currentEntry.clone()).appendTo(controlForm);
-
-            newEntry.find('input').val('');
-
-            newEntry.find('.textPart').text("Partición " + cont)
-
-            controlForm.find('.entry:not(:last) .inputMemory')
-              .addClass('classDisabled')
-              .removeClass('inputMemory')
-              .prop("disabled", true);
-
-            controlForm.find('.entry:not(:last) .btn-add')
-                .removeClass('btn-add').addClass('btn-remove')
-                .removeClass('btn-success').addClass('btn-danger')
-                .html('<span class="glyphicon glyphicon-minus deleteInput">Quitar</span>');
-
-          }else {
-
-            //Alerta por Nueva Particion muy grande
-            $(".textoalert").text("El valor supera la cantida de la partición.");
-            $('.alertCustom').addClass('show');
-
-          }
-
-        }else {
-
-          $(".textoalert").text("Debes ingresar un valor.");
-          $('.alertCustom').addClass('show');
-
-        }
-
-console.log(memFija);
-}});
-
-//falta hacer el borrado de la particion
-$(".deleteInput").click(function(){
-    alert("dsfsefsef.");
+//console.log(memFija);
 });
 
+
+function elimPart(partSize){
+  //EliminamosFisicamente
+  for (var i = 0; i < memFija.length; i++) {
+    if (memFija[i].size == partSize){
+      memFija[i].size = 0;
+    }
+  }
+};
+
+//Borrado de particion
+$(document).on('click','.btn-remove', function(){
+
+  var currentEntry = $(this).parents('.entry:first');
+  var sizeElim = currentEntry.find('input').val();
+  elimPart(sizeElim);
+  currentEntry.find('input').val('');
+  currentEntry.find('.classDisabled')
+    .addClass('inputMemory')
+    .removeClass('classDisabled')
+    .prop("disabled", false);
+
+  currentEntry.find('.btn-remove')
+      .removeClass('btn-remove').addClass('btn-udp')
+      .removeClass('btn-danger').addClass('btn-success')
+      .html('<span class="glyphicon glyphicon-plus">Agregar</span>');
+  $(".textoAlertPart").text("Particion Eliminada Correctamente.");
+  $('.alertPart').removeClass('alert-danger');
+  $('.alertPart').addClass('alert-success');
+  $('.alertPart').addClass('show');
+  });
+
+function setPart(sizePart){
+  for (var i = 0; i < memFija.length; i++) {
+    if (memFija[i].size == 0){
+      memFija[i].size = sizePart;
+    };
+  }
+};
+//Reinput luego de haber borrado una particion
+$(document).on('click','.btn-udp', function(){
+  $('.alertPart').removeClass('show');
+  $('.alertPart').addClass('hide');
+
+  var currentEntry = $(this).parents('.entry:first');
+  var sizeadd = parseInt(currentEntry.find('input').val());
+  if (sizeadd > 0) {
+    setPart(sizeadd);
+
+    currentEntry.find('.inputMemory')
+      .addClass('classDisabled')
+      .removeClass('inputMemory')
+      .prop("disabled", true);
+
+    currentEntry.find('.btn-udp')
+        .removeClass('btn-add').addClass('btn-remove')
+        .removeClass('btn-success').addClass('btn-danger')
+        .html('<span class="glyphicon glyphicon-minus deleteInput">Quitar</span>');
+
+  }else {
+    $(".textoAlertPart").text("Debes Ingresar un Valor");
+    $('.alertPart').removeClass('alert-success');
+    $('.alertPart').addClass('alert-danger');
+    $('.alertPart').addClass('show');
+  }
+  });
 
 //button siguiente
 $(document).on('click','.siguiente', function(e){
@@ -487,6 +618,7 @@ $(document).on('click','.siguiente2', function(e){
   $('[href="#visualizacion"]').tab('show');
 });
 
+//Funciones para la adminitracuon de al me
 //crea una particion nueva
 function newPart(size){
   var part = {};
@@ -632,10 +764,44 @@ function cargaMem(){
         }
       }
     }
-}
+  }
 
 };
 
+function graficarMem(particiones){
+  barraProg = $('.barraMem');
+  itemProg = barraProg.find('.itemMem');
+  perc = 100/sizeMemory;
+  //Carga del primer elememento de la barra
+  tamBar = particiones[0].size * perc;
+//  var tagB = itemProg.find('a');
+  itemProg.attr('aria-valuenow', tamBar ).css('width',tamBar+'%');
+  if (particiones[0].used == null) {
+    itemProg.text('F').removeClass('bg-warning').addClass('bg-success');
+  //  tagB.css("background-color","#28a745" ).text("F");
+  }else {
+    itemProg.text(particiones[0].used.name).removeClass('bg-success').addClass('bg-warning');
+  //  tagB.css("background-color", "#ffc107").text(particiones[0].used.name);
+  }
+  //carga de los siguientes elemeetos
+  for (var i = 1; i < particiones.length; i++) {
+    tamBar = particiones[i].size * perc;
+    var newBar = itemProg.clone();
+  //  var tagB = newBar.find('a');
+    newBar.attr('aria-valuenow', tamBar ).css('width',tamBar+'%');
+    if (particiones[i].used == null) {
+    //  tagB.css("background-color","#28a745" ).text("F");
+  //    tagB.css("border-color", "#28a745");
+      newBar.text("F").removeClass('bg-warning').addClass('bg-success');
+    }else {
+      //tagB.css("background-color", "#ffc107").text(particiones[i].used.name);
+      //tagB.css("border-color", "#ffc107");
+      newBar.text(particiones[i].used.name).removeClass('bg-success').addClass('bg-warning');
+    }
+    barraProg.append(newBar);
+  }
+  return barraProg.html()
+};
 
 //funcion que asigna una proceso a una particion variable
 function asignarProcVar(parts, proc, ix){
@@ -839,8 +1005,7 @@ var esList = []
 //agregar rafagas dinamicas
 $(document).on('click', '.btn-add-raf', function(e){
 
-    $('.alertProcess').removeClass('show');
-    $('.alertProcess').addClass('hide');
+
 
     e.preventDefault();
 
@@ -893,7 +1058,7 @@ $(document).on('click', '.btn-add-raf', function(e){
             $(".textoalert").text("Debes ingresar un valor en ES.");
             $('.alertCustom').addClass('show');
           }else {
-            $(".textoalert").text("Debes ingresar un valor en ES.");
+            $(".textoalert").text("Debes ingresar un valor en CPU.");
             $('.alertCustom').addClass('show');
           }
         }
@@ -901,9 +1066,6 @@ $(document).on('click', '.btn-add-raf', function(e){
       }
 
 });
-
-
-
 
 function saveData() {
 
@@ -915,19 +1077,17 @@ function saveData() {
     var lastCpu = $('.lastCpu').val();
 
       //Para Verificacion del Tamaño de Procesos
-    $('.alertProcess').removeClass('show');
-    $('.alertProcess').addClass('hide');
     if (name&&size&&arrival&&(cpuTimes.length > 0)&&(ioTimes.length > 0)&&lastCpu) {
       var maxTamPocess = getMaxProcessSize(typeMemory)
       if (size > maxTamPocess) {
-        $(".textoalert").text("El tamaño del proceso no puede ser mayor al tamaño de memoria.");
+        $(".textoAlertProc").text("El tamaño del proceso no puede ser mayor al tamaño de memoria.");
         $('.alertProcess').addClass('show');
       }else {
         //Si el proceso entra en memoria se Guarda.
         saveFirebase(name, size, arrival, cpuTimes, ioTimes, lastCpu);
     }
   }else {
-    $(".textoalert").text("Ingrese los Datos.");
+    $(".textoAlertProc").text("Ingrese los Datos.");
     $('.alertProcess').addClass('show');
   }
 }
@@ -970,7 +1130,8 @@ function deleteData(idData){
 }
 
 function getData(){
-
+    arrayProcess = [];
+    lenArrayProcess=0;
     var tabla = document.getElementById('tableId');
 
     db.collection("process").orderBy('arrivalTime').get().then((querySnapshot) => {
@@ -993,14 +1154,15 @@ function getData(){
                 <td class="tdTable"><button class="btn btn-danger" onclick="deleteData('${doc.id}')">Borrar</button></td>
             </tr>
             `;
-            index += 1;
-
+          index += 1;
+          lenArrayProcess += 1;
           arrayProcess.push(doc.data());
+          var ultNom = "P"+(lenArrayProcess+1);
+          $(".nomProc").val(ultNom);
         });
     });
-
     console.log(arrayProcess)
-}
+};
 
 function arrayProc(){
     db.collection("process").orderBy('arrivalTime').get().then((querySnapshot) => {
@@ -1065,6 +1227,7 @@ function nuevoElemento(proceso,tiempo){
   elemento.irrupctionTime = 0;
   elemento.outTime = 0;
   elemento.finish = false;
+  elemento.memoria = null;
   return elemento
 }
 //funcion que rellena el arreglo con tiempos muertos
@@ -1262,6 +1425,7 @@ function firstComeFirstServed(){
 
               elementoCPU.outTime = tiempo+1;
               enCPU.cpuTime.shift();
+              elementoCPU.memoria = particiones;
               salidaCPU.push(elementoCPU);
               //Agregamos a la lista de bloqueado los el proceso
               colaBloqueados.push(enCPU);
@@ -1279,6 +1443,7 @@ function firstComeFirstServed(){
             if (enCPU.lastCpuTime < 1){
               elementoCPU.outTime = tiempo+1;
               elementoCPU.finish = true;
+              elementoCPU.memoria = particiones;
               salidaCPU.push(elementoCPU);
               solicitarProcesos(enCPU.name);
               elementoCPU = null;
