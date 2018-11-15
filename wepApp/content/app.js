@@ -230,6 +230,7 @@ $(document).on('click','.algoInfo',function(){
 
       var arrayCpu = arrayFinish[0];
       var ultTiempo = arrayCpu[arrayCpu.length -1].outTime;
+
       var unit = 100/ultTiempo;
       var firstIrruption = arrayCpu[0].irrupctionTime * unit;
       if (arrayCpu[0].name == 'O') {
@@ -249,8 +250,8 @@ $(document).on('click','.algoInfo',function(){
         tagOne.attr('data-original-title', 'Datos de '+arrayCpu[0].name);
       }
 
-      var htmlPopover = '<div><b>De '+arrayCpu[0].inTime+' a '+arrayCpu[0].outTime+'</b></div>';
-      htmlPopover += '</br><div><b>Tiempo de Ejecucion: '+arrayCpu[0].irrupctionTime+'</b></div>';
+      var htmlPopover = '<div>Desde '+arrayCpu[0].inTime+' hasta '+arrayCpu[0].outTime+'</div>';
+      htmlPopover += '<div>Tiempo de Ejecucion: '+arrayCpu[0].irrupctionTime+'</div>';
       if(arrayCpu[0].finish){
           htmlPopover += '</br><div><b>Proceso Terminado</b></div>';
           var markupFirst = "<tr><th scope='row'>"+arrayCpu[0].name+"</th><td>"+arrayCpu[0].outTime+"</td><td>"+arrayCpu[0].arrivalTime+"</td><td>"+(arrayCpu[0].outTime-arrayCpu[0].arrivalTime)+"</td></tr>";
@@ -258,6 +259,11 @@ $(document).on('click','.algoInfo',function(){
 
           var markWaitFirst = "<tr><th scope='row'>"+arrayCpu[0].name+"</th><td>"+(arrayCpu[0].outTime-arrayCpu[0].arrivalTime)+"</td><td>"+arrayCpu[0].irrupctionTime+"</td><td>"+(arrayCpu[0].outTime-arrayCpu[0].arrivalTime-arrayCpu[0].irrupctionTime)+"</td></tr>";
           $('.tableWait > tbody:last-child').append(markWaitFirst);
+      }
+      if (arrayCpu[0].name != 'O' && arrayCpu[0].memoria != null ) {
+        htmlPopover += "</br><div>Memoria: "+sizeMemory+"</div>";
+        //--Grafico de memoria
+        htmlPopover += graficarMem(arrayCpu[0].memoria);
       }
 
       tagOne.attr('data-content', htmlPopover);
@@ -296,7 +302,7 @@ $(document).on('click','.algoInfo',function(){
 
           newItem.attr('aria-valuenow', item.irruption).css('width',irruption+'%');
           var tag = newItem.find('a');
-          var htmlTag = '<div><b>De '+item.inTime+' a '+item.outTime+'</b></div>';
+          var htmlTag = '<div>Desde '+item.inTime+' hasta '+item.outTime+'</div>';
 
           if(arrayCpu[i].name == 'O'){
             tag.attr('title', 'Tiempo Ocioso');
@@ -309,11 +315,11 @@ $(document).on('click','.algoInfo',function(){
               tag.css("background-color", item.color).text(item.name);
             }
 
-            htmlTag += '</br><div><b>Tiempo de Ejecucion: '+item.irrupctionTime+'</b></div>';
+            htmlTag += '<div>Tiempo de Ejecucion: '+item.irrupctionTime+'</div>';
           }
 
           if(item.finish){
-            htmlTag += '</br><div><b>Proceso Terminado</b></div>';
+            htmlTag += '<div><b>Proceso Terminado</b></div>';
 
             var markup = "<tr><th scope='row'>"+item.name+"</th><td>"+item.outTime+"</td><td>"+item.arrivalTime+"</td><td>"+(item.outTime-item.arrivalTime)+"</td></tr>";
             $('.tableResponse > tbody:last-child').append(markup);
@@ -324,7 +330,7 @@ $(document).on('click','.algoInfo',function(){
           }
           //Graficamos la Memoria
           if (arrayCpu[i].name != 'O' && arrayCpu[i].memoria != null ) {
-            htmlTag += 'Memoria:';
+            htmlTag += "</br><div>Memoria: "+sizeMemory+"</div>";
             //--Grafico de memoria
             htmlTag += graficarMem(arrayCpu[i].memoria);
           }
@@ -486,7 +492,7 @@ $(document).on('click', '.btn-add', function(e){
         var objPart = {};
         objPart.IdPart = cont;
         objPart.size = sizepart;
-        objPart.used = null;
+        objPart.used = "";
 
         memFija.push(objPart);
 
@@ -624,21 +630,21 @@ function newPart(size){
   var part = {};
   part.IdPart = null;
   part.size = size;
-  part.used = null;
+  part.used = "";
   return part
 }
-//calcula
+//calcula no se usa
 function usedMem(parts){
   var totused = 0;
   for (var i = 0; i < parts.length; i++) {
-    if (part.used != null){
+    if (part.used != ""){
       totused += parts[i].used.size
     }
   }
   return totused
 
 }
-//Verifica si se produce fragmentacion ext.
+//Verifica si se produce fragmentacion ext. no se usa
 function fragExt(parts,proc){
     var used = usedMem(parts);
     if (sizeMemory - used >= proc.size) {
@@ -651,10 +657,10 @@ function desFrag(parts){
   var max = parts.length
   for (var j = 0; j < max ; j++) {
     for (var i = 0; i < parts.length - 1; i++) {
-        if (parts[i].used == null && parts[i+1].used == null) {
+        if (parts[i].used == "" && parts[i+1].used == "") {
           var rePar = newPart(parts[i].size + parts[i+1].size);
           rePar.IdPart = parts[i].IdPart;
-          rePar.used = null
+          rePar.used = "";
           //parts.splice(i+1,1);
           parts.splice(i,2);
           parts.splice(i,0,rePar);
@@ -666,11 +672,13 @@ function desFrag(parts){
 //no hay desarollo todavia
 function liberarParts(name){
   for (var i = 0; i < particiones.length; i++) {
-    if (particiones[i].used) {
-      if (particiones[i].used.name == name ) {
-        particiones[i].used = null
+    //if (particiones[i].used != "") {
+      if (particiones[i].used == name ) {
+        var rePar = newPart(particiones[i].size);
+        rePar.IdPart = particiones[i].IdPart;
+        particiones[i] = rePar;
         return true
-      }
+  //    }
     }
   }
   return false
@@ -688,7 +696,7 @@ function obtNewIdPart(parts){
 //Funcion de carga de memoria inicial
 function cargaMem(){
 
-  if (typeMemory = 'Variable') {
+  if (typeMemory == 'Variable') {
     //Para part Variables
     if (particiones.length == 0) {
       part = newPart(sizeMemory);
@@ -702,16 +710,17 @@ function cargaMem(){
       for (var i = 0; i < arrayProcess.length; i++) {
         if (arrayProcess[i].arrivalTime <= tiempo) {
           var ix = worstFit(particiones,arrayProcess[i]);
-          if (ix > 0) {
+          if (ix > -1 ) {
             //asinamos el proceos a la particion
             particiones = asignarProcVar(particiones,arrayProcess[i],ix)
             i = -1
-          }else {
-            if (ix == 0) {
-              particiones = asignarProcVar(particiones,arrayProcess[i],ix)
-              }else {
-                return false
-              }
+          //}else {
+          //  if (ix == 0) {
+        //      particiones = asignarProcVar(particiones,arrayProcess[i],ix)
+          //    i = -1
+            //  }else {
+            //    return false
+          //    }
             }
           }
         }
@@ -722,16 +731,17 @@ function cargaMem(){
       for (var i = 0; i < arrayProcess.length; i++) {
         if (arrayProcess[i].arrivalTime <= tiempo){
           var ix = firstFit(particiones,arrayProcess[i]);
-          if (ix > 0) {
+          if (ix > -1) {
             //mandamos a la Cola de Listos
             particiones = asignarProcVar(particiones,arrayProcess[i],ix)
             i = -1
-          }else {
-            if (ix == 0) {
-              particiones = asignarProcVar(particiones,arrayProcess[i],ix)
-            }else {
-              return false
-            }
+      //    }else {
+        //    if (ix == 0) {
+          //    particiones = asignarProcVar(particiones,arrayProcess[i],ix)
+          //    i = -1
+          //  }else {
+          //    return false
+          //  }
 
             }
         }
@@ -741,12 +751,13 @@ function cargaMem(){
 
 }
 
-  if (typeMemory = "Fija") {
+  if (typeMemory == "Fija") {
     if (fitMemory == 'Best Fit'){
       for (var i = 0; i < arrayProcess.length; i++) {
         if (arrayProcess[i].arrivalTime <= tiempo) {
           var ix = bestFit(memFija,arrayProcess[i]);
-          if (ix) {
+          if (ix > -1) {
+            //Verificar
             particiones = asignarProcFij(memFija,arrayProcess[i],ix);
             i = -1;
           }
@@ -757,8 +768,9 @@ function cargaMem(){
       for (var i = 0; i < arrayProcess.length; i++) {
         if (arrayProcess[i].arrivalTime <= tiempo) {
           var ix = firstFit(memFija,arrayProcess[i]);
-          if (ix) {
-            particiones = asignarProcVar(memFija,arrayProcess[i],ix);
+          if (ix > -1) {
+            //Verificar
+            particiones = asignarProcFij(memFija,arrayProcess[i],ix);
             i = -1;
           }
         }
@@ -770,17 +782,19 @@ function cargaMem(){
 
 function graficarMem(particiones){
   barraProg = $('.barraMem');
+  barraProg.empty();
+  barraProg.append('<div class="progress-bar itemMem" role="progressbar" style="width: 100%;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">F</div>');
   itemProg = barraProg.find('.itemMem');
   perc = 100/sizeMemory;
   //Carga del primer elememento de la barra
   tamBar = particiones[0].size * perc;
 //  var tagB = itemProg.find('a');
   itemProg.attr('aria-valuenow', tamBar ).css('width',tamBar+'%');
-  if (particiones[0].used == null) {
+  if (particiones[0].used == "") {
     itemProg.text('F').removeClass('bg-warning').addClass('bg-success');
   //  tagB.css("background-color","#28a745" ).text("F");
   }else {
-    itemProg.text(particiones[0].used.name).removeClass('bg-success').addClass('bg-warning');
+    itemProg.text(particiones[0].used).removeClass('bg-success').addClass('bg-warning');
   //  tagB.css("background-color", "#ffc107").text(particiones[0].used.name);
   }
   //carga de los siguientes elemeetos
@@ -789,18 +803,19 @@ function graficarMem(particiones){
     var newBar = itemProg.clone();
   //  var tagB = newBar.find('a');
     newBar.attr('aria-valuenow', tamBar ).css('width',tamBar+'%');
-    if (particiones[i].used == null) {
+    if (particiones[i].used == "") {
     //  tagB.css("background-color","#28a745" ).text("F");
   //    tagB.css("border-color", "#28a745");
       newBar.text("F").removeClass('bg-warning').addClass('bg-success');
     }else {
       //tagB.css("background-color", "#ffc107").text(particiones[i].used.name);
       //tagB.css("border-color", "#ffc107");
-      newBar.text(particiones[i].used.name).removeClass('bg-success').addClass('bg-warning');
+      newBar.text(particiones[i].used).removeClass('bg-success').addClass('bg-warning');
     }
     barraProg.append(newBar);
   }
-  return barraProg.html()
+  contentBarra = $('.contentBarra').html();
+  return contentBarra
 };
 
 //funcion que asigna una proceso a una particion variable
@@ -816,12 +831,13 @@ function asignarProcVar(parts, proc, ix){
   //creo particion de Proceso
   var partProc = newPart(parseInt(proc.size));
   partProc.IdPart = partRes.IdPart;
-  partProc.used = proc;
+  var nome = proc.name;
+  partProc.used = nome;
   parts.splice(ix,0,partProc);
   //Creo particion restante
   var partEmpty = newPart(partRes.size - partProc.size);
   partEmpty.IdPart = idnew + 1;
-  partEmpty.used = null;
+  //partEmpty.used = "";
   parts.splice(ix+1,0,partEmpty);
   //agrego el proceso a la lista de procesosTerminados
   procesosTerminados.push(proc);
@@ -836,7 +852,7 @@ function asignarProcVar(parts, proc, ix){
 //Funcion que asigna procesos a particiones fijas
 function asignarProcFij(parts, proc, ix){
   //resguardo la particion para trabajar
-  parts[ix].used = proc;
+  parts[ix].used = proc.name;
   //agrego el Proc a la listo
   colaListo.push(proc);
   //agrego el proceso a la lista de procesosTerminados
@@ -863,31 +879,31 @@ function SortBySizeDes(a, b){
 //Algoritmo de planificacion de memoria,PARTICION FIJA
 function firstFit(parts,proc){
   for (var i = 0; i < parts.length; i++) {
-    if (proc.size <= parts[i].size && parts[i].used == null) {
+    if (proc.size <= parts[i].size && parts[i].used == "") {
       return parts[i].IdPart;
     }
   }
-  return false
+  return -1
 }
 
 function bestFit(parts,proc){
   parts = parts.sort(SortBySize);
   for (var i = 0; i < parts.length; i++) {
-    if (proc.size <= parts[i].size && parts[i].used == null) {;
+    if (proc.size <= parts[i].size && parts[i].used == "") {;
       return parts[i].IdPart;
     }
   }
-  return false
+  return -1
 }
 
 function worstFit(parts,proc){
   parts = parts.sort(SortBySizeDes);
   for (var i = 0; i < parts.length; i++) {
-    if (proc.size <= parts[i].size && parts[i].used == null) {;
+    if (proc.size <= parts[i].size && parts[i].used == "") {;
       return parts[i].IdPart;
     }
   }
-  return false
+  return -1
 }
 
 function solicitarProcesos(name){
@@ -898,73 +914,6 @@ function solicitarProcesos(name){
     //Eliminamos el proc que ya ha terminado
   colaListo.splice(iElim,1);
 
-  //cargaMem();
-  // if (arrayProcess.length > 0) {
-  //
-  //   if (typeMemory = "Variable"){
-  //     if (fitMemory == 'Worst Fit'){
-  //       for (var i = 0; i < arrayProcess.length; i++) {
-  //           var ix = worstFit(particiones,arrayProcess[i]);
-  //           if (ix) {
-  //             particiones = asignarProcVar(particiones,arrayProcess[i],ix);
-  //             i = -1;
-  //           }else {
-  //             //no entra en alguna particion
-  //             if (fragExt(particiones, arrayProcess[i])) {
-  //               //hay fragmentacion externa
-  //               particiones = desFrag(particiones);
-  //               var ix = worstFit(particiones,arrayProcess[i]);
-  //               if (ix) {
-  //                 particiones = asignarProcVar(particiones,arrayProcess[i],ix);
-  //                 i = -1;
-  //               }
-  //             }
-  //           }
-  //       }
-  //     }
-  //     if (fitMemory == 'First Fit'){
-  //       for (var i = 0; i < arrayProcess.length; i++) {
-  //           var ix = firstFit(particiones,arrayProcess[i]);
-  //           if (ix) {
-  //             particiones = asignarProcVar(particiones,arrayProcess[i],ix);
-  //             i = -1;
-  //           }else {
-  //             //no entra en alguna particion
-  //             if (fragExt(particiones, arrayProcess[i])) {
-  //               //hay fragmentacion externa
-  //               particiones = desFrag(particiones);
-  //               var ix = firstFit(particiones,arrayProcess[i]);
-  //               if (ix) {
-  //                 particiones = asignarProcVar(particiones,arrayProcess[i],ix);
-  //                 i = -1;
-  //               }
-  //             }
-  //           }
-  //       }
-  //     }
-  //   }
-  //
-  //   if (typeMemory = "Fija") {
-  //     if (fitMemory == 'Best Fit'){
-  //       for (var i = 0; i < arrayProcess.length; i++) {
-  //           var ix = bestFit(memFija,arrayProcess[i]);
-  //           if (ix) {
-  //             particiones = asignarProcFij(memFija,arrayProcess[i],ix);
-  //             i = -1;
-  //           }
-  //       }
-  //     }
-  //     if (fitMemory == 'First Fit'){
-  //       for (var i = 0; i < arrayProcess.length; i++) {
-  //           var ix = firstFit(memFija,arrayProcess[i]);
-  //           if (ix) {
-  //             particiones = asignarProcVar(memFija,arrayProcess[i],ix);
-  //             i = -1;
-  //           }
-  //       }
-  //     }
-  //   }
-  // }
 }
 
 var config = {
@@ -1134,7 +1083,7 @@ function getData(){
     lenArrayProcess=0;
     var tabla = document.getElementById('tableId');
 
-    db.collection("process").orderBy('arrivalTime').get().then((querySnapshot) => {
+    db.collection("process").orderBy('name').get().then((querySnapshot) => {
 
         tabla.innerHTML = '';
         var index = 1;
@@ -1425,7 +1374,7 @@ function firstComeFirstServed(){
 
               elementoCPU.outTime = tiempo+1;
               enCPU.cpuTime.shift();
-              elementoCPU.memoria = particiones;
+              elementoCPU.memoria = [...particiones];
               salidaCPU.push(elementoCPU);
               //Agregamos a la lista de bloqueado los el proceso
               colaBloqueados.push(enCPU);
@@ -1443,7 +1392,7 @@ function firstComeFirstServed(){
             if (enCPU.lastCpuTime < 1){
               elementoCPU.outTime = tiempo+1;
               elementoCPU.finish = true;
-              elementoCPU.memoria = particiones;
+              elementoCPU.memoria = [...particiones];
               salidaCPU.push(elementoCPU);
               solicitarProcesos(enCPU.name);
               elementoCPU = null;
@@ -1455,7 +1404,7 @@ function firstComeFirstServed(){
       }else{
         //Primero analaizamos cola Bloaqueada y lo quitamos
         //Luego analaizamos Cola Listo
-          if (colaESFin.length > 0 && (bloqDeCiclo == null)) {
+          if (colaESFin.length > 1 || (colaESFin.length > 0 && (bloqDeCiclo == null))) {
             enCPU = colaESFin[0];
             //una Vez que empezamos a tratar lo Eliminamos de la cola pendientes
             colaESFin.shift();
@@ -1465,7 +1414,8 @@ function firstComeFirstServed(){
             elementoCPU.irrupctionTime +=1;
             //Verificamos si debemos sacar de CPU
             if (enCPU.lastCpuTime < 1){
-              elementoCPU.outTime = tiempo;
+              elementoCPU.outTime = tiempo+1;
+              elementoCPU.memoria = [...particiones];
               elementoCPU.finish = true;
               salidaCPU.push(elementoCPU);
               //Refrescamos la cola de listos
@@ -1488,7 +1438,7 @@ function firstComeFirstServed(){
                     elementoCPU.irrupctionTime +=1;
                     //Verificamos si debemos Sacar de CPU 1
                     if (enCPU.cpuTime[0] < 1){
-
+                       elementoCPU.memoria = [...particiones];
                        elementoCPU.outTime = tiempo+1;
                        enCPU.cpuTime.shift();
                        salidaCPU.push(elementoCPU);
@@ -1507,6 +1457,7 @@ function firstComeFirstServed(){
                      //Verificamos si debemos sacar de CPU
                      if (enCPU.lastCpuTime < 1){
                        elementoCPU.outTime = tiempo+1;
+                       elementoCPU.memoria = [...particiones];
                        elementoCPU.finish = true;
                        salidaCPU.push(elementoCPU);
                        solicitarProcesos(enCPU.name);
