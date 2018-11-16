@@ -20,6 +20,10 @@ $(function () {
     });
 })
 
+$(document).tooltip({
+    selector: '.tt'
+});
+
 $(document).ready(function () {
     getData();
 
@@ -263,7 +267,7 @@ $(document).on('click','.algoInfo',function(){
       if (arrayCpu[0].name != 'O' && arrayCpu[0].memoria != null ) {
         htmlPopover += "</br><div>Memoria: "+sizeMemory+"</div>";
         //--Grafico de memoria
-        htmlPopover += graficarMem(arrayCpu[0].memoria);
+        htmlPopover += graficarMem(arrayCpu[0].memoria,arrayCpu[0].name);
       }
 
       tagOne.attr('data-content', htmlPopover);
@@ -332,7 +336,7 @@ $(document).on('click','.algoInfo',function(){
           if (arrayCpu[i].name != 'O' && arrayCpu[i].memoria != null ) {
             htmlTag += "</br><div>Memoria: "+sizeMemory+"</div>";
             //--Grafico de memoria
-            htmlTag += graficarMem(arrayCpu[i].memoria);
+            htmlTag += graficarMem(arrayCpu[i].memoria,arrayCpu[i].name);
           }
 
 
@@ -781,10 +785,10 @@ function cargaMem(){
 
 };
 
-function graficarMem(particiones){
+function graficarMem(particiones,procName){
   barraProg = $('.barraMem');
   barraProg.empty();
-  barraProg.append('<div class="progress-bar itemMem" role="progressbar" style="width: 100%;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">F</div>');
+  barraProg.append('<div class="progress-bar itemMem tt" data-toggle="tooltip" title="P1" data-placement="top"  role="progressbar" style="width: 100%;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">F</div>');
   itemProg = barraProg.find('.itemMem');
   perc = 100/sizeMemory;
   //Carga del primer elememento de la barra
@@ -792,10 +796,15 @@ function graficarMem(particiones){
 //  var tagB = itemProg.find('a');
   itemProg.attr('aria-valuenow', tamBar ).css('width',tamBar+'%');
   if (particiones[0].used == "") {
-    itemProg.text('F').removeClass('bg-warning').addClass('bg-success');
+    itemProg.text('F').removeClass('bg-warning').removeClass('bg-info').addClass('bg-success').attr('title', 'Libre: '+particiones[0].size+'KB.');
   //  tagB.css("background-color","#28a745" ).text("F");
   }else {
-    itemProg.text(particiones[0].used).removeClass('bg-success').addClass('bg-warning');
+
+    if (particiones[0].used == procName) {
+      itemProg.text("P").removeClass('bg-success').addClass('bg-info').attr('title', particiones[0].used+': '+particiones[0].size+'KB.');
+    }else {
+      itemProg.text("P").removeClass('bg-success').addClass('bg-warning').attr('title', particiones[0].used+': '+particiones[0].size+'KB.');
+    }
   //  tagB.css("background-color", "#ffc107").text(particiones[0].used.name);
   }
   //carga de los siguientes elemeetos
@@ -807,11 +816,15 @@ function graficarMem(particiones){
     if (particiones[i].used == "") {
     //  tagB.css("background-color","#28a745" ).text("F");
   //    tagB.css("border-color", "#28a745");
-      newBar.text("F").removeClass('bg-warning').addClass('bg-success');
+      newBar.text("F").removeClass('bg-warning').removeClass('bg-info').addClass('bg-success').attr('title', 'Libre: '+particiones[i].size+'KB.');
     }else {
+      if (particiones[i].used == procName) {
+        newBar.text("P").removeClass('bg-success').removeClass('bg-warning').addClass('bg-info').attr('title', particiones[i].used+': '+particiones[i].size+'KB.');
+      }else {
+        newBar.text("P").removeClass('bg-success').removeClass('bg-info').addClass('bg-warning').attr('title', particiones[i].used+': '+particiones[i].size+'KB.');
+      }
       //tagB.css("background-color", "#ffc107").text(particiones[i].used.name);
       //tagB.css("border-color", "#ffc107");
-      newBar.text(particiones[i].used).removeClass('bg-success').addClass('bg-warning');
     }
     barraProg.append(newBar);
   }
@@ -2096,7 +2109,7 @@ function shortRemainingTimeFirst(){
                                             }
                   }
           }
-      
+
       if (flag == true) {
         flag=false;
         newProcess=[];
