@@ -1299,203 +1299,334 @@ function ixRafaga(proc){
 //POR TANTO, LOS PROCESOS QUE EN COLA DE PROCESOS PREPARADOS PERMANECERÁN ENCOLADOS EN EL ORDEN
 //EN QUE LLEGUEN HASTA QUE LES TOQUE SU EJECUCIÓN.
 function firstComeFirstServed(){
-  var controladorBucle = obtenerTiempoMax();
-    //definimos las Vairables
-   var colaBloqueados = [];
-   //cargaIniMem();
-   var colaESFin = []
-   var salidaCPU = [];
-   var salidaES = [];
-   var salidaFinal = [];
-   var enES = null;
-   tiempo = 0;
-   var enCPU = null;
-   var bloqDeCiclo = null;
+  var controladorBucle=obtenerTiempoMax();
+  //cargaIniMem();
+  var enCPU = null;
+  var elementoCPU={};
+  var enES = null;
+  var elementoES={};
+  var colaCPU = [];
+  var colaES=[];
+  var salidaCPU=[];
+  var salidaES=[];
+  var salidaFinal=[];
+  var i=0;
+  var j=0;
+  var x=0;
+  var posicion=0;
+  //var tiempo=0;
+  var t1=0;
+  var t2=0;
 
-    //Inicio del algoritmo, el For que controla la ejecucion total del algoritmo
-   for (var i=0; i < controladorBucle; i++) {
-     cargaMem();
-     //ya Cumplio ciclo ponemos en false
-     bloqDeCiclo = null;
-     //Analizamos el Trabajo en ES en el mismo tiempo t analizamos primero porque al pasar un proceso a bloqueado automaticamente ejecuta
-      if (enES != null) {
-       //Procesamso el elto else {
-       //controlamos la rafagas
-       if (enES.ioTime.length > 0) {
-         enES.ioTime[0] -= 1;
-         elementoES.irrupctionTime +=1;
-         //Verificamos si debemos sacar de CPU
-         if (enES.ioTime[0] < 1){
-           //if (elementoES.irrupctionTime == 1) {
-        //     if (colaESFin.length == 0) {
-           bloqDeCiclo = enES
-      //       }
-      //     }
-           elementoES.outTime = tiempo+1;
-           enES.ioTime.shift();
-           salidaES.push(elementoES);
-           if (enES.ioTime.length < 1) {
-             colaESFin.push(enES)
-           }
-           colaBloqueados.shift();
-           enES = null;
-         }
-         //controlamos ciclo de ejecucion ES
-       }
+  //for que controla todo el algoritmo
+  for (j = 0; j < controladorBucle; j++) {
+    cargaMem();
+    //para solicitar procesos a la cola de listo en caso de que el proceso haya terminado
+    // y para repartir por cola de cpu y de e/s en caso de que no haya terminado
+    for (var x = 0; x < colaListo.length; x++) {
 
-      }else{
-         //Agregamos un Elemento de la COla de bloqueado
-           if (colaBloqueados.length > 0) {
-             enES = colaBloqueados[0];
-             elementoES = nuevoElemento(enES,tiempo);
-             //Pocesamos el Elto ES
-             if (enES.ioTime.length > 0) {
-               enES.ioTime[0] -= 1;
-               elementoES.irrupctionTime +=1;
-               //Verificamos si debemos sacar de CPU
-               if (enES.ioTime[0] < 1){
-                 //if (elementoES.irrupctionTime == 1) {
-              //     if (colaESFin.length == 0) {
-                 bloqDeCiclo = enES
-                  // }
-            //     }
-                 elementoES.outTime = tiempo+1;
-                 enES.ioTime.shift();
-                 salidaES.push(elementoES);
-                 colaESFin.push(enES)
-                 colaBloqueados.shift();
-                 enES = null;
-               }
-               //controlamos ciclo de ejecucion ES
-             }
-           }
-         }
-
-
-
-     //Analizamos el Trabajo en CPU en el tiempo t
-     if (enCPU != null){
-
-       //Verificamos si posee primer tiempo de CPU y Al terminar Pasamos a Bloquado para ser atendido en ES
-
-       if (enCPU.cpuTime.length > 0){
-         if (enCPU.cpuTime[0] > 0){
-           enCPU.cpuTime[0] -= 1;
-           elementoCPU.irrupctionTime +=1;
-           //Verificamos si debemos Sacar de CPU 1
-           if (enCPU.cpuTime[0] < 1){
-
-              elementoCPU.outTime = tiempo+1;
-              enCPU.cpuTime.shift();
-              elementoCPU.memoria = [...particiones];
-              salidaCPU.push(elementoCPU);
-              //Agregamos a la lista de bloqueado los el proceso
-              colaBloqueados.push(enCPU);
-              elementoCPU = null;
-              enCPU = null;
+      if (colaListo[x].cpuTime.length == colaListo[x].ioTime.length){
+        if (colaListo[x].cpuTime.length != 0){
+            if (estaEn(colaCPU,colaListo[x]) == false && enCPU != colaListo[x]) {
+                      colaCPU.push(colaListo[x]);
             }
           }
-        }else{
-          //Verificamos si posee Segundo Tiempo
-          if (enCPU.lastCpuTime > 0){
-            //Procesamos elto del tipo last CPU
-            enCPU.lastCpuTime -= 1;
-            elementoCPU.irrupctionTime +=1;
-            //Verificamos si debemos sacar de CPU
-            if (enCPU.lastCpuTime < 1){
-              elementoCPU.outTime = tiempo+1;
-              elementoCPU.finish = true;
-              elementoCPU.memoria = [...particiones];
-              salidaCPU.push(elementoCPU);
-              solicitarProcesos(enCPU.name);
-              elementoCPU = null;
-              enCPU = null;
-            }
-          }
-        }
-
       }else{
-        //Primero analaizamos cola Bloaqueada y lo quitamos
-        //Luego analaizamos Cola Listo
-          if (colaESFin.length > 1 || (colaESFin.length > 0 && (bloqDeCiclo == null))) {
-            enCPU = colaESFin[0];
-            //una Vez que empezamos a tratar lo Eliminamos de la cola pendientes
-            colaESFin.shift();
-            elementoCPU = nuevoElemento(enCPU,tiempo);
-            //Procesamos elemento last clpu
-            enCPU.lastCpuTime -= 1;
-            elementoCPU.irrupctionTime +=1;
-            //Verificamos si debemos sacar de CPU
-            if (enCPU.lastCpuTime < 1){
-              elementoCPU.outTime = tiempo+1;
-              elementoCPU.memoria = [...particiones];
-              elementoCPU.finish = true;
-              salidaCPU.push(elementoCPU);
-              //Refrescamos la cola de listos
-              solicitarProcesos(enCPU.name);
-              enCPU = null;
-              elementoCPU = null;
+        if(colaListo[x].ioTime.length == (colaListo[x].cpuTime.length + 1)){
+            if (estaEn(colaES,colaListo[x]) == false && enES != colaListo[x]){
+                colaES.push(colaListo[x])
             }
-            }else{
-              // Solicitamos el Proximo Proceso en listo que no este bloqueddo
-              enCPU = siguienteProceso(colaListo,colaBloqueados,colaESFin,bloqDeCiclo);
-            //  if (bloqDeCiclo == true) {
-              //  enCPU = siguienteProceso(colaListo,colaBloqueados,colaESFin)
-              //}//Verificamos si hay algun proceso en la CL
-              if (enCPU != null){
-                elementoCPU = nuevoElemento(enCPU,tiempo);
-                if (enCPU.cpuTime.length > 0){
-                  if (enCPU.cpuTime[0] > 0){
-
-                    enCPU.cpuTime[0] -= 1;
-                    elementoCPU.irrupctionTime +=1;
-                    //Verificamos si debemos Sacar de CPU 1
-                    if (enCPU.cpuTime[0] < 1){
-                       elementoCPU.memoria = [...particiones];
-                       elementoCPU.outTime = tiempo+1;
-                       enCPU.cpuTime.shift();
-                       salidaCPU.push(elementoCPU);
-                       //Agregamos a la lista de bloqueado los el proceso
-                       colaBloqueados.push(enCPU);
-                       elementoCPU = null;
-                       enCPU = null;
-                     }
-                   }
-                 }else{
-                   //Verificamos si posee Segundo Tiempo
-                   if (enCPU.lastCpuTime > 0){
-                     //Procesamos elto del tipo last CPU
-                     enCPU.lastCpuTime -= 1;
-                     elementoCPU.irrupctionTime +=1;
-                     //Verificamos si debemos sacar de CPU
-                     if (enCPU.lastCpuTime < 1){
-                       elementoCPU.outTime = tiempo+1;
-                       elementoCPU.memoria = [...particiones];
-                       elementoCPU.finish = true;
-                       salidaCPU.push(elementoCPU);
-                       solicitarProcesos(enCPU.name);
-                       elementoCPU = null;
-                       enCPU = null;
-                     }
-                   }
-                 }
-               }//si es Null entonces CPU ociosa
-              }
         }
+      }
 
-    //timer del PROCESADOR
-    tiempo += 1;
-    //Control FIN ALGORITMO
-    if( (colaListo.length == 0) && ( (colaBloqueados.length == 0) && (colaESFin.length == 0) && (enCPU = null) ) ){
-      break
+      if (colaListo[x].cpuTime.length == 0 && colaListo[x].ioTime.length == 0){
+        if ( (colaListo[x].lastCpuTime > 0)  && (estaEn(colaCPU,colaListo[x]) == false) && (enCPU != colaListo[x]) ){
+          colaCPU.push(colaListo[x]);
+        }
+      }
+
+      if (colaListo[x].cpuTime.length == 0 && colaListo[x].ioTime.length == 0){
+        if ((colaListo[x].lastCpuTime == 0)  &&(estaEn(colaCPU,colaListo[x]) == false)){
+          solicitarProcesos(colaListo[x].name)
+        }
+      }
+
+
     }
+    //para darle valores a enCPU
+    if (enCPU == null){
+      if (colaCPU.length > 0) {
+        enCPU = colaCPU[0];
+        elementoCPU = nuevoElemento(enCPU,tiempo);
+        colaCPU.splice(0,1);
+        //var indice = getIxByName(colaListo, enCPU.name);
+      }
+    }
+    //para darle valores a enES
+    if (enES == null){
+      if (colaES.length > 0) {
+        enES=colaES[0];
+        elementoES = nuevoElemento(enES,tiempo);
+        colaES.splice(0,1);
+        //var indice2 = getIxByName(colaListo, enES.name);
+      }
+    }
+    //para procesar el contenido de enCPU
+    if (enCPU != null){
+      elementoCPU.irrupctionTime+=1;
+      t1+=1;
+      if(enCPU.cpuTime[0] > 0){
+        enCPU.cpuTime[0]-=1;
+        //colaListo[indice].cpuTime-=1;
+        if (enCPU.cpuTime[0] < 1){elementoCPU.outTime=elementoCPU.inTime+elementoCPU.irrupctionTime;
+          if (estaEn(colaListo,enCPU) == true){
+            posicion=getIxByName(colaListo,enCPU.name);
+            var test = colaListo[posicion].cpuTime.splice(0,1);
+          }
+          enCPU = null;
+          elementoCPU.memoria = [...particiones];
+          salidaCPU.push(elementoCPU);
+          t1=0;
+        }
+
+      }else{enCPU.lastCpuTime-=1;
+            //colaListo[indice].lastCpuTime-=1;
+            if (enCPU.lastCpuTime < 1){elementoCPU.outTime=elementoCPU.inTime+elementoCPU.irrupctionTime;
+                                                    if(enCPU.lastCpuTime==0){elementoCPU.finish=true}
+                                                    enCPU = null;
+                                                    elementoCPU.memoria = [...particiones];
+                                                    salidaCPU.push(elementoCPU);
+                                                    t1=0;}
+            }
+    }
+    //para procesar el contenido de enES
+    if (enES != null){
+      elementoES.irrupctionTime+=1;
+      enES.ioTime[0]-=1;
+      //colaListo[indice2].ioTime-=1;
+      if (enES.ioTime[0] < 1){
+        elementoES.outTime=elementoES.inTime+elementoES.irrupctionTime;
+        if (estaEn(colaListo,enES) == true){
+          posicion=getIxByName(colaListo,enES.name);
+          colaListo[posicion].ioTime.splice(0,1);
+        }
+        enES = null;
+        salidaES.push(elementoES);
+      }
+    }
+    tiempo+=1;
+    if (colaListo.length == 0 && colaCPU.length == 0 && enCPU == null && arrayProcess.length == 0){
+      break;
+    }
+
   }
-
-
   salidaFinal.push(salidaCPU);
   salidaFinal.push(salidaES);
-  return salidaFinal;
+  return salidaFinal
 }
+
+
+
+//Version antigua de FCFS
+// function firstComeFirstServed(){
+//   var controladorBucle = obtenerTiempoMax();
+//     //definimos las Vairables
+//    var colaBloqueados = [];
+//    //cargaIniMem();
+//    var colaESFin = []
+//    var salidaCPU = [];
+//    var salidaES = [];
+//    var salidaFinal = [];
+//    var enES = null;
+//    tiempo = 0;
+//    var enCPU = null;
+//    var bloqDeCiclo = null;
+//
+//     //Inicio del algoritmo, el For que controla la ejecucion total del algoritmo
+//    for (var i=0; i < controladorBucle; i++) {
+//      cargaMem();
+//      //ya Cumplio ciclo ponemos en false
+//      bloqDeCiclo = null;
+//      //Analizamos el Trabajo en ES en el mismo tiempo t analizamos primero porque al pasar un proceso a bloqueado automaticamente ejecuta
+//       if (enES != null) {
+//        //Procesamso el elto else {
+//        //controlamos la rafagas
+//        if (enES.ioTime.length > 0) {
+//          enES.ioTime[0] -= 1;
+//          elementoES.irrupctionTime +=1;
+//          //Verificamos si debemos sacar de CPU
+//          if (enES.ioTime[0] < 1){
+//            //if (elementoES.irrupctionTime == 1) {
+//         //     if (colaESFin.length == 0) {
+//            bloqDeCiclo = enES
+//       //       }
+//       //     }
+//            elementoES.outTime = tiempo+1;
+//            enES.ioTime.shift();
+//            salidaES.push(elementoES);
+//            if (enES.ioTime.length < 1) {
+//              colaESFin.push(enES)
+//            }
+//            colaBloqueados.shift();
+//            enES = null;
+//          }
+//          //controlamos ciclo de ejecucion ES
+//        }
+//
+//       }else{
+//          //Agregamos un Elemento de la COla de bloqueado
+//            if (colaBloqueados.length > 0) {
+//              enES = colaBloqueados[0];
+//              elementoES = nuevoElemento(enES,tiempo);
+//              //Pocesamos el Elto ES
+//              if (enES.ioTime.length > 0) {
+//                enES.ioTime[0] -= 1;
+//                elementoES.irrupctionTime +=1;
+//                //Verificamos si debemos sacar de CPU
+//                if (enES.ioTime[0] < 1){
+//                  //if (elementoES.irrupctionTime == 1) {
+//               //     if (colaESFin.length == 0) {
+//                  bloqDeCiclo = enES
+//                   // }
+//             //     }
+//                  elementoES.outTime = tiempo+1;
+//                  enES.ioTime.shift();
+//                  salidaES.push(elementoES);
+//                  colaESFin.push(enES)
+//                  colaBloqueados.shift();
+//                  enES = null;
+//                }
+//                //controlamos ciclo de ejecucion ES
+//              }
+//            }
+//          }
+//
+//
+//
+//      //Analizamos el Trabajo en CPU en el tiempo t
+//      if (enCPU != null){
+//
+//        //Verificamos si posee primer tiempo de CPU y Al terminar Pasamos a Bloquado para ser atendido en ES
+//
+//        if (enCPU.cpuTime.length > 0){
+//          if (enCPU.cpuTime[0] > 0){
+//            enCPU.cpuTime[0] -= 1;
+//            elementoCPU.irrupctionTime +=1;
+//            //Verificamos si debemos Sacar de CPU 1
+//            if (enCPU.cpuTime[0] < 1){
+//
+//               elementoCPU.outTime = tiempo+1;
+//               enCPU.cpuTime.shift();
+//               elementoCPU.memoria = [...particiones];
+//               salidaCPU.push(elementoCPU);
+//               //Agregamos a la lista de bloqueado los el proceso
+//               colaBloqueados.push(enCPU);
+//               elementoCPU = null;
+//               enCPU = null;
+//             }
+//           }
+//         }else{
+//           //Verificamos si posee Segundo Tiempo
+//           if (enCPU.lastCpuTime > 0){
+//             //Procesamos elto del tipo last CPU
+//             enCPU.lastCpuTime -= 1;
+//             elementoCPU.irrupctionTime +=1;
+//             //Verificamos si debemos sacar de CPU
+//             if (enCPU.lastCpuTime < 1){
+//               elementoCPU.outTime = tiempo+1;
+//               elementoCPU.finish = true;
+//               elementoCPU.memoria = [...particiones];
+//               salidaCPU.push(elementoCPU);
+//               solicitarProcesos(enCPU.name);
+//               elementoCPU = null;
+//               enCPU = null;
+//             }
+//           }
+//         }
+//
+//       }else{
+//         //Primero analaizamos cola Bloaqueada y lo quitamos
+//         //Luego analaizamos Cola Listo
+//           if (colaESFin.length > 1 || (colaESFin.length > 0 && (bloqDeCiclo == null))) {
+//             enCPU = colaESFin[0];
+//             //una Vez que empezamos a tratar lo Eliminamos de la cola pendientes
+//             colaESFin.shift();
+//             elementoCPU = nuevoElemento(enCPU,tiempo);
+//             //Procesamos elemento last clpu
+//             enCPU.lastCpuTime -= 1;
+//             elementoCPU.irrupctionTime +=1;
+//             //Verificamos si debemos sacar de CPU
+//             if (enCPU.lastCpuTime < 1){
+//               elementoCPU.outTime = tiempo+1;
+//               elementoCPU.memoria = [...particiones];
+//               elementoCPU.finish = true;
+//               salidaCPU.push(elementoCPU);
+//               //Refrescamos la cola de listos
+//               solicitarProcesos(enCPU.name);
+//               enCPU = null;
+//               elementoCPU = null;
+//             }
+//             }else{
+//               // Solicitamos el Proximo Proceso en listo que no este bloqueddo
+//               enCPU = siguienteProceso(colaListo,colaBloqueados,colaESFin,bloqDeCiclo);
+//             //  if (bloqDeCiclo == true) {
+//               //  enCPU = siguienteProceso(colaListo,colaBloqueados,colaESFin)
+//               //}//Verificamos si hay algun proceso en la CL
+//               if (enCPU != null){
+//                 elementoCPU = nuevoElemento(enCPU,tiempo);
+//                 if (enCPU.cpuTime.length > 0){
+//                   if (enCPU.cpuTime[0] > 0){
+//
+//                     enCPU.cpuTime[0] -= 1;
+//                     elementoCPU.irrupctionTime +=1;
+//                     //Verificamos si debemos Sacar de CPU 1
+//                     if (enCPU.cpuTime[0] < 1){
+//                        elementoCPU.memoria = [...particiones];
+//                        elementoCPU.outTime = tiempo+1;
+//                        enCPU.cpuTime.shift();
+//                        salidaCPU.push(elementoCPU);
+//                        //Agregamos a la lista de bloqueado los el proceso
+//                        colaBloqueados.push(enCPU);
+//                        elementoCPU = null;
+//                        enCPU = null;
+//                      }
+//                    }
+//                  }else{
+//                    //Verificamos si posee Segundo Tiempo
+//                    if (enCPU.lastCpuTime > 0){
+//                      //Procesamos elto del tipo last CPU
+//                      enCPU.lastCpuTime -= 1;
+//                      elementoCPU.irrupctionTime +=1;
+//                      //Verificamos si debemos sacar de CPU
+//                      if (enCPU.lastCpuTime < 1){
+//                        elementoCPU.outTime = tiempo+1;
+//                        elementoCPU.memoria = [...particiones];
+//                        elementoCPU.finish = true;
+//                        salidaCPU.push(elementoCPU);
+//                        solicitarProcesos(enCPU.name);
+//                        elementoCPU = null;
+//                        enCPU = null;
+//                      }
+//                    }
+//                  }
+//                }//si es Null entonces CPU ociosa
+//               }
+//         }
+//
+//     //timer del PROCESADOR
+//     tiempo += 1;
+//     //Control FIN ALGORITMO
+//     if( (colaListo.length == 0) && ( (colaBloqueados.length == 0) && (colaESFin.length == 0) && (enCPU = null) ) ){
+//       break
+//     }
+//   }
+//
+//
+//   salidaFinal.push(salidaCPU);
+//   salidaFinal.push(salidaES);
+//   return salidaFinal;
+// }
+
 //EJECUTA COMENZANDO POR EL PRIMER ELEMENTO Y DANDOLE UN TIEMPO DE EJECUCIÓN EQUITATIVO A TODOS LOS PROCEDIMIENTOS
 //DE LA LISTA, RECORRE DE PRINCIPIO HASTA LLEGAR AL ULTIMO Y NUEVAMENTE EMPEZANDO DESDE EL PRIMER ELEMENTO HASTA TERMINAR.
 function roundRobin(quantum){
@@ -1581,6 +1712,7 @@ function roundRobin(quantum){
             var test = colaListo[posicion].cpuTime.splice(0,1);
           }
           enCPU = null;
+          elementoCPU.memoria = [...particiones];
           salidaCPU.push(elementoCPU);
           t1=0;
         }
@@ -1590,6 +1722,7 @@ function roundRobin(quantum){
             if (enCPU.lastCpuTime < 1 || t1==quantum){elementoCPU.outTime=elementoCPU.inTime+elementoCPU.irrupctionTime;
                                                     if(enCPU.lastCpuTime==0){elementoCPU.finish=true}
                                                     enCPU = null;
+                                                    elementoCPU.memoria = [...particiones];
                                                     salidaCPU.push(elementoCPU);
                                                     t1=0;}
             }
