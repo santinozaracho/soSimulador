@@ -107,19 +107,19 @@ $(document).ready(function () {
       var valueCurrent = $(".optionFitOne > input").val();
       fitMemory = valueCurrent;
       console.log(fitMemory);
-      $(".ajuInfo").text("Best Fit");
+      $(".ajuInfo").text(fitMemory);
    });
    $(".optionFitTwo").click(function(){
       var valueCurrent = $(".optionFitTwo > input").val();
       fitMemory = valueCurrent;
       console.log(fitMemory);
-      $(".ajuInfo").text("First Fit");
+      $(".ajuInfo").text(fitMemory);
    });
    $(".optionFitThree").click(function(){
       var valueCurrent = $(".optionFitThree > input").val();
       fitMemory = valueCurrent;
       console.log(fitMemory);
-      $(".ajuInfo").text("Worst Fit");
+      $(".ajuInfo").text(fitMemory);
    });
    //------------------------------------
 
