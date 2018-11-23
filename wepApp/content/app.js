@@ -155,6 +155,21 @@ $(document).ready(function () {
       $(".algoInfo").text("SRTF");
    });
 
+    $(".inputMemory").keyup(function(){
+      $('.alertPart').removeClass('show');
+      $('.alertPart').addClass('hide');
+
+      var sizepart2 = parseInt($('.inputMemory').val())
+
+      if (sizepart2 > 0) {
+        $('.alertPart').removeClass('show');
+        $('.alertPart').addClass('hide');
+      }else {
+        $(".textoAlertPart").text("Debe ingresar un numero mayor a cero.");
+        $('.alertPart').addClass('show');
+      }
+    });
+
    $(".quantumIn").keyup(function(){
 
      $('.alertProcess').removeClass('show');
