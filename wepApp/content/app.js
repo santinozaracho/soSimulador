@@ -107,19 +107,19 @@ $(document).ready(function () {
       var valueCurrent = $(".optionFitOne > input").val();
       fitMemory = valueCurrent;
       console.log(fitMemory);
-      $(".ajuInfo").text("Best Fit");
+      $(".ajuInfo").text(fitMemory);
    });
    $(".optionFitTwo").click(function(){
       var valueCurrent = $(".optionFitTwo > input").val();
       fitMemory = valueCurrent;
       console.log(fitMemory);
-      $(".ajuInfo").text("First Fit");
+      $(".ajuInfo").text(fitMemory);
    });
    $(".optionFitThree").click(function(){
       var valueCurrent = $(".optionFitThree > input").val();
       fitMemory = valueCurrent;
       console.log(fitMemory);
-      $(".ajuInfo").text("Worst Fit");
+      $(".ajuInfo").text(fitMemory);
    });
    //------------------------------------
 
@@ -832,14 +832,23 @@ function graficarMem(particiones,procName){
   return contentBarra
 };
 
+function getIxByIdPart(parts,idPart){
+  for (var i = 0; i < parts.length; i++) {
+    if (parts[i].IdPart == idPart ){
+      return i
+    }
+  }
+};
+
 //funcion que asigna una proceso a una particion variable
 function asignarProcVar(parts, proc, ix){
+  idx = getIxByIdPart(parts,ix);
   //resguardo la particion para trabajar
-  var partRes = parts[ix];
+  var partRes = parts[idx];
   //genero el nuevo id de part
   var idnew = obtNewIdPart(parts);
   //quito la particion resguardada
-  parts.splice(ix,1);
+  parts.splice(idx,1);
   //agrego el Proc a la listo
   colaListo.push(proc);
   //creo particion de Proceso
@@ -847,12 +856,12 @@ function asignarProcVar(parts, proc, ix){
   partProc.IdPart = partRes.IdPart;
   var nome = proc.name;
   partProc.used = nome;
-  parts.splice(ix,0,partProc);
+  parts.splice(idx,0,partProc);
   //Creo particion restante
   var partEmpty = newPart(partRes.size - partProc.size);
   partEmpty.IdPart = idnew + 1;
   //partEmpty.used = "";
-  parts.splice(ix+1,0,partEmpty);
+  parts.splice(idx+1,0,partEmpty);
   //agrego el proceso a la lista de procesosTerminados
   procesosTerminados.push(proc);
 
@@ -865,8 +874,9 @@ function asignarProcVar(parts, proc, ix){
 }
 //Funcion que asigna procesos a particiones fijas
 function asignarProcFij(parts, proc, ix){
+  idx = getIxByIdPart(parts,ix);
   //resguardo la particion para trabajar
-  parts[ix].used = proc.name;
+  parts[idx].used = proc.name;
   //agrego el Proc a la listo
   colaListo.push(proc);
   //agrego el proceso a la lista de procesosTerminados
@@ -901,20 +911,22 @@ function firstFit(parts,proc){
 }
 
 function bestFit(parts,proc){
-  parts = parts.sort(SortBySize);
-  for (var i = 0; i < parts.length; i++) {
-    if (proc.size <= parts[i].size && parts[i].used == "") {;
-      return parts[i].IdPart;
+  partitions = [...parts]
+  partitions = partitions.sort(SortBySize);
+  for (var i = 0; i < partitions.length; i++) {
+    if (proc.size <= partitions[i].size && partitions[i].used == "") {;
+      return partitions[i].IdPart;
     }
   }
   return -1
 }
 
 function worstFit(parts,proc){
-  parts = parts.sort(SortBySizeDes);
-  for (var i = 0; i < parts.length; i++) {
-    if (proc.size <= parts[i].size && parts[i].used == "") {;
-      return parts[i].IdPart;
+  partitions = [...parts];
+  partitions = partitions.sort(SortBySizeDes);
+  for (var i = 0; i < partitions.length; i++) {
+    if (proc.size <= partitions[i].size && partitions[i].used == "") {;
+      return partitions[i].IdPart;
     }
   }
   return -1
