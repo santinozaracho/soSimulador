@@ -1386,6 +1386,7 @@ function firstComeFirstServed(){
   var i=0;
   var j=0;
   var x=0;
+  var p=0;
   var posicion=0;
   //var tiempo=0;
   var t1=0;
@@ -1465,7 +1466,11 @@ function firstComeFirstServed(){
       }else{enCPU.lastCpuTime-=1;
             //colaListo[indice].lastCpuTime-=1;
             if (enCPU.lastCpuTime < 1){elementoCPU.outTime=elementoCPU.inTime+elementoCPU.irrupctionTime;
-                                                    if(enCPU.lastCpuTime==0){elementoCPU.finish=true}
+                                                    if(enCPU.lastCpuTime==0){
+                                                      elementoCPU.finish=true;
+                                                      p=getIxByName(colaListo,enCPU.name);
+                                                      solicitarProcesos(colaListo[p].name);
+                                                    }
                                                     enCPU = null;
                                                     elementoCPU.memoria = [...particiones];
                                                     salidaCPU.push(elementoCPU);
@@ -1717,6 +1722,7 @@ function roundRobin(quantum){
   var i=0;
   var j=0;
   var x=0;
+  var p=0;
   var posicion=0;
   //var tiempo=0;
   var t1=0;
@@ -1793,7 +1799,11 @@ function roundRobin(quantum){
       }else{enCPU.lastCpuTime-=1;
             //colaListo[indice].lastCpuTime-=1;
             if (enCPU.lastCpuTime < 1 || t1==quantum){elementoCPU.outTime=elementoCPU.inTime+elementoCPU.irrupctionTime;
-                                                    if(enCPU.lastCpuTime==0){elementoCPU.finish=true}
+                                                    if(enCPU.lastCpuTime==0){
+                                                      elementoCPU.finish=true;
+                                                      p=getIxByName(colaListo,enCPU.name);
+                                                      solicitarProcesos(colaListo[p].name);
+                                                    }
                                                     enCPU = null;
                                                     elementoCPU.memoria = [...particiones];
                                                     salidaCPU.push(elementoCPU);
