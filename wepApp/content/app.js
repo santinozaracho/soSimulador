@@ -4,6 +4,7 @@ var fitMemory = "First Fit"; //Ajuste de memoria
 var algorithm = "FCFS"; //Algoritmo de Planificacion
 var generalQuantum = 0; // Quantum para roundRobin
 var arrayProcess = []; //Arreglo con los procesos importados de la BD
+var arrayProcGraf = [];
 var procesosTerminados = []; // cola de procesos Terminado
 var particiones = []; // Memoria variable
 var colaListo = []; //Cola de procesos Listos
@@ -245,12 +246,16 @@ $(document).on('click','.algoInfo',function(){
       }
       //Carga de las Barras
       //calculamos el tamaño de cada Tiempo para representarlo en la barra de porcentajes
+      var totalTime = 0;
+      var totalProcess = 0;
 
+      var totalWait = 0;
 
       var arrayCpu = arrayFinish[0];
       var ultTiempo = arrayCpu[arrayCpu.length -1].outTime;
 
       var unit = 100/ultTiempo;
+
       var firstIrruption = arrayCpu[0].irrupctionTime * unit;
       if (arrayCpu[0].name == 'O') {
         arrayCpu[0].color = '#e9ecef'
@@ -279,6 +284,7 @@ $(document).on('click','.algoInfo',function(){
           var markWaitFirst = "<tr><th scope='row'>"+arrayCpu[0].name+"</th><td>"+(arrayCpu[0].outTime-arrayCpu[0].arrivalTime)+"</td><td>"+arrayCpu[0].irrupctionTime+"</td><td>"+(arrayCpu[0].outTime-arrayCpu[0].arrivalTime-arrayCpu[0].irrupctionTime)+"</td></tr>";
           $('.tableWait > tbody:last-child').append(markWaitFirst);
       }
+
       if (arrayCpu[0].name != 'O' && arrayCpu[0].memoria != null ) {
         htmlPopover += "</br><div>Memoria: "+sizeMemory+"</div>";
         //--Grafico de memoria
@@ -287,7 +293,7 @@ $(document).on('click','.algoInfo',function(){
 
       tagOne.attr('data-content', htmlPopover);
       tagOne.text(arrayCpu[0].name);
-      if (firstIrruption < 4) {
+      if (firstIrruption < 2) {
         tagOne.css("background-color", arrayCpu[0].color).text("-");
       }else {
         tagOne.css("background-color", arrayCpu[0].color).text(arrayCpu[0].name);
@@ -328,7 +334,7 @@ $(document).on('click','.algoInfo',function(){
             tag.css("background-color", item.color).text("-");
           }else{
             tag.attr('title', 'Datos de '+item.name);
-            if (irruption < 4 ) {
+            if (irruption < 2 ) {
               tag.css("background-color", item.color).text("-");
             }else {
               tag.css("background-color", item.color).text(item.name);
@@ -340,10 +346,17 @@ $(document).on('click','.algoInfo',function(){
           if(item.finish){
             htmlTag += '<div><b>Proceso Terminado</b></div>';
 
+            totalTime += item.outTime-item.arrivalTime;
+
+            totalProcess += 1;
+
             var markup = "<tr><th scope='row'>"+item.name+"</th><td>"+item.outTime+"</td><td>"+item.arrivalTime+"</td><td>"+(item.outTime-item.arrivalTime)+"</td></tr>";
             $('.tableResponse > tbody:last-child').append(markup);
+            var irruptionTot = getTotalTime(item.name);
 
-            var markWait = "<tr><th scope='row'>"+item.name+"</th><td>"+(item.outTime-item.arrivalTime)+"</td><td>"+item.irrupctionTime+"</td><td>"+(item.outTime-item.arrivalTime-item.irrupctionTime)+"</td></tr>";
+            totalWait += (item.outTime-item.arrivalTime) - irruptionTot;
+
+            var markWait = "<tr><th scope='row'>"+item.name+"</th><td>"+(item.outTime-item.arrivalTime)+"</td><td>"+irruptionTot+"</td><td>"+(item.outTime-item.arrivalTime-irruptionTot)+"</td></tr>";
             $('.tableWait > tbody:last-child').append(markWait);
 
           }
@@ -354,8 +367,6 @@ $(document).on('click','.algoInfo',function(){
             htmlTag += graficarMem(arrayCpu[i].memoria,arrayCpu[i].name);
           }
 
-
-
           //--Fin grafico de memoira
           tag.attr('data-content', htmlTag);
 
@@ -363,6 +374,9 @@ $(document).on('click','.algoInfo',function(){
           $('#progressCpu').append(newItem);
 
       }
+
+      $(".timeReturn").text("Tiempo de Retorno Promedio: " + (totalTime/totalProcess).toFixed(2));
+      $(".timeWait").text("Tiempo de Espera Promedio: " + (totalWait/totalProcess).toFixed(2));
 
       //-------- E/S -----
 
@@ -388,12 +402,12 @@ $(document).on('click','.algoInfo',function(){
         tagOneEs.attr('data-original-title', 'Tiempo Ocioso');
         tagOneEs.css("background-color", arrayEs[0].color).text("-");
       }else{
-        if (firstIrruptionEs < 4) {
-          tagOneEs.css("background-color", arrayEs[0].color).text("-");
+        if (firstIrruptionEs < 2) {
+          tagOneEs.css("background-color", arrayEs[0].color).text("+");
         }else {
           tagOneEs.css("background-color", arrayEs[0].color).text(arrayEs[0].name);
         }
-        tagOneEs.attr('data-original-title', 'Datos de '+arrayEs[0].name);
+        tagOneEs.attr('data-original-title', 'E/S de '+arrayEs[0].name);
 
       }
 
@@ -435,13 +449,13 @@ $(document).on('click','.algoInfo',function(){
             tag.attr('title', 'Tiempo Ocioso');
             tag.css("background-color", item.color).text("-");
           }else{
-            if (irruption < 4) {
-              tag.css("background-color", item.color).text("-");
+            if (irruption < 2) {
+              tag.css("background-color", item.color).text("+");
             }else {
               tag.css("background-color", item.color).text(item.name);
             }
 
-            tag.attr('title', 'Datos de '+item.name);
+            tag.attr('title', 'E/S de '+item.name);
             htmlTag += '</br><div><b>Tiempo de Ejecucion: '+item.irrupctionTime+'</b></div>';
           }
 
@@ -458,6 +472,23 @@ $(document).on('click','.algoInfo',function(){
    //--------------
 
 });
+
+
+///---------------------
+function getTotalTime(nameProces){
+  for (var i = 0; i < arrayProcGraf.length; i++) {
+    if (arrayProcGraf[i].name === nameProces) {
+      var irruption = 0;
+      for (var j = 0; j < arrayProcGraf[i].cpuTime.length; j++) {
+        irruption += arrayProcGraf[i].cpuTime[j]
+      }
+      irruption += parseInt(arrayProcGraf[i].lastCpuTime);
+      return irruption
+    }
+  }
+  return 0
+};
+///-----------------------
 
 $(document).on('click', ".one", function (e) {
     e.preventDefault();
@@ -1133,6 +1164,7 @@ function deleteData(idData){
 
 function getData(){
     arrayProcess = [];
+    arrayProcGraf = [];
     lenArrayProcess=0;
     var tabla = document.getElementById('tableId');
 
@@ -1159,6 +1191,7 @@ function getData(){
           index += 1;
           lenArrayProcess += 1;
           arrayProcess.push(doc.data());
+          arrayProcGraf.push(doc.data());
           var ultNom = "P"+(lenArrayProcess+1);
           $(".nomProc").val(ultNom);
         });
