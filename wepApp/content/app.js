@@ -989,12 +989,13 @@ function solicitarProcesos(name){
 }
 
 var config = {
-    apiKey: "AIzaSyBPV-YDy4TwyVtAnKzG8SQ3fwKy4gyAHxQ",
-    authDomain: "proyectoprocesos-fddd5.firebaseapp.com",
-    databaseURL: "https://proyectoprocesos-fddd5.firebaseio.com",
-    projectId: "proyectoprocesos-fddd5",
-    storageBucket: "proyectoprocesos-fddd5.appspot.com",
-    messagingSenderId: "80081573356"
+  apiKey: "AIzaSyCtG08UPuvdESMwuhgjAUQLTOif5H6KRJ4",
+  authDomain: "simuladorsosantino.firebaseapp.com",
+  databaseURL: "https://simuladorsosantino.firebaseio.com",
+  projectId: "simuladorsosantino",
+  storageBucket: "simuladorsosantino.appspot.com",
+  messagingSenderId: "708254942519",
+  appId: "1:708254942519:web:887fde5977a85302bb06b2"
 };
 
 firebase.initializeApp(config);
